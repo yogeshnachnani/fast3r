@@ -7,6 +7,13 @@ import kotlin.browser.document
 
 fun main () {
     document.head!!.insertAdjacentHTML("afterbegin", "<style>$styles</style>")
+    /**
+     * The official documentation specifies that we create a <div id = 'root'> in index.html
+     * Somehow, that prevents tests from executing properly (this was after we introduced react)
+     * As a workaround, we create the root div element here instead
+     * See here for more details - https://stackoverflow.com/questions/61839800/unit-testing-in-kotlin-js/62058511#62058511
+     */
+    document.body!!.insertAdjacentHTML("afterbegin", "<div id='root'></div>" )
 //    renderDiffView()
     renderGettingStarted()
 }

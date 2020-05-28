@@ -22,7 +22,13 @@ repositories {
 
 kotlin {
     js {
-        browser {}
+        browser {
+            testTask {
+                useKarma() {
+                    useChrome()
+                }
+            }
+        }
         nodejs {
             useCommonJs()
         }
@@ -33,44 +39,6 @@ kotlin {
     tasks.named("compileKotlinJs") {
         this as KotlinJsCompile
         kotlinOptions.moduleKind = "commonjs"
-    }
-
-    fun linkAtomPackage() {
-        val projectDir = projectDir
-        val userHome = System.getProperty("user.home")
-        val nodeModulesOutputDir = "${projectDir.absolutePath}/build/js/node_modules"
-        val linkInSuperCrAtomProject = "$userHome/.atom/packages/super-cr/node_modules"
-        val symLinkInSuperCrAtomPackage = File(linkInSuperCrAtomProject)
-        if (symLinkInSuperCrAtomPackage.exists()) {
-            /** Link already exists, confirm that it points to intended output dir */
-            if (symLinkInSuperCrAtomPackage.canonicalPath == nodeModulesOutputDir) {
-                println("Symlink to node_modules already exists. Nothing to do")
-            } else {
-                println("Symlink points to ${symLinkInSuperCrAtomPackage.canonicalPath} which is wrong. Nuking and fixing")
-                exec {
-                    symLinkInSuperCrAtomPackage.delete()
-                    commandLine("ln", "-s", nodeModulesOutputDir, linkInSuperCrAtomProject)
-                }
-            }
-        } else {
-            println("Creating symlink of $nodeModulesOutputDir to $linkInSuperCrAtomProject")
-            exec {
-                commandLine("ln", "-s", nodeModulesOutputDir, linkInSuperCrAtomProject)
-            }
-        }
-    }
-
-    tasks.register("buildNLink") {
-        dependsOn("buildDependents")
-        doLast {
-            linkAtomPackage()
-        }
-    }
-    tasks.register("assembleNLink") {
-        dependsOn("assemble")
-        doLast {
-            linkAtomPackage()
-        }
     }
 
     sourceSets {
