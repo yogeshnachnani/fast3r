@@ -14,8 +14,8 @@ fun main () {
      * See here for more details - https://stackoverflow.com/questions/61839800/unit-testing-in-kotlin-js/62058511#62058511
      */
     document.body!!.insertAdjacentHTML("afterbegin", "<div id='root'></div>" )
-//    renderDiffView()
-    renderGettingStarted()
+    renderDiffView()
+//    renderGettingStarted()
 }
 
 private fun renderGettingStarted() {

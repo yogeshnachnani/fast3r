@@ -96,8 +96,12 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
     private fun Edit.processForNewEditor(offset: Long): Long {
         return when(editType) {
-            DiffEditType.INSERT,
+            DiffEditType.INSERT -> {
+                highlighLinesWithGutter(editor = rightEditor, fromRow = beginB + offset, numLines = lengthB, cssClazz = TextStyles.insertedTextNew)
+                0L
+            }
             DiffEditType.REPLACE -> {
+                highlightChangedTextInNewEditor(offset)
                 highlighLinesWithGutter(editor = rightEditor, fromRow = beginB + offset, numLines = lengthB, cssClazz = TextStyles.insertedTextNew)
                 0L
             }
@@ -118,6 +122,15 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             DiffEditType.EMPTY -> TODO()
         }
     }
+    private fun Edit.highlightChangedTextInNewEditor(offset: Long) {
+        (beginB until (endB + offset)).map { index ->
+            val newLine = rightEditor.getSession().getLine(index.toDouble())
+            val oldLine = rightEditor.getSession().getLine(index.toDouble())
+//            val diff = Diff.diffWords(oldLine, newLine)
+//            console.log("Got diff $diff for index ", index.toDouble())
+        }
+    }
+
     private fun Edit.processForOldEditor(offset: Long) {
         /**
          * The region highlighted by [beginA] to [endA] has been 'replaced' _in the original (left side) document
@@ -147,7 +160,6 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             DiffEditType.INSERT -> {
                 val numLines = lengthB - lengthA
                 val numLinesInDocument = leftEditor.getSession().getLength() as Number
-                console.log("Handling INSERT for old editor. Will insert $numLines at ${beginB + offset}. Num of current lines is $numLinesInDocument")
                 insertEmptyLinesAt(editor = leftEditor, rowNumber = beginB + offset, numLines = numLines)
                 highlighLinesWithGutter(leftEditor, beginB + offset, numLines, TextStyles.textInsertedForBalance)
             }
