@@ -21,7 +21,7 @@ class TextStyles {
 
 var styles = CSSBuilder().apply {
     TextStyles.insertedTextNew.cssClassName().invoke {
-        background = "#e6ffed"
+        background = "#51fc81"
         position = Position.absolute
         zIndex = 20
     }
