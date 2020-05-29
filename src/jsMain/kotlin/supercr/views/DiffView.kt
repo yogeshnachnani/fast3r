@@ -44,6 +44,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 attrs {
                     item = true
                     container = false
+                    xs = 6
                 }
                 AceEditor {
                     attrs {
@@ -52,6 +53,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                         name = "left-main-editor"
                         readOnly = true
                         value = props.oldText
+                        width = "inherit"
                     }
                 }
             }
@@ -59,6 +61,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 attrs {
                     item = true
                     container = false
+                    xs = 6
                 }
                 AceEditor {
                     attrs {
@@ -67,6 +70,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                         name = "right-main-editor"
                         readOnly = true
                         value = props.newText
+                        width = "inherit"
                     }
                 }
             }

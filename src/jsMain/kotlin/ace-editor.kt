@@ -17,4 +17,6 @@ external interface AceEditorProps: RProps {
     var editorProps: Object
     var placeHolder: String
     var value: String
+    var width: String
+    var height: String
 }
