@@ -307,7 +307,7 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
 
 }
 
-fun RBuilder.repoComponent(handler: RepoComponentProps.() -> Unit): ReactElement {
+private fun RBuilder.repoComponent(handler: RepoComponentProps.() -> Unit): ReactElement {
     return child(RepoComponent::class) {
         this.attrs(handler)
     }

@@ -1,9 +1,11 @@
 import codereview.DiffChangeType
 import codereview.Edit
 import codereview.FileDiff
+import codereview.FileDiffList
 import codereview.FileHeader
 import react.dom.render
 import supercr.css.styles
+import supercr.views.changeSetScreen
 import supercr.views.fileView
 import supercr.views.getStartedScreen
 import kotlin.browser.document
@@ -31,14 +33,13 @@ private fun renderGettingStarted() {
 
 private fun renderDiffView() {
     render(document.getElementById("root")) {
-        fileView {
-            fileDiff = testModifyDiff
-        }
-        fileView {
-            fileDiff = testAddFileDifff
-        }
-        fileView {
-            fileDiff = testRemovedFileDiff
+        changeSetScreen {
+            fileDiffList = FileDiffList(
+                fileDiffs =  listOf(
+                    testModifyDiff,
+                    testAddFileDifff
+                )
+            )
         }
     }
 }
@@ -69,7 +70,7 @@ private val testModifyDiff = FileDiff(
         """.trimIndent(),
     diffChangeType = DiffChangeType.MODIFY,
     fileHeader = FileHeader(
-        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/ChangesetM.kt",
         fileOldPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
         description = "",
         identifier = "xyz1234",
@@ -137,7 +138,7 @@ val testAddFileDifff = FileDiff (
         """.trimIndent(),
     diffChangeType = DiffChangeType.ADD,
     fileHeader = FileHeader(
-        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/ChangesetA.kt",
         fileOldPath = "",
         description = "",
         identifier = "newFile1234",

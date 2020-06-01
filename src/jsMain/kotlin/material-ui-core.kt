@@ -3,6 +3,7 @@
 
 import react.RClass
 import react.RProps
+import react.ReactElement
 
 @JsName("Button")
 external val Button: RClass<ButtonProps>
@@ -20,9 +21,39 @@ external val Grid: RClass<GridProps>
 external interface GridProps: RProps {
     var item: Boolean
     var container: Boolean
+
+    /**
+     * stretch
+     * center
+     * flex-start
+     * flex-end
+     * space-between
+     * space-around
+     *
+     * Default: Stretch
+     */
     var alignContent: String
+
+    /**
+     * flex-start
+     * center
+     * flex-end
+     * stretch
+     * baseline
+     *
+     * Default: Stretch
+     */
     var alignItems: String
     var direction: String
+
+    /**
+     * flex-start
+     * center
+     * flex-end
+     * space-between
+     * space-around
+     * space-evenly
+     */
     var justify: String
     var spacing: Number
     var wrap: String
@@ -55,6 +86,7 @@ external val Divider: RClass<DividerProps>
 external interface ListProps: RProps {
     var dense: Boolean
     var disablePadding: Boolean
+    var subHeader: ReactElement
 }
 
 @JsName("List")
@@ -78,3 +110,24 @@ external interface ListItemProps: RProps {
 
 @JsName("ListItem")
 external val ListItem: RClass<ListItemProps>
+
+external interface AvatarProps: RProps {
+    var alt: String
+    /** 'circle' 'rounded' or 'square'. Default circle */
+    var variant: String
+}
+
+@JsName("Avatar")
+external val Avatar: RClass<AvatarProps>
+
+@JsName("ListSubheader")
+external val ListSubHeader: RClass<ListSubHeaderProps>
+
+external interface ListSubHeaderProps: RProps {
+    /** 'default' , 'primary' , 'inherit' */
+    var color: String
+    var disableGutters: Boolean
+    var disableSticky: Boolean
+    /** IF true, [ListSubHeader] will be indented */
+    var inset: Boolean
+}
