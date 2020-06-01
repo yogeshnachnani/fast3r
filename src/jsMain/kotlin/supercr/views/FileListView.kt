@@ -12,6 +12,7 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.setState
 
 enum class FileDiffListMode {
     compact,
@@ -21,10 +22,14 @@ enum class FileDiffListMode {
 external interface FileListViewProps : RProps{
     var fileList: FileDiffList
     var mode: FileDiffListMode
-    var onFileSelect: (FileDiff) -> Unit
+    var onFileSelect: (FileDiff?) -> Unit
 }
 
-class FileListView: RComponent<FileListViewProps, RState>() {
+external interface FileListViewState: RState {
+    var selectedIndex: Int?
+}
+
+class FileListView: RComponent<FileListViewProps, FileListViewState>() {
     override fun RBuilder.render() {
         MaterialUIList {
             attrs {
@@ -35,24 +40,34 @@ class FileListView: RComponent<FileListViewProps, RState>() {
                     +   "Files"
                 }
             }
-            props.fileList.fileDiffs.map {
+            props.fileList.fileDiffs.mapIndexed { index, currentFileDiff ->
                 ListItem {
                     attrs {
                         button = true
                         divider = true
-                        onClick = handleClick(it)
+                        onClick = handleClick(index)
+                        selected
                     }
                     fileItem {
-                        fileDiff = it
+                        fileDiff = currentFileDiff
                     }
                 }
             }
         }
     }
 
-    private fun handleClick(fileDiff: FileDiff): () -> Unit {
+    private fun handleClick(index: Int): () -> Unit {
         return {
-            props.onFileSelect(fileDiff)
+            val (currentIndex, currentFileDiff) = if (state.selectedIndex != null && state.selectedIndex == index) {
+                /** Basically toggling */
+                Pair(null, null)
+            } else {
+                Pair(index, props.fileList.fileDiffs[index])
+            }
+            setState {
+                selectedIndex = currentIndex
+            }
+            props.onFileSelect(currentFileDiff)
         }
     }
 

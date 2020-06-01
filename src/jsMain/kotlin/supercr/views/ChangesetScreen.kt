@@ -61,7 +61,7 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
         }
     }
 
-    private val handleFileSelect: (FileDiff) -> Unit = { userSelectedFile ->
+    private val handleFileSelect: (FileDiff?) -> Unit = { userSelectedFile ->
         setState {
             selectedFile = userSelectedFile
         }
