@@ -19,4 +19,6 @@ external interface AceEditorProps: RProps {
     var value: String
     var width: String
     var height: String
+    var highlightActiveLine: Boolean
+    var className: String
 }

@@ -3,7 +3,6 @@ import codereview.Edit
 import codereview.FileDiff
 import codereview.FileHeader
 import react.dom.render
-import supercr.views.diffView
 import supercr.css.styles
 import supercr.views.fileView
 import supercr.views.getStartedScreen
@@ -31,8 +30,21 @@ private fun renderGettingStarted() {
 }
 
 private fun renderDiffView() {
-    val testDiff = FileDiff(
-        rawTextOld = """
+    render(document.getElementById("root")) {
+        fileView {
+            fileDiff = testModifyDiff
+        }
+        fileView {
+            fileDiff = testAddFileDifff
+        }
+        fileView {
+            fileDiff = testRemovedFileDiff
+        }
+    }
+}
+
+private val testModifyDiff = FileDiff(
+    rawTextOld = """
                 public class FooBarBaz {
                   public static void main() {
                     System.out.println("This is a line");
@@ -43,7 +55,7 @@ private fun renderDiffView() {
                 }
             
         """.trimIndent(),
-        rawTextNew = """
+    rawTextNew = """
                 public class FooBarBaz {
                   // Adding a comment - which will be a completely new line
                   public static void main() {
@@ -55,24 +67,104 @@ private fun renderDiffView() {
 
                 }
         """.trimIndent(),
-        diffChangeType = DiffChangeType.MODIFY,
-        fileHeader = FileHeader(
-            fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
-            fileOldPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
-            description = "",
-            editList = listOf(
-                Edit(beginA = 1, endA = 1, beginB = 1, endB = 2),
-                Edit(beginA = 3, endA = 5, beginB = 4, endB = 7),
-                Edit(beginA = 6, endA = 8, beginB = 8, endB = 8),
-                Edit(beginA = 9, endA = 9, beginB = 9, endB = 10)
-            )
+    diffChangeType = DiffChangeType.MODIFY,
+    fileHeader = FileHeader(
+        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        fileOldPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        description = "",
+        identifier = "xyz1234",
+        editList = listOf(
+            Edit(beginA = 1, endA = 1, beginB = 1, endB = 2),
+            Edit(beginA = 3, endA = 5, beginB = 4, endB = 7),
+            Edit(beginA = 6, endA = 8, beginB = 8, endB = 8),
+            Edit(beginA = 9, endA = 9, beginB = 9, endB = 10)
         )
     )
+)
 
-    render(document.getElementById("root")) {
-        fileView {
-            fileDiff = testDiff
-        }
-    }
-}
+private val testRenameDiff = FileDiff(
+    rawTextOld = """
+                public class FooBarBaz {
+                  public static void main() {
+                    System.out.println("This is a line");
+                    System.out.println("This is 2nd line");
+                    System.out.println("This is 3rd line");
+                    System.out.println("This is 4th line");
+                  }
+                }
+            
+        """.trimIndent(),
+    rawTextNew = """
+                public class FooBarBaz {
+                  // Adding a comment - which will be a completely new line
+                  public static void main() {
+                    System.out.println("This is a line");
+                    System.out.println("This is 2nd changed line");
+                    System.out.println("This is 3rd changed line");
+                    System.out.println("This is a new line");
+                    System.out.println("This is 4th line");
 
+                }
+        """.trimIndent(),
+    diffChangeType = DiffChangeType.RENAME,
+    fileHeader = FileHeader(
+        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        fileOldPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset2.kt",
+        description = "",
+        identifier = "abcd1234",
+        editList = listOf(
+            Edit(beginA = 1, endA = 1, beginB = 1, endB = 2),
+            Edit(beginA = 3, endA = 5, beginB = 4, endB = 7),
+            Edit(beginA = 6, endA = 8, beginB = 8, endB = 8),
+            Edit(beginA = 9, endA = 9, beginB = 9, endB = 10)
+        )
+    )
+)
+
+val testAddFileDifff = FileDiff (
+    rawTextOld = null,
+    rawTextNew = """
+                public class FooBarBaz {
+                  // Adding a comment - which will be a completely new line
+                  public static void main() {
+                    System.out.println("This is a line");
+                    System.out.println("This is 2nd changed line");
+                    System.out.println("This is 3rd changed line");
+                    System.out.println("This is a new line");
+                    System.out.println("This is 4th line");
+
+                }
+        """.trimIndent(),
+    diffChangeType = DiffChangeType.ADD,
+    fileHeader = FileHeader(
+        fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        fileOldPath = "",
+        description = "",
+        identifier = "newFile1234",
+        editList = emptyList()
+    )
+)
+
+val testRemovedFileDiff = FileDiff (
+    rawTextNew = null,
+    rawTextOld = """
+                public class FooBarBaz {
+                  // Adding a comment - which will be a completely new line
+                  public static void main() {
+                    System.out.println("This is a line");
+                    System.out.println("This is 2nd changed line");
+                    System.out.println("This is 3rd changed line");
+                    System.out.println("This is a new line");
+                    System.out.println("This is 4th line");
+
+                }
+        """.trimIndent(),
+    diffChangeType = DiffChangeType.DELETE,
+    fileHeader = FileHeader(
+        fileOldPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+        fileNewPath = "",
+        description = "",
+        identifier = "oldFile1234",
+        editList = emptyList()
+    )
+)

@@ -89,6 +89,8 @@ fun Git.formatDiff(oldRef: String, newRef: String): FileDiffList {
                     else -> throw RuntimeException("Not possible to have a null change type for file ${diffEntry.newPath}")
                 },
                 fileHeader = FileHeader(
+                    /** TODO : Confirm if [AbbreviatedObjectId.name] can be used*/
+                    identifier = diffFileHeader.newId.name(),
                     fileNewPath = diffFileHeader.newPath,
                     fileOldPath = diffFileHeader.oldPath,
                     description = String(diffFileHeader.buffer),

@@ -16,6 +16,7 @@ data class FileDiff(
 )
 @Serializable
 data class FileHeader(
+    val identifier: String,
     val fileNewPath: String,
     val fileOldPath: String,
     val description: String,
