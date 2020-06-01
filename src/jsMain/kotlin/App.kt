@@ -1,7 +1,11 @@
+import codereview.DiffChangeType
 import codereview.Edit
+import codereview.FileDiff
+import codereview.FileHeader
 import react.dom.render
 import supercr.views.diffView
 import supercr.css.styles
+import supercr.views.fileView
 import supercr.views.getStartedScreen
 import kotlin.browser.document
 
@@ -27,9 +31,8 @@ private fun renderGettingStarted() {
 }
 
 private fun renderDiffView() {
-    render(document.getElementById("root")) {
-        diffView {
-            oldText = """
+    val testDiff = FileDiff(
+        rawTextOld = """
                 public class FooBarBaz {
                   public static void main() {
                     System.out.println("This is a line");
@@ -38,9 +41,9 @@ private fun renderDiffView() {
                     System.out.println("This is 4th line");
                   }
                 }
-                
-            """.trimIndent()
-            newText = """
+            
+        """.trimIndent(),
+        rawTextNew = """
                 public class FooBarBaz {
                   // Adding a comment - which will be a completely new line
                   public static void main() {
@@ -51,13 +54,24 @@ private fun renderDiffView() {
                     System.out.println("This is 4th line");
 
                 }
-            """.trimIndent()
+        """.trimIndent(),
+        diffChangeType = DiffChangeType.MODIFY,
+        fileHeader = FileHeader(
+            fileNewPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+            fileOldPath = "kotlin-js/src/commonMain/kotlin/codereview/Changeset.kt",
+            description = "",
             editList = listOf(
                 Edit(beginA = 1, endA = 1, beginB = 1, endB = 2),
                 Edit(beginA = 3, endA = 5, beginB = 4, endB = 7),
                 Edit(beginA = 6, endA = 8, beginB = 8, endB = 8),
                 Edit(beginA = 9, endA = 9, beginB = 9, endB = 10)
             )
+        )
+    )
+
+    render(document.getElementById("root")) {
+        fileView {
+            fileDiff = testDiff
         }
     }
 }

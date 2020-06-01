@@ -5,7 +5,6 @@ import codereview.Edit
 import codereview.FileDiff
 import codereview.FileDiffList
 import codereview.FileHeader
-import io.btc.supercr.git.GitUtils.Companion.gitUtilsLogger
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
@@ -90,6 +89,8 @@ fun Git.formatDiff(oldRef: String, newRef: String): FileDiffList {
                     else -> throw RuntimeException("Not possible to have a null change type for file ${diffEntry.newPath}")
                 },
                 fileHeader = FileHeader(
+                    fileNewPath = diffFileHeader.newPath,
+                    fileOldPath = diffFileHeader.oldPath,
                     description = String(diffFileHeader.buffer),
                     editList = diffFileHeader.toEditList()
                         .map { edit ->

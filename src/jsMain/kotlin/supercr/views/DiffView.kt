@@ -2,6 +2,7 @@ package supercr.views
 
 import AceEditor
 import Grid
+import Paper
 import codereview.DiffEditType
 import codereview.Edit
 import react.RBuilder
@@ -9,6 +10,7 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.dom.p
 import supercr.css.TextStyles
 import supercr.processor.TextDiffProcessor
 
@@ -38,7 +40,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 alignItems = "center"
                 direction = "row"
                 justify = "center"
-                spacing = 2
+                spacing = 0
             }
             Grid {
                 attrs {
