@@ -19,6 +19,11 @@ external interface CodeViewProps: RProps {
  * A simple wrapper over [AceEditor] with sensible defaults
  */
 class CodeView : RComponent<CodeViewProps, RState>() {
+    /** These are required to load the editor properly */
+    val ace = js("require('ace-builds/src-noconflict/ace')")
+    val webpackResolver = js("require('ace-builds/webpack-resolver')")
+    val theme = js("require('ace-builds/src-noconflict/theme-solarized_light')")
+    val split = js("require('ace-builds/src-noconflict/ext-split')")
     override fun RBuilder.render() {
         AceEditor {
             attrs {

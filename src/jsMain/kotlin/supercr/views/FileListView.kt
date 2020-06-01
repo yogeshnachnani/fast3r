@@ -32,13 +32,8 @@ external interface FileListViewState: RState {
 class FileListView: RComponent<FileListViewProps, FileListViewState>() {
     override fun RBuilder.render() {
         MaterialUIList {
-            attrs {
-                subHeader = ListSubHeader {
-                    attrs {
-                        inset = false
-                    }
-                    +   "Files"
-                }
+            ListSubHeader {
+                + "Files"
             }
             props.fileList.fileDiffs.mapIndexed { index, currentFileDiff ->
                 ListItem {

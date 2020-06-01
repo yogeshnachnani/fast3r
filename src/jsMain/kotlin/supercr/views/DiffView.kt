@@ -27,9 +27,6 @@ external interface DiffViewState: RState {
 
 class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     val ace = js("require('ace-builds/src-noconflict/ace')")
-    val webpackResolver = js("require('ace-builds/webpack-resolver')")
-    val theme = js("require('ace-builds/src-noconflict/theme-solarized_light')")
-    val split = js("require('ace-builds/src-noconflict/ext-split')")
     private var leftEditor: dynamic = null
     private var rightEditor: dynamic = null
 

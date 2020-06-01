@@ -167,7 +167,7 @@ class TextDiffProcessor constructor(
 
     private fun insertEmptyLinesAt(editor: dynamic, rowNumber: Long,numLines: Long) {
         val emptyLinesArray = generateEmptyLineArray(numLines)
-        editor.getSession().getDocument().insertLines(rowNumber, emptyLinesArray)
+        editor.getSession().getDocument().insertFullLines(rowNumber, emptyLinesArray)
     }
 
     private fun generateEmptyLineArray(numLines: Long) = Array(numLines.toInt()) { "" }

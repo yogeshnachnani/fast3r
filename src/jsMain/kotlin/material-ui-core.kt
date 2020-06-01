@@ -86,7 +86,6 @@ external val Divider: RClass<DividerProps>
 external interface ListProps: RProps {
     var dense: Boolean
     var disablePadding: Boolean
-    var subHeader: ReactElement
 }
 
 @JsName("List")
