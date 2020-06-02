@@ -5,30 +5,28 @@ import codereview.FileDiffList
 import codereview.Project
 import io.btc.utils.TestUtils
 import io.btc.utils.TestUtils.Companion.validBtcRef
+import io.btc.utils.initTestDb
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.parametersOf
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import io.ktor.util.InternalAPI
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.junit.Test
 import kotlin.test.assertEquals
 
 
-@InternalAPI
 class ProjectApiTest {
     private val json = Json(configuration = JsonConfiguration.Stable)
     private val testProject = Project(providerPath = "theboringtech/btcmain", localPath = TestUtils.btcRepoDir, name = "BTC")
     private val testRequestAsJson = json.stringify(Project.serializer(), testProject)
 
     @Test
-    fun testAddAndRetrieveProject() = withTestApplication({superCrServer()}) {
+    fun testAddAndRetrieveProject() = withTestApplication({superCrServer(initTestDb())}) {
         /** Create project */
         addProjectEntry()
         /** Get Project */
@@ -39,14 +37,14 @@ class ProjectApiTest {
     }
 
     @Test
-    fun `testFetch - should return NOT FOUND if project not found missing`() = withTestApplication({superCrServer()}) {
+    fun `testFetch - should return NOT FOUND if project not found missing`() = withTestApplication({superCrServer(initTestDb())}) {
         with(handleRequest(HttpMethod.Post, "/projects/foo/fetch/foobar"))  {
             assertEquals(HttpStatusCode.NotFound, response.status())
         }
     }
 
     @Test
-    fun `testFetch - should fetch the ref from upstream`() = withTestApplication({superCrServer()}) {
+    fun `testFetch - should fetch the ref from upstream`() = withTestApplication({superCrServer(initTestDb())}) {
         addProjectEntry()
         with(handleRequest(HttpMethod.Post, "/projects/${testProject.id}/fetch/$validBtcRef"))  {
             assertEquals(HttpStatusCode.Accepted, response.status())
@@ -54,7 +52,7 @@ class ProjectApiTest {
     }
 
     @Test
-    fun `testFetch - should return NOT FOUND if ref is not found`() = withTestApplication({superCrServer()}) {
+    fun `testFetch - should return NOT FOUND if ref is not found`() = withTestApplication({superCrServer(initTestDb())}) {
         /** Create Test Repo */
         addProjectEntry()
         /** Fetch non existent ref */
@@ -64,7 +62,7 @@ class ProjectApiTest {
     }
 
     @Test
-    fun `testDiff - should return BAD REQUEST if oldRef or newRef parameters are missing`()  = withTestApplication({superCrServer()})  {
+    fun `testDiff - should return BAD REQUEST if oldRef or newRef parameters are missing`()  = withTestApplication({superCrServer(initTestDb())})  {
         addProjectEntry()
         with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/diff")) {
             assertEquals(HttpStatusCode.BadRequest, response.status())
@@ -72,7 +70,7 @@ class ProjectApiTest {
     }
 
     @Test
-    fun `testDiff - should return diff `()  = withTestApplication({superCrServer()}) {
+    fun `testDiff - should return diff `()  = withTestApplication({superCrServer(initTestDb())}) {
         addProjectEntry()
         val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
         val newRef = "f5d172438eab345885a0af297683f7b41a14060f"

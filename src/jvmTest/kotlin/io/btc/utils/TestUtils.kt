@@ -1,5 +1,8 @@
 package io.btc.utils
 
+import APP_NAME
+import io.btc.supercr.api.initDb
+import org.jdbi.v3.core.Jdbi
 import java.io.File
 
 class TestUtils {
@@ -10,4 +13,8 @@ class TestUtils {
             }
         const val validBtcRef = "ae6adbf9f142c8591e2128484c87c4e50cdc19e7"
     }
+}
+
+fun initTestDb(): Jdbi {
+    return initDb(dbName = "test")
 }

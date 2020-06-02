@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 val ktorVersion = "1.3.2"
 val jgitVersion = "5.7.0.202003110725-r"
 val logbackVersion = "1.2.3"
+val jdbiVersion = "3.12.2"
 
 
 
@@ -34,7 +35,18 @@ kotlin {
         }
     }
 
-    jvm()
+    jvm {
+        val main by compilations.getting {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+        val test by compilations.getting {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
 
     tasks.named("compileKotlinJs") {
         this as KotlinJsCompile
@@ -108,6 +120,12 @@ kotlin {
                 implementation("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")
                 /** Logs */
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
+                /** Db */
+                implementation("org.xerial:sqlite-jdbc:3.30.1")
+                implementation("org.jdbi:jdbi3-core:$jdbiVersion")
+                implementation("org.jdbi:jdbi3-kotlin:$jdbiVersion")
+                implementation("org.jdbi:jdbi3-kotlin-sqlobject:$jdbiVersion")
+                implementation("org.jdbi:jdbi3-sqlite:$jdbiVersion")
             }
         }
 

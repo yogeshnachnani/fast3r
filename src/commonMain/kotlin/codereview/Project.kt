@@ -1,8 +1,8 @@
 package codereview
 
-import io.ktor.util.InternalAPI
-import io.ktor.util.encodeBase64
+import encodeToBase64
 import kotlinx.serialization.Serializable
+
 
 @Serializable
 data class Project(
@@ -10,6 +10,5 @@ data class Project(
     val providerPath: String,
     val name: String
 ) {
-    @InternalAPI
-    val id: String = localPath.encodeBase64()
+    val id = localPath.encodeToBase64()
 }
