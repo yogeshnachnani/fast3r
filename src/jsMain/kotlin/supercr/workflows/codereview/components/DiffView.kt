@@ -1,18 +1,13 @@
-package supercr.views
+package supercr.workflows.codereview.components
 
-import AceEditor
 import Grid
-import Paper
-import codereview.DiffEditType
 import codereview.Edit
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
-import react.dom.p
-import supercr.css.TextStyles
-import supercr.processor.TextDiffProcessor
+import supercr.workflows.codereview.processor.TextDiffProcessor
 
 external interface DiffViewProps: RProps {
     var branchName: String

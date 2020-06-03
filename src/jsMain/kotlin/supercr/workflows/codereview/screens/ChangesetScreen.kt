@@ -1,4 +1,4 @@
-package supercr.views
+package supercr.workflows.codereview.screens
 
 import Grid
 import codereview.FileDiff
@@ -9,6 +9,8 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import supercr.workflows.codereview.components.fileList
+import supercr.workflows.codereview.components.fileView
 
 external interface ChangesetScreenProps: RProps {
     var fileDiffList: FileDiffList

@@ -1,6 +1,5 @@
 package codereview
 
-import encodeToBase64
 import kotlinx.serialization.Serializable
 
 
@@ -10,5 +9,8 @@ data class Project(
     val providerPath: String,
     val name: String
 ) {
-    val id = localPath.encodeToBase64()
+    /** TODO : Get encodeToBase64 to work */
+//    val id = localPath.encodeToBase64()
+    val id
+    get() = localPath.replace("/", "")
 }

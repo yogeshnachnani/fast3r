@@ -13,6 +13,9 @@ import kotlin.test.assertEquals
 @JsModule("../../../../processedResources/js/test/pull_request_example1.json")
 external val pullRequestExample1Contents: dynamic
 
+@JsModule("../../../../processedResources/js/test/pull_request_example2.json")
+external val pullRequestExample2WithoutAssigneeContents: dynamic
+
 @JsModule("../../../../processedResources/js/test/pull_request_details.json")
 external val pullRequestDetailsContents: dynamic
 
@@ -32,6 +35,13 @@ class GithubDtosTest {
         val pullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(pullRequestExample1Contents))
         assertEquals("Proposed changes to the website", pullRequestSummary.title)
         assertEquals(1, pullRequestSummary.assignees.size)
+
+        val pullRequestWithoutAssigneeSummary: PullRequestSummary = json.parse(
+            deserializer = PullRequestSummary.serializer(),
+            string = JSON.stringify(pullRequestExample2WithoutAssigneeContents)
+        )
+        assertEquals("Making changes to the test file", pullRequestWithoutAssigneeSummary.title)
+        assertEquals(0, pullRequestWithoutAssigneeSummary.assignees.size)
     }
 
     @Test

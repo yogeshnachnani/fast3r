@@ -1,27 +1,23 @@
 package git.provider
 
 import auth.DumbOauthClient
+import codereview.Project
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.promise
-import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import runTest
-import kotlin.js.Date
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlin.time.measureTime
+
 
 class GithubClientTest {
     val githubClient = GithubClient(
-        oauthClient = DumbOauthClient(""),
+        oauthClient = DumbOauthClient("4da05160ff8311a45f31fe8fd6ab374b8a6f9fe9"),
         httpClient = HttpClient() {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
@@ -31,6 +27,7 @@ class GithubClientTest {
 
     /**
      * This will be re-written as part of a more elaborate e2e test
+     * Note: We have a lot of println statements to help zero in on exact call where the error occurs
      */
     @Test
     @Ignore
@@ -39,9 +36,14 @@ class GithubClientTest {
             val reposSummary = githubClient.getReposSummary("theboringtech")
             assertEquals(2, reposSummary.size)
             val websiteRepo = reposSummary.first { it.name.contains("github.io") }
-            val pullRequests = githubClient.listPullRequests(websiteRepo)
+            val project = Project("/home/yogesh/work/theboringtech.github.io", websiteRepo.full_name, websiteRepo.name)
+            println("Will Fetch pull request for $project")
+            val pullRequests = githubClient.listPullRequests(project)
+            println("Pull requests fetched. Now, will check if pr is merged")
             val prMerged = githubClient.isPrMerged(pullRequests.first())
+            println("Retrieved prMergedValue")
             assertFalse(prMerged)
+            println("Will now fetch pull request details")
             val pulLRequestDetails = githubClient.getPullRequestDetails(pullRequests.first())
             assertTrue(pulLRequestDetails.mergeable)
         } catch (e: Exception) {
@@ -49,7 +51,7 @@ class GithubClientTest {
                 println("The test by default doesn't have an access token. Add an access token while creating github client")
                 throw RuntimeException("Check access token on github client")
             }
-            throw RuntimeException(e)
+            throw e
         }
     }
 

@@ -5,9 +5,9 @@ import codereview.FileDiffList
 import codereview.FileHeader
 import react.dom.render
 import supercr.css.styles
-import supercr.views.changeSetScreen
-import supercr.views.fileView
-import supercr.views.getStartedScreen
+import supercr.workflows.codereview.screens.changeSetScreen
+import supercr.workflows.gettingstarted.screens.getStartedScreen
+import supercr.workflows.mainScreen
 import kotlin.browser.document
 
 fun main () {
@@ -19,8 +19,16 @@ fun main () {
      * See here for more details - https://stackoverflow.com/questions/61839800/unit-testing-in-kotlin-js/62058511#62058511
      */
     document.body!!.insertAdjacentHTML("afterbegin", "<div id='root'></div>" )
-    renderDiffView()
+//    renderDiffView()
 //    renderGettingStarted()
+    renderMainScreen()
+}
+private fun renderMainScreen() {
+    render(document.getElementById("root")) {
+        mainScreen {
+
+        }
+    }
 }
 
 private fun renderGettingStarted() {

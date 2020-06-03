@@ -29,7 +29,7 @@ class ProjectApi constructor(
                     with(call.receive<Project>()) {
                         gitProject.addProject(this)
                     }
-                    call.respond(mapOf("OK" to true))
+                    call.respond(HttpStatusCode.Created ,mapOf("OK" to true))
                 }
                 route("{id}") {
                     get {

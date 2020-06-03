@@ -1,6 +1,7 @@
 package io.btc.supercr.api
 
 import APP_NAME
+import DEFAULT_PORT
 import HOME
 import io.btc.supercr.db.ProjectRepository
 import io.btc.supercr.git.GitProject
@@ -8,15 +9,18 @@ import io.btc.supercr.git.GitUtils
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
-import io.ktor.jackson.jackson
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import io.ktor.serialization.json
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.sqlite3.SQLitePlugin
@@ -29,7 +33,7 @@ class ApiServer constructor(
 
 ) {
     init {
-        embeddedServer(Netty, 8081, watchPaths = listOf("ApiServerInitKt"), module = Application::superCrServerProduction)
+        embeddedServer(Netty, DEFAULT_PORT, watchPaths = listOf("ApiServerInitKt"), module = Application::superCrServerProduction)
             .start()
     }
 
@@ -45,15 +49,17 @@ fun Application.superCrServer(jdbi: Jdbi) {
         level = Level.INFO
     }
     install(ContentNegotiation) {
-        jackson {
-
-        }
+        json(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
     }
     install(Routing) {
         get("/") {
             call.respond(mapOf("OK" to true))
         }
         ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)))
+    }
+    install(CORS) {
+        host("localhost:8080")
+        allowNonSimpleContentTypes = true
     }
 }
 

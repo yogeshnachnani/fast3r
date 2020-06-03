@@ -1,8 +1,7 @@
-package supercr.views
+package supercr.workflows.codereview.components
 
 import AceEditor
 import react.RBuilder
-import react.RClass
 import react.RComponent
 import react.RProps
 import react.RState

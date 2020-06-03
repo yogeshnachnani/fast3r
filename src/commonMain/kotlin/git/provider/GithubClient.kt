@@ -1,6 +1,7 @@
 package git.provider
 
 import auth.OauthClient
+import codereview.Project
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.defaultSerializer
 import io.ktor.client.request.HttpRequestBuilder
@@ -19,12 +20,12 @@ class GithubClient(
     private val httpClient: HttpClient
 ) {
     companion object {
-        val ACCEPT_HEADER_VALUE = "application/vnd.github.v3+json"
-        val GITHUB_API_BASE_URL = "https://api.github.com/"
-        val AUTH_HEADER_PREFIX = "token "
-        val ORGS_PATH = "orgs/"
-        val REPOS_PATH = "repos"
-        val PULLS_PATH = "pulls"
+        private const val ACCEPT_HEADER_VALUE = "application/vnd.github.v3+json"
+        private const val GITHUB_API_BASE_URL = "https://api.github.com/"
+        private const val AUTH_HEADER_PREFIX = "token "
+        private const val ORGS_PATH = "orgs/"
+        private const val REPOS_PATH = "repos"
+        private const val PULLS_PATH = "pulls"
         val jsonSerializer = defaultSerializer()
     }
 
@@ -35,9 +36,9 @@ class GithubClient(
         })
     }
 
-    suspend fun listPullRequests(repoSummary: RepoSummary): List<PullRequestSummary> {
+    suspend fun listPullRequests(project: Project): List<PullRequestSummary> {
         return httpClient.request<List<PullRequestSummary>>(buildRequest().apply {
-            url("$GITHUB_API_BASE_URL$REPOS_PATH/${repoSummary.full_name}/$PULLS_PATH")
+            url("$GITHUB_API_BASE_URL$REPOS_PATH/${project.providerPath}/$PULLS_PATH")
             method = HttpMethod.Get
         })
     }

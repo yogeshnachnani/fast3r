@@ -1,4 +1,4 @@
-package supercr.views
+package supercr.workflows.codereview.components
 
 import Grid
 import Paper

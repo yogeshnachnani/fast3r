@@ -1,4 +1,4 @@
-package supercr.processor
+package supercr.workflows.codereview.processor
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

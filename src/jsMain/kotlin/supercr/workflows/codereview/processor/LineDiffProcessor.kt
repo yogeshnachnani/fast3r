@@ -1,4 +1,4 @@
-package supercr.processor
+package supercr.workflows.codereview.processor
 
 import JsDiffResult
 import diffWords

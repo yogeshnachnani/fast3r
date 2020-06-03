@@ -97,6 +97,9 @@ kotlin {
 
                 /** Webpack */
                 implementation(npm("file-loader", "~6.0.0"))
+
+                /** Diff */
+                implementation(npm("diff", "~4.0.2"))
             }
         }
 
@@ -115,7 +118,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
-                implementation("io.ktor:ktor-jackson:$ktorVersion")
+                implementation("io.ktor:ktor-serialization:$ktorVersion")
                 /** Jgit */
                 implementation("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")
                 /** Logs */
