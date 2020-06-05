@@ -3,8 +3,13 @@ import codereview.Edit
 import codereview.FileDiff
 import codereview.FileDiffList
 import codereview.FileHeader
+import react.ReactElement
+import react.buildElement
 import react.dom.render
+import react.dom.span
 import supercr.css.styles
+import supercr.kb.UniversalKeyboardShortcutHandler
+import supercr.kb.components.keyboardEnabledList
 import supercr.workflows.codereview.screens.changeSetScreen
 import supercr.workflows.gettingstarted.screens.getStartedScreen
 import supercr.workflows.mainScreen
@@ -21,8 +26,75 @@ fun main () {
     document.body!!.insertAdjacentHTML("afterbegin", "<div id='root'></div>" )
 //    renderDiffView()
 //    renderGettingStarted()
-    renderMainScreen()
+//    renderMainScreen()
+    tryOutKeyboardEnabledList()
 }
+
+private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, () -> Unit>> {
+    return names.map {
+        val element = buildElement {
+            span {
+                + "I am $it"
+            }
+        }
+        val handler: () -> Unit = {
+            console.log("Hello, I am $it")
+        }
+        Pair(element!!, handler)
+    }
+}
+
+private fun tryOutKeyboardEnabledList() {
+    UniversalKeyboardShortcutHandler.init()
+    render(document.getElementById("root")) {
+        val elements = getComponentsToRender(
+            listOf(
+                "foo",
+                "bar",
+                "baaz",
+                "quux",
+                "blah",
+                "bleh",
+                "need",
+                "to",
+                "make",
+                "a",
+                "longer",
+                "list",
+                "with",
+                "random",
+                "new",
+                "things",
+                "because",
+                "I",
+                "have",
+                "written",
+                "the",
+                "code",
+                "in",
+                "such",
+                "a",
+                "way",
+                "only",
+                "half",
+                "way",
+                "through",
+                "this exercise",
+                "have I realised",
+                "that I could have simply",
+                "used a prefix",
+                "what an idiot",
+                "but it's amazing how",
+                "the mind works"
+            )
+        )
+        console.log("Got ", elements.size, " number of elements for the list")
+        keyboardEnabledList {
+            elementsWithHandlers = elements
+        }
+    }
+}
+
 private fun renderMainScreen() {
     render(document.getElementById("root")) {
         mainScreen {

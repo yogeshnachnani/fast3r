@@ -114,6 +114,8 @@ external interface AvatarProps: RProps {
     var alt: String
     /** 'circle' 'rounded' or 'square'. Default circle */
     var variant: String
+    /** Css class name */
+    var className: String
 }
 
 @JsName("Avatar")
