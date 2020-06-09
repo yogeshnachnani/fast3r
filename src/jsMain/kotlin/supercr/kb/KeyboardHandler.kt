@@ -57,11 +57,11 @@ object UniversalKeyboardShortcutHandler {
     }
 
     fun unRegisterShortcut(shortcutString: String) {
-        console.log("Need to unregister $shortcutString")  // TODO
+        TODO()
     }
 
     private var currentSelectedPrefix = ""
-    private var currentPartialMatches = mutableListOf<() -> Unit>()
+    private var currentPartialMatches = mutableSetOf<() -> Unit>()
     private var isInitialised = false
     private val keydownListener: (Event) -> Unit ={ keydownEvent ->
         val kbEvent = keydownEvent as KeyboardEvent
@@ -107,5 +107,11 @@ object UniversalKeyboardShortcutHandler {
         currentSelectedPrefix = prefixToSet
     }
 
+    /**
+     * TODO: Hack introduced for running test cases
+     */
+    fun clear() {
+        invokeAndClearSelection(null)
+    }
 }
 
