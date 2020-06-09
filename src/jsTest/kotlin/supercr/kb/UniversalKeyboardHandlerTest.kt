@@ -34,7 +34,6 @@ class UniversalKeyboardHandlerTest {
     }
 
     @Test
-    @Ignore
     fun shouldUnregisterHandlerWithTrie() {
         val fullMatchHandler : () -> Unit = {
 

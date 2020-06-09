@@ -77,6 +77,10 @@ object KeyboardShortcutTrie {
             }
         }
     }
+
+    fun remove(shortcutString: String) {
+        keyboardShortcutTrie.remove(shortcutString)
+    }
 }
 
 private class KeyboardShortcutTrieNode {
@@ -148,6 +152,30 @@ private class KeyboardShortcutTrieNode {
 
     fun clear() {
         children.clear()
+    }
+
+    fun remove(shortcutString: CharSequence) {
+        /** First, guard against weird inputs */
+        require(shortcutString.isNotEmpty()) {"Can;t remove an empty string"}
+        val prefixChar = shortcutString.first()
+        if (children[prefixChar]?.removeMe(shortcutString.subSequence(1, shortcutString.length)) == true) {
+            children.remove(prefixChar)
+        }
+    }
+
+    private fun removeMe(shortcutString: CharSequence): Boolean {
+        return when(val prefixChar = shortcutString.firstOrNull()) {
+            null -> {
+                /** This node has matched. It should be removed */
+                true
+            }
+            else -> {
+                if (children[prefixChar]?.removeMe(shortcutString.subSequence(1, shortcutString.length)) == true) {
+                    children.remove(prefixChar)
+                }
+                return children.isEmpty() && fullMatchHandler == null
+            }
+        }
     }
 
     private fun addPartialMatchHandler(partialMatchHandler: () -> Unit) {

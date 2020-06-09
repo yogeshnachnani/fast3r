@@ -254,4 +254,31 @@ class KeyboardShortcutTrieNodeTest {
             }
     }
 
+    @Test
+    fun testRemoval() {
+        val noOp: () -> Unit = {
+
+        }
+        var abCalled = false
+        val functionForAb: () -> Unit = {
+            abCalled = true
+        }
+        /** Just ensuring that we have "ab" inserted first */
+        KeyboardShortcutTrie["ab"] = PrefixMatchHandlers(fullMatch = functionForAb, partialMatchHandler = noOp)
+        KeyboardShortcutTrie["a"] = PrefixMatchHandlers(fullMatch = functionForAb, partialMatchHandler = noOp)
+        assertEquals(25, KeyboardShortcutTrie.listAvailableChars("").size)
+        assertEquals(25, KeyboardShortcutTrie.listAvailableChars("a").size)
+        assertNotNull(KeyboardShortcutTrie["ab"].fullMatch)
+        assertNotNull(KeyboardShortcutTrie["a"].fullMatch)
+
+        KeyboardShortcutTrie.remove("ab")
+        assertEquals(25, KeyboardShortcutTrie.listAvailableChars("").size)
+        assertEquals(26, KeyboardShortcutTrie.listAvailableChars("a").size)
+        assertTrue(KeyboardShortcutTrie["ab"].isNoMatch())
+
+        KeyboardShortcutTrie.remove("a")
+        assertEquals(26, KeyboardShortcutTrie.listAvailableChars("").size)
+        assertTrue(KeyboardShortcutTrie["a"].isNoMatch())
+    }
+
 }

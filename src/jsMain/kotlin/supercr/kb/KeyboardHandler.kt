@@ -57,7 +57,7 @@ object UniversalKeyboardShortcutHandler {
     }
 
     fun unRegisterShortcut(shortcutString: String) {
-        TODO()
+        KeyboardShortcutTrie.remove(shortcutString)
     }
 
     private var currentSelectedPrefix = ""
