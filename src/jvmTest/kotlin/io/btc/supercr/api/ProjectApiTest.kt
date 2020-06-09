@@ -88,7 +88,7 @@ class ProjectApiTest {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(testRequestAsJson)
         }) {
-            assertEquals(HttpStatusCode.OK, response.status())
+            assertEquals(HttpStatusCode.Created, response.status())
         }
     }
 }
