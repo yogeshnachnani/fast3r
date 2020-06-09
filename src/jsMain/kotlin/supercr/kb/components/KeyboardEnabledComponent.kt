@@ -24,6 +24,7 @@ external interface KeyboardEnabledComponentProps: RProps {
     var xsValueForShortcutChip: Number?
     var onSelected: () -> Unit
     var assignedShortcut: String
+    var uponUnmount: (String) -> Unit
 }
 
 external interface KeyboardEnabledComponentState: RState {
@@ -101,6 +102,7 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
 
     override fun componentWillUnmount() {
         UniversalKeyboardShortcutHandler.unRegisterShortcut(props.assignedShortcut)
+        props.uponUnmount(props.assignedShortcut)
     }
 }
 

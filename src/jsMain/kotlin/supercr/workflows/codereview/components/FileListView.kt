@@ -12,7 +12,10 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.buildElement
+import react.createElement
 import react.setState
+import supercr.kb.components.keyboardEnabledList
 
 enum class FileDiffListMode {
     compact,
@@ -31,11 +34,19 @@ external interface FileListViewState: RState {
 
 class FileListView: RComponent<FileListViewProps, FileListViewState>() {
     override fun RBuilder.render() {
-        MaterialUIList {
-            ListSubHeader {
-                + "Files"
+        keyboardEnabledList {
+            elementsWithHandlers = createFileListElements()
+            listSubHeader = buildElement {
+                ListSubHeader {
+                    + "Files"
+                }
             }
-            props.fileList.fileDiffs.mapIndexed { index, currentFileDiff ->
+        }
+    }
+
+    private fun createFileListElements(): List<Pair<ReactElement, () -> Unit>> {
+        return props.fileList.fileDiffs.mapIndexed { index, currentFileDiff ->
+            val element = buildElement {
                 ListItem {
                     attrs {
                         button = true
@@ -48,6 +59,10 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
                     }
                 }
             }
+            val handler: () -> Unit = {
+                handleClick(index).invoke()
+            }
+            Pair(element!!, handler)
         }
     }
 

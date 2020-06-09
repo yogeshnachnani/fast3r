@@ -24,10 +24,11 @@ fun main () {
      * See here for more details - https://stackoverflow.com/questions/61839800/unit-testing-in-kotlin-js/62058511#62058511
      */
     document.body!!.insertAdjacentHTML("afterbegin", "<div id='root'></div>" )
-//    renderDiffView()
+    UniversalKeyboardShortcutHandler.init()
+    renderDiffView()
 //    renderGettingStarted()
 //    renderMainScreen()
-    tryOutKeyboardEnabledList()
+//    tryOutKeyboardEnabledList()
 }
 
 private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, () -> Unit>> {
@@ -45,7 +46,6 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
 }
 
 private fun tryOutKeyboardEnabledList() {
-    UniversalKeyboardShortcutHandler.init()
     render(document.getElementById("root")) {
         val elements = getComponentsToRender(
             listOf(
