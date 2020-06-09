@@ -2,13 +2,12 @@
 @file:JsNonModule
 
 import react.RClass
-import react.RProps
-import react.ReactElement
+import react.dom.WithClassName
 
 @JsName("Button")
 external val Button: RClass<ButtonProps>
 
-external interface ButtonProps: RProps {
+external interface ButtonProps: WithClassName {
     var variant: String
     var color: String
     var onClick: () -> Unit
@@ -18,7 +17,7 @@ external interface ButtonProps: RProps {
 external val Grid: RClass<GridProps>
 
 /** https://material-ui.com/api/grid/ */
-external interface GridProps: RProps {
+external interface GridProps: WithClassName {
     var item: Boolean
     var container: Boolean
 
@@ -63,7 +62,7 @@ external interface GridProps: RProps {
 @JsName("Paper")
 external val Paper: RClass<PaperProps>
 
-external interface PaperProps: RProps {
+external interface PaperProps: WithClassName {
     /** 0 to 24 */
     var elevation: Number
     /** If true, rounded corners are disabled. */
@@ -71,7 +70,7 @@ external interface PaperProps: RProps {
     /** 'elevation' or 'outlined' */
     var variant: String
 }
-external interface DividerProps: RProps {
+external interface DividerProps: WithClassName {
     /** If true, divider will have lighter color */
     var light: Boolean
     /* horizontal, vertical */
@@ -83,7 +82,7 @@ external interface DividerProps: RProps {
 @JsName("Divider")
 external val Divider: RClass<DividerProps>
 
-external interface ListProps: RProps {
+external interface ListProps: WithClassName {
     var dense: Boolean
     var disablePadding: Boolean
 }
@@ -91,7 +90,7 @@ external interface ListProps: RProps {
 @JsName("List")
 external val MaterialUIList: RClass<ListProps>
 
-external interface ListItemProps: RProps {
+external interface ListItemProps: WithClassName {
     /** flex-start | center */
     var alignItems: String
     var autoFocus: Boolean
@@ -110,12 +109,10 @@ external interface ListItemProps: RProps {
 @JsName("ListItem")
 external val ListItem: RClass<ListItemProps>
 
-external interface AvatarProps: RProps {
+external interface AvatarProps: WithClassName {
     var alt: String
     /** 'circle' 'rounded' or 'square'. Default circle */
     var variant: String
-    /** Css class name */
-    var className: String
 }
 
 @JsName("Avatar")
@@ -124,7 +121,7 @@ external val Avatar: RClass<AvatarProps>
 @JsName("ListSubheader")
 external val ListSubHeader: RClass<ListSubHeaderProps>
 
-external interface ListSubHeaderProps: RProps {
+external interface ListSubHeaderProps: WithClassName {
     /** 'default' , 'primary' , 'inherit' */
     var color: String
     var disableGutters: Boolean
