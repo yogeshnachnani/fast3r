@@ -24,5 +24,11 @@ class GitProject constructor(
 
     operator fun get(id: String): Pair<Project, Git>? {
         return projects[id]
+            ?: projectRepository[id]
+                ?.let { project ->
+                    val git = gitUtils.openRepo(project.localPath)
+                    projects[id] = Pair(project, git)
+                    projects[id]
+                }
     }
 }

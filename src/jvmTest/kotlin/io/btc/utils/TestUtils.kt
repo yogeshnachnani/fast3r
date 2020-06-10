@@ -18,3 +18,12 @@ class TestUtils {
 fun initTestDb(): Jdbi {
     return initDb(dbName = "test")
 }
+
+fun Jdbi.clearTestDb() {
+    this.useTransaction<RuntimeException> { handle ->
+        handle.createUpdate("""
+                DELETE FROM project
+            """.trimIndent())
+            .execute()
+    }
+}

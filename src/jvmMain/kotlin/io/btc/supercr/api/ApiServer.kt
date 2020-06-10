@@ -82,7 +82,7 @@ fun initDb(dbName: String = "supercrdb"): Jdbi {
 internal fun Jdbi.runMigrations() {
     this.useTransaction<RuntimeException> { handle ->
         handle.createUpdate("""
-                CREATE TABLE IF NOT EXISTS project(name TEXT, localPath TEXT, providerPath TEXT)
+                CREATE TABLE IF NOT EXISTS project(id TEXT UNIQUE,name TEXT, localPath TEXT, providerPath TEXT)
             """.trimIndent())
             .execute()
     }

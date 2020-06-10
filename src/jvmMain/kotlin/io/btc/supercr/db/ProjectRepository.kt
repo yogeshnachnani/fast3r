@@ -10,8 +10,8 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
 interface ProjectDao {
     @SqlUpdate("""
-        INSERT INTO project(name, localPath, providerPath)
-        VALUES (:name, :localPath, :providerPath)
+        INSERT INTO project(id ,name, localPath, providerPath)
+        VALUES (:id, :name, :localPath, :providerPath)
     """)
     fun insertProject(@BindKotlin project: Project): Int
 
@@ -26,6 +26,11 @@ interface ProjectDao {
     """
     )
     fun getProjectsByLocalPath(@Bind("localPath") localPath: String): Project?
+
+    @SqlQuery("""
+        SELECT * from project where id = :id
+    """)
+    fun getProjectById(@Bind("id") id: String): Project?
 }
 
 class ProjectRepository constructor(
@@ -43,7 +48,14 @@ class ProjectRepository constructor(
         }
     }
 
-    operator fun get(localPath: String): Project? {
+    operator fun get(id: String): Project? {
+        return jdbi.withHandle<Project? ,RuntimeException> { handle ->
+            val projectDao: ProjectDao = handle.attach()
+            projectDao.getProjectById(id)
+        }
+    }
+
+    fun getByLocalPath(localPath: String): Project? {
         return jdbi.withHandle<Project? ,RuntimeException> { handle ->
             val projectDao: ProjectDao = handle.attach()
             projectDao.getProjectsByLocalPath(localPath)
