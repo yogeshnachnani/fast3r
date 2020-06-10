@@ -55,4 +55,26 @@ class GithubClientTest {
         }
     }
 
+    @Test
+    @Ignore
+    fun testGithubReviews() = runTest {
+        try {
+            val project = Project("/home/yogesh/work/theboringtech.github.io", "theboringtech/theboringtech.github.io", "")
+            val pullRequest = githubClient.listPullRequests(project).find { it.number == 2 }
+            println("Pull requests fetched. ")
+            val reviews = githubClient.listReviewsFor(pullRequest!!)
+            println("reviews fetched")
+            assertTrue(reviews.any { it.body.contains("making another comment") })
+            val pullRequestComments = githubClient.listComments(pullRequest!!)
+            println("PullRequestsComments fetched :  $pullRequestComments")
+            assertTrue(pullRequestComments.size >= 2)
+        } catch (e: Exception) {
+            if (e.message?.contains("401 Unauthorized") == true) {
+                println("The test by default doesn't have an access token. Add an access token while creating github client")
+                throw RuntimeException("Check access token on github client")
+            }
+            throw e
+        }
+    }
+
 }

@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 
 enum class GithubAuthorAssociation{
     CONTRIBUTOR,
-    OWNER
+    OWNER,
+    NONE
 }
 
 enum class GithubPullRequestState{
@@ -247,14 +248,14 @@ data class GithubLink(
 
 @Serializable
 data class GithubLinkRelations(
-    val self: GithubLink,
+    val self: GithubLink? = null,
     val html: GithubLink,
-    val issue: GithubLink,
-    val comments: GithubLink,
-    val review_comments: GithubLink,
-    val review_comment: GithubLink,
-    val commits: GithubLink,
-    val statuses: GithubLink
+    val issue: GithubLink? = null,
+    val comments: GithubLink? = null,
+    val review_comments: GithubLink? = null,
+    val review_comment: GithubLink? = null,
+    val commits: GithubLink? = null,
+    val statuses: GithubLink? = null
 )
 
 @Serializable
@@ -363,4 +364,131 @@ data class User(
     val received_events_url: String,
     val type: String, //TODO: Convert to enum after reading docs
     val site_admin: Boolean
+)
+
+@Serializable
+data class IssueComment(
+    val id: Long,
+    val node_id: String,
+    val url: String,
+    val html_url: String,
+    val body: String,
+    val user: User,
+    val created_at: String,
+    val updated_at: String
+)
+
+@Serializable
+enum class ReviewState{
+    APPROVED,
+    PENDING,
+    CHANGES_REQUESTED,
+    COMMENTED
+}
+
+@Serializable
+data class Review(
+    val id: Long,
+    val node_id: String,
+    val user: User,
+    val body: String,
+    val state: ReviewState,
+    val html_url: String,
+    val pull_request_url: String,
+    val _links: GithubLinkRelations,
+    val submitted_at: String,
+    val commit_id: String
+)
+
+@Serializable
+data class ReviewComment(
+    val url: String,
+    val pull_request_review_id: Long,
+    val id: Long,
+    val node_id: String,
+    val diff_hunk: String,
+    val path: String,
+    val position: Long,
+    val original_position: Long,
+    val commit_id: String,
+    val original_commit_id: String,
+    val in_reply_to_id: Long? = null,
+    val user: User,
+    val body: String,
+    val created_at: String,
+    val updated_at: String,
+    val html_url: String,
+    val pull_request_url: String,
+    val author_association: GithubAuthorAssociation,
+    val _links: GithubLinkRelations
+)
+
+@Serializable
+data class ReviewCommentPayload(
+    val path: String,
+    val position: Int,
+    val body: String
+)
+
+@Serializable
+enum class ReviewPayloadEventState {
+    APPROVE,
+    REQUEST_CHANGES,
+    COMMENT,
+    PENDING
+}
+
+@Serializable
+data class ReviewPayload(
+    /** Defaults to the most recent commit in the pull request if not specified */
+    val commit_id: String? = null,
+    val body: String,
+    val event: ReviewPayloadEventState,
+    val comments: List<ReviewCommentPayload>
+)
+
+@Serializable
+data class ReviewUpdatePayload(
+    val body: String,
+    val event: ReviewPayloadEventState
+)
+
+@Serializable
+data class ReviewDismissPayload(
+    val message: String
+)
+
+@Serializable
+enum class ReviewCommentSide{
+    RIGHT,
+    LEFT
+}
+
+@Serializable
+data class PullRequestReviewComment(
+    val url: String,
+    val pull_request_review_id: Long,
+    val id: Long,
+    val node_id: String,
+    val diff_hunk: String,
+    val path: String,
+    val position: Long,
+    val original_position: Long,
+    val commit_id: String,
+    val original_commit_id: String,
+    val in_reply_to_id: Long? = null,
+    val user: User,
+    val body: String,
+    val created_at: String,
+    val updated_at: String,
+    val html_url: String,
+    val pull_request_url: String,
+    val author_association: GithubAuthorAssociation,
+    val _links: GithubLinkRelations,
+    val start_line: Long? = null,
+    val original_start_line: Long? = null,
+    val start_side: ReviewCommentSide? = null,
+    val line: Long? = null,
+    val original_line: Long? = null,
+    val side: ReviewCommentSide? = null
 )

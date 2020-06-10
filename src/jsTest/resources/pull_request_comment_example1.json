@@ -1,0 +1,55 @@
+{
+  "url": "https://api.github.com/repos/theboringtech/btcmain/pulls/comments/437891367",
+  "pull_request_review_id": 427749673,
+  "id": 437891367,
+  "node_id": "MDI0OlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudDQzNzg5MTM2Nw==",
+  "diff_hunk": "@@ -0,0 +1,19 @@\n+// environment variables\n+\n+// Timeout increase trick from \n+// http://blog.jonathanargentiero.com/overriding-karma-mocha-default-timeout-2000ms/ \n+// The trick for adding this file came from\n+// https://github.com/JetBrains/kotlin/blob/7fe66d3456a2e51e5bf228497e81b28a6367766c/libraries/tools/kotlin-gradle-plugin/src/main/kotlin/org/jetbrains/kotlin/gradle/targets/js/testing/karma/KotlinKarma.kt#L44\n+config.set({",
+    "path": "kotlin-js/karma.config.d/increase-mocha-timeout.conf.js",
+    "position": 7,
+    "original_position": 7,
+    "commit_id": "500e03d4f1d1a1afcc68c56b180a0c69fff0a633",
+    "original_commit_id": "500e03d4f1d1a1afcc68c56b180a0c69fff0a633",
+    "user": {
+      "login": "yogeshnachnani",
+      "id": 2109181,
+      "node_id": "MDQ6VXNlcjIxMDkxODE=",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2109181?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/yogeshnachnani",
+      "html_url": "https://github.com/yogeshnachnani",
+      "followers_url": "https://api.github.com/users/yogeshnachnani/followers",
+      "following_url": "https://api.github.com/users/yogeshnachnani/following{/other_user}",
+      "gists_url": "https://api.github.com/users/yogeshnachnani/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/yogeshnachnani/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/yogeshnachnani/subscriptions",
+      "organizations_url": "https://api.github.com/users/yogeshnachnani/orgs",
+      "repos_url": "https://api.github.com/users/yogeshnachnani/repos",
+      "events_url": "https://api.github.com/users/yogeshnachnani/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/yogeshnachnani/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "Dummy Comment",
+    "created_at": "2020-06-10T06:38:54Z",
+    "updated_at": "2020-06-10T06:39:00Z",
+    "html_url": "https://github.com/theboringtech/btcmain/pull/1#discussion_r437891367",
+    "pull_request_url": "https://api.github.com/repos/theboringtech/btcmain/pulls/1",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "self": {
+        "href": "https://api.github.com/repos/theboringtech/btcmain/pulls/comments/437891367"
+      },
+      "html": {
+        "href": "https://github.com/theboringtech/btcmain/pull/1#discussion_r437891367"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/theboringtech/btcmain/pulls/1"
+      }
+    },
+    "start_line": null,
+    "original_start_line": null,
+    "start_side": null,
+    "line": 7,
+    "original_line": 7,
+    "side": "RIGHT"
+}

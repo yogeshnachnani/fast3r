@@ -3,13 +3,17 @@ package git.provider
 import auth.OauthClient
 import codereview.Project
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.defaultSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.request
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -26,7 +30,8 @@ class GithubClient(
         private const val ORGS_PATH = "orgs/"
         private const val REPOS_PATH = "repos"
         private const val PULLS_PATH = "pulls"
-        val jsonSerializer = defaultSerializer()
+        private const val REVIEWS_PATH = "reviews"
+        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     }
 
     suspend fun getReposSummary(orgName: String): List<RepoSummary> {
@@ -79,7 +84,7 @@ class GithubClient(
 
     suspend fun isPrMerged(pullRequestSummary: PullRequestSummary): Boolean {
         val response: HttpResponse = httpClient.request(buildRequest().apply {
-            url("${pullRequestSummary._links.self.href}/merge")
+            url("${pullRequestSummary._links.self!!.href}/merge")
             method = HttpMethod.Get
         })
         return when(response.status) {
@@ -105,6 +110,83 @@ class GithubClient(
                 throw RuntimeException("Unhandled status code ${response.status}")
             }
         }
+    }
+
+    suspend fun listReviewsFor(pullRequestSummary: PullRequestSummary): List<Review> {
+        return httpClient.request<List<Review>>(buildRequest().apply {
+            url("${pullRequestSummary._links.self}/$REVIEWS_PATH")
+            method = HttpMethod.Get
+        })
+    }
+
+    suspend fun retrieveLatestInfoForReview(review: Review): Review {
+        return httpClient.request<Review>(buildRequest().apply {
+            url("${review.pull_request_url}/$REVIEWS_PATH/${review.id}")
+            method = HttpMethod.Get
+        })
+    }
+
+    suspend fun deleteReview(review: Review): Boolean {
+        val response: HttpResponse = httpClient.request(buildRequest().apply {
+            url("${review.pull_request_url}/$REVIEWS_PATH/${review.id}")
+            method = HttpMethod.Delete
+        })
+        return when(response.status) {
+            HttpStatusCode.OK -> true
+            else -> {
+                throw RuntimeException("Unhandled status code ${response.status}")
+            }
+        }
+    }
+
+    suspend fun listComments(review: Review): List<ReviewComment> {
+        return httpClient.request<List<ReviewComment>>(buildRequest().apply {
+            url("${review.pull_request_url}/$REVIEWS_PATH/${review.id}/comments")
+            method = HttpMethod.Get
+        })
+    }
+
+    suspend fun createReview(pullRequestSummary: PullRequestSummary, reviewPayload: ReviewPayload): Pair<Review?, String?> {
+        val response = httpClient.post<HttpResponse> {
+            body = reviewPayload
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            url("${pullRequestSummary._links.self}/$REVIEWS_PATH")
+        }
+        return when(response.status) {
+            HttpStatusCode.OK -> Pair(json.parse(Review.serializer(), response.readText()), null)
+            else -> Pair(null, response.readText())
+        }
+    }
+
+    suspend fun updateOrSubmitReview(review: Review, reviewUpdatePayload: ReviewUpdatePayload): Boolean {
+        val response = httpClient.post<HttpResponse> {
+            body = reviewUpdatePayload
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            url("${review.pull_request_url}/$REVIEWS_PATH/${review.id}/events")
+        }
+        return when(response.status) {
+            HttpStatusCode.OK -> true
+            else -> false
+        }
+    }
+
+    suspend fun dismissReview(review: Review, dismissPayload: ReviewDismissPayload): Boolean {
+        val response = httpClient.put<HttpResponse> {
+            body = dismissPayload
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            url("${review.pull_request_url}/$REVIEWS_PATH/${review.id}/dismissals")
+        }
+        return when(response.status) {
+            HttpStatusCode.OK -> true
+            else -> false
+        }
+    }
+
+    suspend fun listComments(pullRequestSummary: PullRequestSummary): List<PullRequestReviewComment> {
+        return httpClient.request<List<PullRequestReviewComment>>(buildRequest().apply {
+            url("${pullRequestSummary._links.review_comments}")
+            method = HttpMethod.Get
+        })
     }
 
     private suspend fun buildRequest(): HttpRequestBuilder {
