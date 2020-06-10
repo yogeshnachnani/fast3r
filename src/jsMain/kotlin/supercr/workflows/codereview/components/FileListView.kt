@@ -122,7 +122,7 @@ private class FileItem: RComponent<FileItemProps, RState>() {
                     xs = 2
                 }
                 Avatar {
-                    + "XS"
+                    + props.fileDiff.fileHeader.tShirtSize.name
                 }
             }
         }
