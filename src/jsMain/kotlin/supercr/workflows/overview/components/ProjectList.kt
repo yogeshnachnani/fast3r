@@ -28,7 +28,7 @@ class ProjectList: RComponent<ProjectListProps, RState>() {
                 attrs {
                     container = false
                     item = true
-                    xs = 12
+                    md = 12
                 }
                 renderProjectList()
             }
@@ -36,7 +36,7 @@ class ProjectList: RComponent<ProjectListProps, RState>() {
                 attrs {
                     container = false
                     item = true
-                    xs = 12
+                    md = 12
                 }
                 Button {
                     attrs {

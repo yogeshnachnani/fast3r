@@ -56,7 +56,7 @@ external interface GridProps: WithClassName {
     var justify: String
     var spacing: Number
     var wrap: String
-    var xs: Number
+    var md: Number
 }
 
 @JsName("Paper")

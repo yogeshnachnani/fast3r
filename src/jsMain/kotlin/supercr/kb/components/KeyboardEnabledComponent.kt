@@ -53,7 +53,7 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
                 attrs {
                     container = false
                     item = true
-                    xs = 10
+                    md = 10
                 }
                 child(props.elementToRender)
             }
@@ -61,7 +61,7 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
                 attrs {
                     container = false
                     item = true
-                    xs = props.xsValueForShortcutChip ?: 2
+                    md = props.xsValueForShortcutChip ?: 2
                 }
                 /** TODO: Fix styling */
                 Avatar {

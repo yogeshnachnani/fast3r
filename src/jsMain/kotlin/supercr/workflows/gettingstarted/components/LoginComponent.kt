@@ -56,7 +56,7 @@ class LoginComponent: RComponent<LoginComponentProps, RState>() {
                         attrs {
                             item = true
                             container = false
-                            xs = 12
+                            md = 12
                         }
                         p {
                             + "Welcome to the fastest CR experience. Lets Get Started"
@@ -71,14 +71,14 @@ class LoginComponent: RComponent<LoginComponentProps, RState>() {
                         attrs {
                             item = true
                             container = false
-                            xs = 4
+                            md = 4
                         }
                     }
                     Grid {
                         attrs {
                             item = true
                             container = false
-                            xs = 4
+                            md = 4
                         }
                         Button {
                             attrs {
@@ -95,7 +95,7 @@ class LoginComponent: RComponent<LoginComponentProps, RState>() {
                         attrs {
                             item = true
                             container = false
-                            xs = 4
+                            md = 4
                         }
                     }
                 }

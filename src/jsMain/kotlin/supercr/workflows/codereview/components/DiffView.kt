@@ -39,7 +39,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 attrs {
                     item = true
                     container = false
-                    xs = 6
+                    md = 6
                 }
                 codeView {
                     id = leftEditorId()
@@ -50,7 +50,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 attrs {
                     item = true
                     container = false
-                    xs = 6
+                    md = 6
                 }
                 codeView {
                     id = rightEditorId()

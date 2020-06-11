@@ -35,7 +35,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 attrs {
                     container = false
                     item = true
-                    xs = 8
+                    md = 8
                 }
                 pullRequestList {
                     githubClient = props.getGithubClient()
@@ -46,7 +46,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 attrs {
                     container = false
                     item = true
-                    xs = 4
+                    md = 4
                 }
                 renderRightSection()
             }
@@ -67,7 +67,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 attrs {
                     item = true
                     container = false
-                    xs = 12
+                    md = 12
                 }
                 userStats {
 
@@ -77,7 +77,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 attrs {
                     item = true
                     container = false
-                    xs = 12
+                    md = 12
                 }
                 projectList {
                     projects = props.projects

@@ -4,7 +4,6 @@ import Avatar
 import Grid
 import ListItem
 import ListSubHeader
-import MaterialUIList
 import codereview.FileDiff
 import codereview.FileDiffList
 import react.RBuilder
@@ -13,7 +12,6 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.buildElement
-import react.createElement
 import react.setState
 import supercr.kb.components.keyboardEnabledList
 
@@ -107,7 +105,7 @@ private class FileItem: RComponent<FileItemProps, RState>() {
                 attrs {
                     item = true
                     container = false
-                    xs = 10
+                    md = 10
                 }
 //                    Paper {
 //                    p {
@@ -119,7 +117,7 @@ private class FileItem: RComponent<FileItemProps, RState>() {
                 attrs {
                     item = true
                     container = false
-                    xs = 2
+                    md = 2
                 }
                 Avatar {
                     + props.fileDiff.fileHeader.tShirtSize.name

@@ -39,7 +39,7 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
             }
             Grid {
                 attrs {
-                    xs = 3
+                    md = 3
                     item = true
                     container = false
                 }
@@ -50,7 +50,7 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
             }
             Grid {
                 attrs {
-                    xs = 9
+                    md = 9
                     item = true
                     container = false
                 }

@@ -54,7 +54,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             attrs {
                 item = true
                 container = false
-                xs = 12
+                md = 12
             }
             Paper {
                 attrs {
@@ -76,7 +76,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     attrs {
                         item = true
                         container = false
-                        xs = 2
+                        md = 2
                     }
                     Paper {
 
@@ -92,7 +92,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             attrs {
                 item = true
                 container = false
-                xs = 12
+                md = 12
             }
             Paper {
                 attrs {
@@ -115,7 +115,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     attrs {
                         item = true
                         container = false
-                        xs = 2
+                        md = 2
                     }
                     Paper {
 
@@ -130,7 +130,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             attrs {
                 item = true
                 container = false
-                xs = xsValToUse
+                md = xsValToUse
             }
             codeView {
                 id = props.fileDiff.fileHeader.identifier
@@ -144,7 +144,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
         return Grid {
             attrs {
                 container = true
-                xs = 12
+                md = 12
                 spacing = 0
                 direction = "row"
                 alignItems = "center"
@@ -152,7 +152,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             }
             Grid {
                 attrs {
-                    xs = 6
+                    md = 6
                 }
                 Paper {
                     attrs {
@@ -166,7 +166,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             }
             Grid {
                 attrs {
-                    xs = 6
+                    md = 6
                 }
                 Paper {
                     attrs {
@@ -187,7 +187,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             attrs {
                 item = true
                 container = false
-                xs = 12
+                md = 12
             }
             Paper {
                 attrs {
@@ -210,7 +210,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             attrs {
                 item = true
                 container = false
-                xs = xsValToUse
+                md = xsValToUse
             }
             diffView {
                 oldText = props.fileDiff.rawTextOld?:""
