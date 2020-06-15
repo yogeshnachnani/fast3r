@@ -3,6 +3,8 @@
 
 import react.RClass
 import react.dom.WithClassName
+import styled.CustomStyledProps
+import styled.StyledProps
 
 @JsName("Button")
 external val Button: RClass<ButtonProps>

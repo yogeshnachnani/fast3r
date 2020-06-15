@@ -1,6 +1,7 @@
 package supercr.workflows.codereview.components
 
 import Grid
+import Paper
 import codereview.Edit
 import react.RBuilder
 import react.RComponent
@@ -35,26 +36,27 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 justify = "center"
                 spacing = 0
             }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
-                    md = 6
-                }
-                codeView {
-                    id = leftEditorId()
-                    codeText = props.oldText
-                }
+            codeView {
+                id = leftEditorId()
+                codeText = props.oldText
+                xsValueToUse = 5
+            }
+            codeView {
+                id = rightEditorId()
+                codeText = props.newText
+                xsValueToUse = 6
             }
             Grid {
                 attrs {
                     item = true
                     container = false
-                    md = 6
+                    md = 1
                 }
-                codeView {
-                    id = rightEditorId()
-                    codeText = props.newText
+                Paper {
+                    attrs {
+                        variant = "outlined"
+                    }
+                    + "For Comments"
                 }
             }
         }

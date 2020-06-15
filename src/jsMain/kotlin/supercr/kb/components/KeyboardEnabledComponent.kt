@@ -10,7 +10,9 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.getClassName
 import styled.styledSpan
+import supercr.css.ComponentStyles
 import supercr.css.TextStyles
 import supercr.kb.UniversalKeyboardShortcutHandler
 
@@ -45,15 +47,14 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
             attrs {
                 container = true
                 item = false
-                justify = "space-evenly"
-                alignItems = "center"
-                spacing = 2
+                justify = "space-around"
+                alignItems = "baseline"
+                spacing = 1
             }
             Grid {
                 attrs {
                     container = false
                     item = true
-                    md = 10
                 }
                 child(props.elementToRender)
             }
@@ -66,7 +67,8 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
                 /** TODO: Fix styling */
                 Avatar {
                     attrs {
-                        className = TextStyles.textInsertedForBalance
+                        variant = "rounded"
+                        className = ComponentStyles.getClassName { ComponentStyles::smallTextAvatar }
                     }
                     if (state.selectedPortion.isNotEmpty()) {
                         styledSpan {

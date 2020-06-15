@@ -3,6 +3,7 @@ package supercr.workflows.codereview.screens
 import Grid
 import codereview.FileDiff
 import codereview.FileDiffList
+import git.provider.PullRequestSummary
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -12,23 +13,16 @@ import react.setState
 import supercr.workflows.codereview.components.fileList
 import supercr.workflows.codereview.components.fileView
 
-external interface ChangesetScreenProps: RProps {
+external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffList
+    var pullRequestSummary: PullRequestSummary
 }
 
-external interface ChangeSetScreenState: RState {
+external interface ChangeSetReviewScreenState : RState {
     var selectedFile: FileDiff?
 }
 
-/**
- * Main Screen to start off reviews with.
- * Should aim to show
- * (a) Summary of the PR
- * (b) Files changed etc
- * (c) Stats
- * (d) Comments
- */
-class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>() {
+class ChangeSetReviewScreen : RComponent<ChangeSetReviewScreenProps, ChangeSetReviewScreenState>() {
     override fun RBuilder.render() {
         Grid {
             attrs {
@@ -39,7 +33,6 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
             }
             Grid {
                 attrs {
-                    md = 3
                     item = true
                     container = false
                 }
@@ -50,7 +43,7 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
             }
             Grid {
                 attrs {
-                    md = 9
+                    md = 10
                     item = true
                     container = false
                 }
@@ -62,7 +55,6 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
             }
         }
     }
-
     private val handleFileSelect: (FileDiff?) -> Unit = { userSelectedFile ->
         setState {
             selectedFile = userSelectedFile
@@ -70,8 +62,8 @@ class ChangesetScreen : RComponent<ChangesetScreenProps, ChangeSetScreenState>()
     }
 }
 
-fun RBuilder.changeSetScreen(handler: ChangesetScreenProps.() -> Unit): ReactElement {
-    return child(ChangesetScreen::class) {
+fun RBuilder.changeSetReview(handler: ChangeSetReviewScreenProps.() -> Unit): ReactElement {
+    return child(ChangeSetReviewScreen::class) {
         this.attrs(handler)
     }
 }

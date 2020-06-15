@@ -4,12 +4,18 @@ import Grid
 import Paper
 import codereview.DiffChangeType
 import codereview.FileDiff
+import kotlinx.css.minHeight
+import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.dom.p
+import styled.css
+import styled.getClassName
+import styled.styledDiv
+import supercr.css.ComponentStyles
 import supercr.css.TextStyles
 
 /**
@@ -34,6 +40,18 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 direction = "row"
                 justify = "center"
                 spacing = 0
+            }
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 12
+                }
+                styledDiv {
+                    css {
+                        minHeight = 108.px
+                    }
+                }
             }
             renderDiffView()
         }
@@ -126,17 +144,11 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
     }
 
     private fun RBuilder.renderAceEditorForSingleFiles(text: String, xsValToUse: Number, classNameToUse: String): ReactElement {
-        return Grid {
-            attrs {
-                item = true
-                container = false
-                md = xsValToUse
-            }
-            codeView {
-                id = props.fileDiff.fileHeader.identifier
-                codeText = text
-                className = classNameToUse
-            }
+        return codeView {
+            id = props.fileDiff.fileHeader.identifier
+            codeText = text
+            className = classNameToUse
+            xsValueToUse = xsValToUse
         }
     }
 

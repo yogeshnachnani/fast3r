@@ -9,6 +9,8 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.getClassName
+import supercr.css.ComponentStyles
 
 /**
  * Assigns keyboard shortcuts for given [elementsWithHandlers] and renders them in a [MaterialUIList]
@@ -24,6 +26,7 @@ external interface KeyboardEnabledListProps: RProps {
     var elementsWithHandlers: List<Pair<ReactElement, () -> Unit>>
     var xsValueForShortcutChip: Number?
     var listSubHeader: ReactElement?
+    var listItemClassName: String
 }
 
 external interface KeyboardEnabledListState: RState {
@@ -50,8 +53,9 @@ class KeyboardEnabledList: RComponent<KeyboardEnabledListProps, KeyboardEnabledL
                 state.prefixes.mapIndexed {index,  (prefix, element, handler) ->
                     ListItem {
                         attrs {
-                            divider = true
+                            divider = false
                             onClick = handler
+                            className = props.listItemClassName
                         }
                         keyboardEnabledComponent {
                             elementToRender = element

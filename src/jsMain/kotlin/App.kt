@@ -3,6 +3,7 @@ import codereview.Edit
 import codereview.FileDiff
 import codereview.FileDiffList
 import codereview.FileHeader
+import git.provider.PullRequestSummary
 import react.ReactElement
 import react.buildElement
 import react.dom.render
@@ -10,20 +11,28 @@ import react.dom.span
 import supercr.css.styles
 import supercr.kb.UniversalKeyboardShortcutHandler
 import supercr.kb.components.keyboardEnabledList
-import supercr.workflows.codereview.screens.changeSetScreen
+import supercr.workflows.codereview.screens.changeSetOverviewScreen
 import supercr.workflows.gettingstarted.screens.getStartedScreen
 import supercr.workflows.mainScreen
 import kotlin.browser.document
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import supercr.css.ComponentStyles
+import supercr.workflows.codereview.screens.changeSetScreen
+
+@JsModule("../../../../processedResources/js/main/pull_request_big_one.json")
+external val bigPullRequest: dynamic
 
 fun main () {
     document.head!!.insertAdjacentHTML("afterbegin", "<style>$styles</style>")
+    ComponentStyles.inject()
     /**
      * The official documentation specifies that we create a <div id = 'root'> in index.html
      * Somehow, that prevents tests from executing properly (this was after we introduced react)
      * As a workaround, we create the root div element here instead
      * See here for more details - https://stackoverflow.com/questions/61839800/unit-testing-in-kotlin-js/62058511#62058511
      */
-    document.body!!.insertAdjacentHTML("afterbegin", "<div id='root'></div>" )
+    document.body!!.insertAdjacentHTML("afterbegin", "<div id='root' style='height:100vh; width:100vw;'></div>" )
     UniversalKeyboardShortcutHandler.init()
     renderDiffView()
 //    renderGettingStarted()
@@ -112,8 +121,11 @@ private fun renderGettingStarted() {
 }
 
 private fun renderDiffView() {
+    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
     render(document.getElementById("root")) {
         changeSetScreen {
+            pullRequestSummary = samplePullRequestSummary
             fileDiffList = FileDiffList(
                 fileDiffs =  listOf(
                     testModifyDiff,

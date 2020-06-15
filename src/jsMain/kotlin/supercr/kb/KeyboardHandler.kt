@@ -60,13 +60,27 @@ object UniversalKeyboardShortcutHandler {
         KeyboardShortcutTrie.remove(shortcutString)
     }
 
+    fun registerEnterKeyShortcut(handler: () -> Unit) {
+        this.enterKeyHandler = handler
+    }
+    fun unregisterEnterKeyShortcut() {
+        console.log("Removing Enter shortcut")
+        this.enterKeyHandler = null
+    }
+
     private var currentSelectedPrefix = ""
     private var currentPartialMatches = mutableSetOf<() -> Unit>()
     private var isInitialised = false
+    private var enterKeyHandler: ( () -> Unit )? = null
+
     private val keydownListener: (Event) -> Unit ={ keydownEvent ->
         val kbEvent = keydownEvent as KeyboardEvent
-        console.log("Handling kb event with key : ${kbEvent.key}. Current selected prefix is $currentSelectedPrefix")
+//        console.log("Handling kb event with key : ${kbEvent.key}. Current selected prefix is $currentSelectedPrefix")
         when(kbEvent.key) {
+            "Enter" -> {
+                kbEvent.preventDefault()
+                enterKeyHandler?.invoke()
+            }
             "Escape" -> {
                 kbEvent.preventDefault()
                 invokeAndClearSelection(null)
