@@ -81,6 +81,12 @@ object Colors {
     val accentHighlight2 = hsl(45, 100, 85)
     val accentHighlight3 = hsl(45, 100, 70)
     val accentHighlight4 = hsl(46, 100, 65)
+
+    val warmGrey5 = hsl(41, 15, 28)
+    val warmGrey4 = hsl(40, 12, 43)
+    val warGreyBase = hsl(39, 12, 58)
+    val warmGrey2 = hsl(39, 16, 76)
+    val warmGrey1 = hsl(39, 21, 88)
 }
 
 object FontSizes {
@@ -175,5 +181,8 @@ var styles = CSSBuilder().apply {
         fontSize = FontSizes.normal
         overflow = Overflow.hidden
         backgroundColor = Colors.background9
+    }
+    ".ace-clouds-midnight .ace_gutter-active-line" {
+        background = Colors.warGreyBase.value
     }
 }
