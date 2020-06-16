@@ -8,6 +8,8 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.dom.p
+import styled.getClassName
+import supercr.css.ComponentStyles
 
 external interface TitleAndDescriptionProps : RProps {
     var pullRequestSummary: PullRequestSummary
@@ -23,6 +25,7 @@ class TitleAndDescription : RComponent<TitleAndDescriptionProps, TitleAndDescrip
             attrs {
                 square = true
                 variant = "outlined"
+                className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
             }
             p {
                 + "${ props.pullRequestSummary.title } #${props.pullRequestSummary.number}"

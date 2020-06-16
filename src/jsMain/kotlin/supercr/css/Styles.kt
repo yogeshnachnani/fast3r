@@ -5,10 +5,12 @@ import kotlinx.css.Color
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.background
+import kotlinx.css.backgroundColor
+import kotlinx.css.color
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
-import kotlinx.css.fontStyle
 import kotlinx.css.height
+import kotlinx.css.hsl
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minHeight
@@ -17,7 +19,6 @@ import kotlinx.css.paddingBottom
 import kotlinx.css.paddingLeft
 import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
-import kotlinx.css.pc
 import kotlinx.css.position
 import kotlinx.css.px
 import kotlinx.css.rgb
@@ -43,7 +44,43 @@ enum class AvatarSize {
 }
 
 object Colors {
-    val baseText = rgb(61, 61, 61)
+    /** Backgrounds */
+    val background9 = hsl(0, 0, 13)
+    val background8 = hsl(0, 0, 26)
+    val background7 = hsl(0, 0, 38)
+    val background6 = hsl(0, 0, 46)
+    val background5 = hsl(0, 0, 74)
+
+    /** Text */
+    val baseText4 = hsl(0, 0, 88)
+    val baseText3 = hsl(0, 0, 93)
+    val baseText = hsl(0, 0, 96)
+    val baseText1 = hsl(0, 0, 98)
+
+    val primary9 = hsl(235, 66, 30)
+    val primary8 = hsl(233, 57, 37)
+    val primary7 = hsl(232, 54, 41)
+    val primary6 = hsl(232, 50, 45)
+    val primaryBase = hsl(231, 48, 48)
+    val primary4 = hsl(230, 44, 64)
+    val primary3 = hsl(231, 44, 74)
+    val primary2 = hsl(232, 45, 84)
+    val primary1 = hsl(231, 44, 94)
+
+    val accentPrimary9 =  hsl(173, 100, 21)
+    val accentPrimary8 =  hsl(173, 100, 24)
+    val accentPrimary7 =  hsl(174, 100, 27)
+    val accentPrimary6 =  hsl(174, 100, 29)
+    val accentPrimary5 =  hsl(174, 63, 40)
+    val accentPrimary4 =  hsl(174, 42, 51)
+    val accentPrimary3 =hsl(174, 42, 65)
+    val accentPrimary2 = hsl(175, 41, 79)
+    val accentPrimary1 = hsl(177, 41, 91)
+
+    val accentHighlight1 = hsl(46, 100, 94)
+    val accentHighlight2 = hsl(45, 100, 85)
+    val accentHighlight3 = hsl(45, 100, 70)
+    val accentHighlight4 = hsl(46, 100, 65)
 }
 
 object FontSizes {
@@ -51,11 +88,12 @@ object FontSizes {
     val small = 13.px
     val normal = 16.px
     val medium = 18.px
-    val large = 21.px
+    val large = 20.px
     val extraLarge = 24.px
-    val huge = 28.px
+    val huge = 30.px
 }
 object FontFamilies {
+    const val code = "Menlo, Consolas, 'DejaVu Sans Mono', monospace"
     const val default = "roboto,sans-serif"
     const val nonCode = "Inter, Roboto, Sans-serif"
 }
@@ -85,6 +123,11 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.tiny
         fontFamily = FontFamilies.nonCode
     }
+
+    val backgroundAccentPrimary4 by css {
+        backgroundColor = Colors.accentPrimary4
+    }
+
     val gutterLessListItem by css {
         paddingLeft = 0.px
         paddingRight = 0.px
@@ -95,6 +138,13 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         paddingBottom = 0.px
         paddingTop = 0.px
         maxWidth = 190.px
+    }
+
+    val infoPaper by css {
+        backgroundColor = Colors.background7
+        fontSize = FontSizes.normal
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText1
     }
 }
 
@@ -114,9 +164,16 @@ var styles = CSSBuilder().apply {
         position = Position.absolute
         zIndex = 20
     }
+    "html" {
+        fontFamily = FontFamilies.default
+        fontSize = FontSizes.normal
+        overflow = Overflow.hidden
+        backgroundColor = Colors.background9
+    }
     "body" {
         fontFamily = FontFamilies.default
         fontSize = FontSizes.normal
         overflow = Overflow.hidden
+        backgroundColor = Colors.background9
     }
 }

@@ -37,12 +37,12 @@ class CodeView : RComponent<CodeViewProps, RState>() {
             AceEditor {
                 attrs {
                     mode = "java"
-                    theme = "github"
+                    theme = "clouds_midnight"
                     name = props.id
                     readOnly = true
                     value = props.codeText
                     width = "inherit"
-                    highlightActiveLine = false
+                    highlightActiveLine = true
                     className = "${props.className} ${ ComponentStyles.getClassName { ComponentStyles::codeViewEditor } }"
                 }
             }

@@ -68,7 +68,7 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
                 Avatar {
                     attrs {
                         variant = "rounded"
-                        className = ComponentStyles.getClassName { ComponentStyles::smallTextAvatar }
+                        className = "${ ComponentStyles.getClassName { ComponentStyles::smallTextAvatar } } ${ComponentStyles.getClassName { ComponentStyles::backgroundAccentPrimary4 }}"
                     }
                     if (state.selectedPortion.isNotEmpty()) {
                         styledSpan {

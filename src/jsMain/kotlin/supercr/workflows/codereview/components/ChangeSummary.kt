@@ -14,9 +14,12 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.dom.div
 import react.dom.p
+import styled.getClassName
 import styled.styled
 import styled.styledP
+import supercr.css.ComponentStyles
 
 external interface ChangeSummaryProps : RProps {
     var fileDiffList: FileDiffList
@@ -33,6 +36,7 @@ class ChangeSummary : RComponent<ChangeSummaryProps, ChangeSummaryState>() {
             attrs {
                 square = true
                 variant = "outlined"
+                className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
             }
             p {
                 + fileDiffs.filesChangedDescription()
@@ -43,7 +47,7 @@ class ChangeSummary : RComponent<ChangeSummaryProps, ChangeSummaryState>() {
 
     private fun RBuilder.fileChangesByTshirtSize() {
         val tshirtSizes = listOf(XS, S, M, L, XL)
-        p {
+        div {
             tshirtSizes.map { tshirtSize ->
                 val filesOfSize = props.fileDiffList.fileDiffs.filter { it.fileHeader.tShirtSize == tshirtSize }
                 if (filesOfSize.isNotEmpty()) {

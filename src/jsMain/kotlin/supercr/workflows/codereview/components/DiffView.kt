@@ -8,6 +8,8 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import styled.getClassName
+import supercr.css.ComponentStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 
 external interface DiffViewProps: RProps {
@@ -55,6 +57,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 Paper {
                     attrs {
                         variant = "outlined"
+                        className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                     }
                     + "For Comments"
                 }

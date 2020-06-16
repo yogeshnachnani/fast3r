@@ -78,6 +78,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 attrs {
                     square = true
                     variant = "outlined"
+                    className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                 }
                 p {
                     +props.fileDiff.fileHeader.fileNewPath
@@ -116,6 +117,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 attrs {
                     square = true
                     variant = "outlined"
+                    className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                 }
                 p {
                     +props.fileDiff.fileHeader.fileOldPath
@@ -170,6 +172,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     attrs {
                         square = true
                         variant = "outlined"
+                        className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                     }
                     p {
                         + "${ props.fileDiff.fileHeader.fileOldPath } -> "
@@ -205,6 +208,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 attrs {
                     square = true
                     variant = "outlined"
+                    className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                 }
                 p {
                     + props.fileDiff.fileHeader.fileNewPath

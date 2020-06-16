@@ -6,6 +6,7 @@ import ListSubHeader
 import codereview.FileDiff
 import codereview.FileDiffList
 import kotlinx.css.Display
+import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.em
 import kotlinx.css.marginBottom
@@ -25,6 +26,7 @@ import styled.styledDiv
 import styled.styledP
 import supercr.components.fileSizeChip
 import supercr.css.AvatarSize
+import supercr.css.Colors
 import supercr.css.ComponentStyles
 import supercr.kb.components.keyboardEnabledList
 
@@ -103,13 +105,15 @@ private class FileItem: RComponent<FileItemProps, RState>() {
             css {
                 marginTop = 0.10.em
                 marginBottom = 0.px
+                color = Colors.baseText1
             }
             + props.fileDiff.fileHeader.fileNewPath.split("/").last()
         }
-        styledP {
+        styledDiv {
             css {
                 marginTop = 0.px
                 marginLeft = 8.px
+                color = Colors.baseText
             }
             fileSizeChip {
                 fileSize = props.fileDiff.fileHeader.tShirtSize
