@@ -68,7 +68,8 @@ class ChangeSetReviewScreen(
                     }
                     reviewScreenActionBar {
                         actions = listOf(
-                            ActionBarShortcut("Next File", "]]", handleNextFileCommand)
+                            ActionBarShortcut("Next File", "]]", handleNextFileCommand),
+                            ActionBarShortcut("Save for Later", "sl", handleSaveForLater)
                         )
                     }
                 }
@@ -106,31 +107,41 @@ class ChangeSetReviewScreen(
         }
     }
     private val handleNextFileCommand: () -> Unit = {
+        changeCurrentFileStateTo(FileReviewStatus.REVIEWED)
+    }
+
+    private val handleSaveForLater: () -> Unit = {
+        changeCurrentFileStateTo(FileReviewStatus.SAVED_FOR_LATER)
+    }
+
+    private fun changeCurrentFileStateTo(statusToChangeTo: FileReviewStatus) {
         /** TODO: Possible bug here if the shortcut is called before any file is selected */
         val currentFileDiff = state.selectedFile!!
         val currentFileIndex = state.fileDiffShortutAndStatusList.indexOfFirst { it.fileDiff == currentFileDiff }
         val newFileSet = state.fileDiffShortutAndStatusList.mapIndexed { index, fileData ->
             if (index == currentFileIndex) {
-                fileData.copy(currentStatus = FileReviewStatus.REVIEWED)
+                fileData.copy(currentStatus = statusToChangeTo)
             } else {
                 fileData
             }
         }
-        if (currentFileIndex == state.fileDiffShortutAndStatusList.lastIndex) {
+        val pendingReview = newFileSet.filter { it.currentStatus == FileReviewStatus.TO_BE_REVIEWED }
+        if (pendingReview.isEmpty()) {
             /** We have reached the end of the review */
             setState {
-                selectedFile = null
+                selectedFile = newFileSet.firstOrNull { it.currentStatus == FileReviewStatus.SAVED_FOR_LATER }?.fileDiff
                 fileDiffShortutAndStatusList = newFileSet
             }
         } else {
             /** Bring on the next file */
-            val nextFile = state.fileDiffShortutAndStatusList[currentFileIndex + 1].fileDiff
+            val nextFile = pendingReview.first().fileDiff
             setState {
                 selectedFile = nextFile
                 fileDiffShortutAndStatusList = newFileSet
             }
         }
     }
+
 }
 
 fun RBuilder.changeSetReview(handler: ChangeSetReviewScreenProps.() -> Unit): ReactElement {

@@ -168,7 +168,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
         width = LinearDimension.fillAvailable
-        marginTop = 10.px
+        marginTop = 25.px
     }
     val actionBarItem by css {
         width = LinearDimension.fitContent

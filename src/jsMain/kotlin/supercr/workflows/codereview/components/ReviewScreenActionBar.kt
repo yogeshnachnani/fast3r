@@ -41,8 +41,9 @@ class ReviewScreenActionBar : RComponent<ReviewScreenActionBarProps, ReviewScree
                 attrs {
                     container = true
                     item = false
-                    justify = "flex-start"
+                    justify = "space-evenly"
                     alignItems = "baseline"
+                    spacing = 4
                 }
                 props.actions.map {
                     renderAction(it)
