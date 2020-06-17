@@ -29,7 +29,7 @@ class ChangeSetReviewScreen : RComponent<ChangeSetReviewScreenProps, ChangeSetRe
                 container = true
                 item = false
                 justify = "flex-start"
-                spacing = 1
+                spacing = 2
             }
             Grid {
                 attrs {
