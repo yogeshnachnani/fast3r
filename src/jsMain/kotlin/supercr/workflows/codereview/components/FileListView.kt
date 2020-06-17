@@ -5,8 +5,6 @@ import ListItem
 import ListSubHeader
 import MaterialUIList
 import codereview.FileDiff
-import codereview.FileDiffList
-import datastructures.KeyboardShortcutTrie
 import kotlinx.css.color
 import kotlinx.css.em
 import kotlinx.css.marginBottom
@@ -19,7 +17,6 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.buildElement
-import react.setState
 import styled.css
 import styled.getClassName
 import styled.styledDiv
@@ -28,8 +25,7 @@ import supercr.components.fileSizeChip
 import supercr.css.AvatarSize
 import supercr.css.Colors
 import supercr.css.ComponentStyles
-import supercr.kb.UniversalKeyboardShortcutHandler
-import supercr.kb.components.keyboardEnabledComponent
+import supercr.kb.components.keyboardChip
 
 enum class FileDiffListMode {
     compact,
@@ -113,16 +109,37 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
                 className = ComponentStyles.getClassName { ComponentStyles::compactFileListItem }
                 key = assignedShortcut
             }
-            keyboardEnabledComponent {
-                this.attrs {
-                    elementToRender = buildElement {
-                        fileItem {
-                            fileDiff = currentFileDiff
+            Grid {
+                attrs {
+                    container = true
+                    item = false
+                    justify = "space-evenly"
+                    alignItems = "baseline"
+                    className = ComponentStyles.getClassName { ComponentStyles::maxWidthFitContent }
+                }
+                Grid {
+                    attrs {
+                        container = false
+                        item = true
+                        md = 10
+                    }
+                    fileItem {
+                        fileDiff = currentFileDiff
+                    }
+                }
+                Grid {
+                    attrs {
+                        container = false
+                        item = true
+                        md = 2
+                    }
+                    keyboardChip {
+                        this.attrs {
+                            onSelected = handlerForFile
+                            this.assignedShortcut = assignedShortcut
+                            uponUnmount = removePrefixOnUnmount
                         }
-                    }!!
-                    onSelected = handlerForFile
-                    this.assignedShortcut = assignedShortcut
-                    uponUnmount = removePrefixOnUnmount
+                    }
                 }
             }
         }

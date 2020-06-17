@@ -12,10 +12,12 @@ import react.RState
 import react.ReactElement
 import react.setState
 import supercr.kb.UniversalKeyboardShortcutHandler
+import supercr.workflows.codereview.components.ActionBarShortcut
 import supercr.workflows.codereview.components.FileDiffStateAndMetaData
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
 import supercr.workflows.codereview.components.fileView
+import supercr.workflows.codereview.components.reviewScreenActionBar
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffList
@@ -64,19 +66,16 @@ class ChangeSetReviewScreen(
                     fileView {
                         fileDiff = props.fileDiffList.fileDiffs.find { it == state.selectedFile }!!
                     }
+                    reviewScreenActionBar {
+                        actions = listOf(
+                            ActionBarShortcut("Next File", "]]", handleNextFileCommand)
+                        )
+                    }
                 }
             }
         }
     }
 
-    override fun componentDidMount() {
-        registerCommandShortcuts()
-    }
-
-    override fun componentWillUnmount() {
-        unregisterCommandShortcuts()
-    }
-    
     private fun generateFileDiffAndMetaData(): List<FileDiffStateAndMetaData> {
         return KeyboardShortcutTrie.generatePossiblePrefixCombos(
             prefixString = null,
@@ -106,14 +105,6 @@ class ChangeSetReviewScreen(
             }
         }
     }
-    private fun registerCommandShortcuts() {
-        UniversalKeyboardShortcutHandler.registerShortcut("]]", handleNextFileCommand, {})
-    }
-
-    private fun unregisterCommandShortcuts() {
-        UniversalKeyboardShortcutHandler.unRegisterShortcut("]]")
-    }
-
     private val handleNextFileCommand: () -> Unit = {
         /** TODO: Possible bug here if the shortcut is called before any file is selected */
         val currentFileDiff = state.selectedFile!!

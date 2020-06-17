@@ -5,7 +5,6 @@ import datastructures.PrefixMatchHandlers
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
 import kotlin.browser.window
-import supercr.kb.components.KeyboardEnabledList
 
 /**
  * A note on implementation:
@@ -27,7 +26,6 @@ import supercr.kb.components.KeyboardEnabledList
 
 /**
  * Used to register a Keyboard shortcut (see [registerShortcut] method )
- * Invoke this directly only for special use cases. Prefer using [KeyboardEnabledList] instead
  * TODO: Write test cases before making further edits
  */
 

@@ -2,6 +2,7 @@ package supercr.css
 
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
+import kotlinx.css.LinearDimension
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.background
@@ -11,6 +12,7 @@ import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
 import kotlinx.css.height
 import kotlinx.css.hsl
+import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minHeight
@@ -19,6 +21,7 @@ import kotlinx.css.paddingBottom
 import kotlinx.css.paddingLeft
 import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
+import kotlinx.css.pc
 import kotlinx.css.position
 import kotlinx.css.px
 import kotlinx.css.vh
@@ -107,6 +110,9 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val fullHeight by css {
         height = 100.vh
     }
+    val maxWidthFitContent by css {
+        maxWidth = LinearDimension.fitContent
+    }
     val codeViewEditor by css {
         minHeight = 600.px
         maxHeight = 900.px
@@ -154,6 +160,18 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
+    }
+
+    val actionBar by css {
+        backgroundColor = Colors.background8
+        fontSize = FontSizes.small
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText1
+        width = LinearDimension.fillAvailable
+        marginTop = 10.px
+    }
+    val actionBarItem by css {
+        width = LinearDimension.fitContent
     }
 }
 

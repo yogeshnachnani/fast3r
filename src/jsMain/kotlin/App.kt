@@ -10,8 +10,6 @@ import react.dom.render
 import react.dom.span
 import supercr.css.styles
 import supercr.kb.UniversalKeyboardShortcutHandler
-import supercr.kb.components.keyboardEnabledList
-import supercr.workflows.codereview.screens.changeSetOverviewScreen
 import supercr.workflows.gettingstarted.screens.getStartedScreen
 import supercr.workflows.mainScreen
 import kotlin.browser.document
@@ -51,56 +49,6 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
             console.log("Hello, I am $it")
         }
         Pair(element!!, handler)
-    }
-}
-
-private fun tryOutKeyboardEnabledList() {
-    render(document.getElementById("root")) {
-        val elements = getComponentsToRender(
-            listOf(
-                "foo",
-                "bar",
-                "baaz",
-                "quux",
-                "blah",
-                "bleh",
-                "need",
-                "to",
-                "make",
-                "a",
-                "longer",
-                "list",
-                "with",
-                "random",
-                "new",
-                "things",
-                "because",
-                "I",
-                "have",
-                "written",
-                "the",
-                "code",
-                "in",
-                "such",
-                "a",
-                "way",
-                "only",
-                "half",
-                "way",
-                "through",
-                "this exercise",
-                "have I realised",
-                "that I could have simply",
-                "used a prefix",
-                "what an idiot",
-                "but it's amazing how",
-                "the mind works"
-            )
-        )
-        console.log("Got ", elements.size, " number of elements for the list")
-        keyboardEnabledList {
-            elementsWithHandlers = elements
-        }
     }
 }
 
