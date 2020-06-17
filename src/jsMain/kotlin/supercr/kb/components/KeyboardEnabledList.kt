@@ -58,11 +58,13 @@ class KeyboardEnabledList: RComponent<KeyboardEnabledListProps, KeyboardEnabledL
                             className = props.listItemClassName
                         }
                         keyboardEnabledComponent {
-                            elementToRender = element
-                            onSelected = handler
-                            assignedShortcut = prefix
-                            xsValueForShortcutChip = props.xsValueForShortcutChip
-                            uponUnmount = removePrefixOnUnmount
+                            attrs {
+                                elementToRender = element
+                                onSelected = handler
+                                assignedShortcut = prefix
+                                xsValueForShortcutChip = props.xsValueForShortcutChip
+                                uponUnmount = removePrefixOnUnmount
+                            }
                         }
                     }
                 }

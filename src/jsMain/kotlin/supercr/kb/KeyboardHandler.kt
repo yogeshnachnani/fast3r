@@ -32,6 +32,11 @@ import supercr.kb.components.KeyboardEnabledList
  */
 
 object UniversalKeyboardShortcutHandler {
+    val universalShortCuts = setOf(
+        "[[", /** During a code review, go to the Previous file */ /** During a code review, go to the Previous file */
+        "]]" /** During a code review, got to the Next file */ /** During a code review, got to the Next file */
+    )
+
     /**
      * To be called at startup time
      */
@@ -64,7 +69,6 @@ object UniversalKeyboardShortcutHandler {
         this.enterKeyHandler = handler
     }
     fun unregisterEnterKeyShortcut() {
-        console.log("Removing Enter shortcut")
         this.enterKeyHandler = null
     }
 
@@ -75,7 +79,6 @@ object UniversalKeyboardShortcutHandler {
 
     private val keydownListener: (Event) -> Unit ={ keydownEvent ->
         val kbEvent = keydownEvent as KeyboardEvent
-//        console.log("Handling kb event with key : ${kbEvent.key}. Current selected prefix is $currentSelectedPrefix")
         when(kbEvent.key) {
             "Enter" -> {
                 kbEvent.preventDefault()

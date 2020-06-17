@@ -2,10 +2,12 @@ package supercr.kb.components
 
 import Avatar
 import Grid
+import datastructures.KeyboardShortcutTrie
 import kotlinx.css.Color
 import kotlinx.css.backgroundColor
 import react.RBuilder
 import react.RComponent
+import react.RElementBuilder
 import react.RProps
 import react.RState
 import react.ReactElement
@@ -34,9 +36,14 @@ external interface KeyboardEnabledComponentState: RState {
     var unselectedPortion: String
 }
 
-class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, KeyboardEnabledComponentState>() {
+class KeyboardEnabledComponent(
+    constructorProps: KeyboardEnabledComponentProps
+): RComponent<KeyboardEnabledComponentProps, KeyboardEnabledComponentState>(constructorProps) {
 
-    override fun KeyboardEnabledComponentState.init() {
+    /**
+     * Register the shortcut with keyboard handler trie
+     */
+    override fun KeyboardEnabledComponentState.init(props: KeyboardEnabledComponentProps) {
         selectedPortion = ""
         unselectedPortion = ""
     }
@@ -91,14 +98,11 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
         }
     }
 
-    /**
-     * Register the shortcut with keyboard handler trie
-     */
     override fun componentDidMount() {
         UniversalKeyboardShortcutHandler.registerShortcut(
             shortcutString = props.assignedShortcut,
             fullMatchHandler = props.onSelected,
-            partialMatchHandler = this.handlePartialSelect
+            partialMatchHandler = this@KeyboardEnabledComponent.handlePartialSelect
         )
     }
 
@@ -108,8 +112,8 @@ class KeyboardEnabledComponent: RComponent<KeyboardEnabledComponentProps, Keyboa
     }
 }
 
-fun RBuilder.keyboardEnabledComponent(handler: KeyboardEnabledComponentProps.() -> Unit): ReactElement {
+fun RBuilder.keyboardEnabledComponent(handler: RElementBuilder<KeyboardEnabledComponentProps>.() -> Unit): ReactElement {
     return child(KeyboardEnabledComponent::class) {
-        this.attrs(handler)
+        handler()
     }
 }

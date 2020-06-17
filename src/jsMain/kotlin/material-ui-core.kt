@@ -106,6 +106,7 @@ external interface ListItemProps: WithClassName {
     /** If true, the left and right padding is removed */
     var disableGutters: Boolean
     var onClick: () -> Unit
+    var key: String
 }
 
 @JsName("ListItem")

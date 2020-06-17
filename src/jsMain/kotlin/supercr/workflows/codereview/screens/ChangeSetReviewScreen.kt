@@ -39,6 +39,12 @@ class ChangeSetReviewScreen : RComponent<ChangeSetReviewScreenProps, ChangeSetRe
                 fileList {
                     fileList = props.fileDiffList
                     onFileSelect = handleFileSelect
+                    onAllDone = {}
+                    onFileMarkedDone = { fileMarkedDone, nextFile ->
+                        handleFileSelect(nextFile)
+                    }
+                    onFileMarkedForLater = {foo ->}
+                    onPreviousFile = {foo, bar ->}
                 }
             }
             Grid {
