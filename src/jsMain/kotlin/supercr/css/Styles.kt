@@ -21,7 +21,6 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.position
 import kotlinx.css.px
-import kotlinx.css.rgb
 import kotlinx.css.vh
 import kotlinx.css.width
 import kotlinx.css.zIndex
@@ -84,7 +83,7 @@ object Colors {
 
     val warmGrey5 = hsl(41, 15, 28)
     val warmGrey4 = hsl(40, 12, 43)
-    val warGreyBase = hsl(39, 12, 58)
+    val warmGreyBase = hsl(39, 12, 58)
     val warmGrey2 = hsl(39, 16, 76)
     val warmGrey1 = hsl(39, 21, 88)
 }
@@ -144,6 +143,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         paddingBottom = 0.px
         paddingTop = 0.px
         maxWidth = 190.px
+        fontSize = FontSizes.small
+    }
+    val fileListSectionSeparator by css {
+        color = Colors.warmGrey2
     }
 
     val infoPaper by css {
@@ -183,6 +186,6 @@ var styles = CSSBuilder().apply {
         backgroundColor = Colors.background9
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
-        background = Colors.warGreyBase.value
+        background = Colors.warmGreyBase.value
     }
 }
