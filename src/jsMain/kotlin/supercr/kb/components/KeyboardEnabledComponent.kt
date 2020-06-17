@@ -22,6 +22,7 @@ import supercr.kb.UniversalKeyboardShortcutHandler
  * Provides and displays a keyboard shortcut for a given [elementToRender]
  * The [elementToRender] is wrapped within a Grid and the [KeyboardEnabledComponent] uses up the [xsValueForShortcutChip] part to show the shortcut chip
  * The [onSelected] method is invoked when the component is selected.
+ * The only advantage provided by this is that it takes care of registering and unregistering the assigned shortcuts with the [UniversalKeyboardShortcutHandler]
  */
 external interface KeyboardEnabledComponentProps: RProps {
     var elementToRender: ReactElement
