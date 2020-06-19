@@ -21,6 +21,9 @@ import supercr.workflows.codereview.screens.changeSetScreen
 @JsModule("../../../../processedResources/js/main/pull_request_big_one.json")
 external val bigPullRequest: dynamic
 
+@JsModule("../../../../processedResources/js/main/file_diff_for_big_pull_request.json")
+external val fileDiffForBigPullRequest: dynamic
+
 fun main () {
     document.head!!.insertAdjacentHTML("afterbegin", "<style>$styles</style>")
     ComponentStyles.inject()
@@ -71,15 +74,11 @@ private fun renderGettingStarted() {
 private fun renderDiffView() {
     val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    val sampleFileDiff: FileDiffList = json.parse(FileDiffList.serializer(), JSON.stringify(fileDiffForBigPullRequest))
     render(document.getElementById("root")) {
         changeSetScreen {
             pullRequestSummary = samplePullRequestSummary
-            fileDiffList = FileDiffList(
-                fileDiffs =  listOf(
-                    testModifyDiff,
-                    testAddFileDifff
-                )
-            )
+            fileDiffList = sampleFileDiff
         }
     }
 }
