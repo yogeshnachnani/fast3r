@@ -67,7 +67,8 @@ data class Edit (
     val endA: Long,
     val endB: Long
 ) {
-    val editType: DiffEditType = when {
+    val editType: DiffEditType
+    get() = when {
         (beginA < endA) -> {
             if (beginB < endB) {
                 DiffEditType.REPLACE;
@@ -78,9 +79,12 @@ data class Edit (
         (beginB < endB) -> DiffEditType.INSERT
         else -> DiffEditType.EMPTY
     }
-    val isEmpty = beginA == endA && beginB == endB
-    val lengthA = endA - beginA
-    val lengthB = endB - beginB
+    val isEmpty: Boolean
+        get() = beginA == endA && beginB == endB
+    val lengthA: Long
+        get() = endA - beginA
+    val lengthB: Long
+        get() = endB - beginB
 
     override fun toString(): String {
         return "$editType($beginA-$endA,$beginB-$endB)"
