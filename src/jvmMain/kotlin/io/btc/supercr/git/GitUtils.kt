@@ -5,6 +5,7 @@ import codereview.Edit
 import codereview.FileDiff
 import codereview.FileDiffList
 import codereview.FileHeader
+import io.btc.supercr.git.GitUtils.Companion.gitUtilsLogger
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
@@ -66,6 +67,7 @@ fun Git.formatDiff(oldRef: String, newRef: String): FileDiffList {
     val diffFormatter = DiffFormatter(System.out)
         .also {
             it.setRepository(this.repository)
+            it.isDetectRenames = true
         }
     return diffFormatter.scan(
         ObjectId.fromString(oldRef),
@@ -73,13 +75,18 @@ fun Git.formatDiff(oldRef: String, newRef: String): FileDiffList {
     )
         .map { diffEntry ->
             val diffFileHeader = diffFormatter.toFileHeader(diffEntry)
+            gitUtilsLogger.debug("Processing file oldPath: {} and new path: {}", diffFileHeader.oldPath, diffFileHeader.newPath)
             FileDiff(
                 rawTextOld = if (diffEntry.oldMode == FileMode.MISSING) {
                     null
                 } else {
                     repository.fetchContents(  diffEntry.oldId.toObjectId())
                 },
-                rawTextNew = repository.fetchContents(diffEntry.newId.toObjectId()),
+                rawTextNew = if (diffEntry.newMode == FileMode.MISSING) {
+                    null
+                } else {
+                   repository.fetchContents(diffEntry.newId.toObjectId())
+                },
                 diffChangeType = when(diffEntry.changeType) {
                     DiffEntry.ChangeType.ADD -> DiffChangeType.ADD
                     DiffEntry.ChangeType.MODIFY -> DiffChangeType.MODIFY

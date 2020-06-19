@@ -20,7 +20,7 @@ fun main() {
 
 private fun tryoutGit() {
     FileRepositoryBuilder()
-        .setGitDir(File("/home/yogesh/work/theboringtech.github.io/.git"))
+        .setGitDir(File("/home/yogesh/work/btc/.git"))
         .readEnvironment()
         .findGitDir()
         .build()
@@ -28,11 +28,13 @@ private fun tryoutGit() {
             DiffFormatter(System.out)
                 .also {
                     it.setRepository(repo)
+                    it.isDetectRenames = true
                 }
                 .let { diffFormatter ->
                     diffFormatter.scan(
-                        ObjectId.fromString("168242420aa58e2c65921adca573df703e01292f"),
-                        ObjectId.fromString("c5549e620254c3b0a56b3a8b37dea197ba0e9236")
+                        // old diff
+                        ObjectId.fromString("d9883ad3e5a5b4d08faef91ac8471e60438077b6"),
+                        ObjectId.fromString("c5873d613cb8c0e8c7aa8fd5599e6eda64d8a4a0")
                     )
                         .forEach { diffEntry ->
                             println("Processing diff entry $diffEntry")
@@ -41,8 +43,8 @@ private fun tryoutGit() {
                         }
                     println("**** Now checking changes ***")
                     diffFormatter.format(
-                        ObjectId.fromString("168242420aa58e2c65921adca573df703e01292f"),
-                        ObjectId.fromString("c5549e620254c3b0a56b3a8b37dea197ba0e9236")
+                        ObjectId.fromString("d9883ad3e5a5b4d08faef91ac8471e60438077b6"),
+                        ObjectId.fromString("c5873d613cb8c0e8c7aa8fd5599e6eda64d8a4a0")
                     )
                 }
 
