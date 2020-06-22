@@ -41,12 +41,12 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             codeView {
                 id = leftEditorId()
                 codeText = props.oldText
-                xsValueToUse = 5
+                xsValueToUse = 6
             }
             codeView {
                 id = rightEditorId()
                 codeText = props.newText
-                xsValueToUse = 7
+                xsValueToUse = 6
             }
         }
     }

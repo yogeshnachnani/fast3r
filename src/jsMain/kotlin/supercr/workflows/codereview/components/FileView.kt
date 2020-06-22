@@ -91,17 +91,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                Grid {
-                    attrs {
-                        item = true
-                        container = false
-                        md = 2
-                    }
-                    Paper {
-
-                    }
-                }
-                renderAceEditorForSingleFiles(props.fileDiff.rawTextNew ?: "", xsValToUse = 10, classNameToUse = TextStyles.insertedTextNew)
+                renderAceEditorForSingleFiles(props.fileDiff.rawTextNew ?: "", xsValToUse = 12, classNameToUse = TextStyles.insertedTextNew)
             }
         }
     }
@@ -130,17 +120,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.rawTextOld ?: "", xsValToUse = 10, classNameToUse = TextStyles.removedText)
-                Grid {
-                    attrs {
-                        item = true
-                        container = false
-                        md = 2
-                    }
-                    Paper {
-
-                    }
-                }
+                renderAceEditorForSingleFiles(props.fileDiff.rawTextOld ?: "", xsValToUse = 12, classNameToUse = TextStyles.removedText)
             }
         }
     }
