@@ -21,4 +21,6 @@ external interface AceEditorProps: RProps {
     var height: String
     var highlightActiveLine: Boolean
     var className: String
+    /** Warning: wrapEnabled = true does not work! as of now -- (yogesh) */
+    var wrapEnabled: Boolean
 }

@@ -2,6 +2,7 @@ package supercr.workflows.codereview.components
 
 import AceEditor
 import Grid
+import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -43,7 +44,9 @@ class CodeView : RComponent<CodeViewProps, RState>() {
                     value = props.codeText
                     width = "inherit"
                     highlightActiveLine = true
+                    height = "800px"
                     className = "${props.className} ${ ComponentStyles.getClassName { ComponentStyles::codeViewEditor } }"
+                    wrapEnabled = false
                 }
             }
         }
