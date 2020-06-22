@@ -5,11 +5,26 @@ import ListItem
 import ListSubHeader
 import MaterialUIList
 import codereview.FileDiff
+import kotlinx.css.Align
+import kotlinx.css.Display
+import kotlinx.css.Float
+import kotlinx.css.LinearDimension
+import kotlinx.css.alignContent
 import kotlinx.css.color
+import kotlinx.css.display
 import kotlinx.css.em
+import kotlinx.css.float
+import kotlinx.css.fontSize
+import kotlinx.css.margin
 import kotlinx.css.marginBottom
 import kotlinx.css.marginLeft
+import kotlinx.css.marginRight
 import kotlinx.css.marginTop
+import kotlinx.css.maxWidth
+import kotlinx.css.minHeight
+import kotlinx.css.minWidth
+import kotlinx.css.pc
+import kotlinx.css.pct
 import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
@@ -21,10 +36,12 @@ import styled.css
 import styled.getClassName
 import styled.styledDiv
 import styled.styledP
+import styled.styledSpan
 import supercr.components.fileSizeChip
 import supercr.css.AvatarSize
 import supercr.css.Colors
 import supercr.css.ComponentStyles
+import supercr.css.FontSizes
 import supercr.kb.components.keyboardChip
 
 enum class FileDiffListMode {
@@ -63,24 +80,22 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
 
     override fun RBuilder.render() {
         if (props.fileList.isNotEmpty()) {
-            MaterialUIList {
-                ListSubHeader {
-                    attrs {
-                        disableGutters = true
-                        inset = false
-                    }
-                    + "Files"
+            styledDiv {
+                css {
+                    minHeight = 20.px
                 }
             }
-            listOf(FileReviewStatus.TO_BE_REVIEWED, FileReviewStatus.SAVED_FOR_LATER, FileReviewStatus.REVIEWED)
-                .map { reviewStatus ->
-                    renderListSeparator(reviewStatus)
-                    props.fileList
-                        .filter { it.currentStatus == reviewStatus}
-                        .map { (currentFileDiff, assignedShortcut, _, handler) ->
-                            renderFileItem(currentFileDiff, assignedShortcut, handler)
-                        }
-                }
+            MaterialUIList {
+                listOf(FileReviewStatus.TO_BE_REVIEWED, FileReviewStatus.SAVED_FOR_LATER, FileReviewStatus.REVIEWED)
+                    .map { reviewStatus ->
+                        renderListSeparator(reviewStatus)
+                        props.fileList
+                            .filter { it.currentStatus == reviewStatus}
+                            .map { (currentFileDiff, assignedShortcut, _, handler) ->
+                                renderFileItem(currentFileDiff, assignedShortcut, handler)
+                            }
+                    }
+            }
         }
     }
 
@@ -92,8 +107,8 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
             }
             styledP {
                 css {
-                    marginTop = 0.10.em
-                    marginBottom = 0.px
+                    marginTop = 8.px
+                    marginBottom = 8.px
                     color = Colors.warmGreyBase
                 }
                 + fileReviewStatus.displayText()
@@ -109,36 +124,24 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
                 className = ComponentStyles.getClassName { ComponentStyles::compactFileListItem }
                 key = assignedShortcut
             }
-            Grid {
-                attrs {
-                    container = true
-                    item = false
-                    justify = "space-evenly"
-                    alignItems = "baseline"
-                    className = ComponentStyles.getClassName { ComponentStyles::maxWidthFitContent }
+            styledDiv {
+                css {
+                    display = Display.block
+                    minWidth = 90.pct
                 }
-                Grid {
-                    attrs {
-                        container = false
-                        item = true
-                        md = 10
-                    }
-                    fileItem {
-                        fileDiff = currentFileDiff
-                    }
+                fileItem {
+                    fileDiff = currentFileDiff
                 }
-                Grid {
-                    attrs {
-                        container = false
-                        item = true
-                        md = 2
-                    }
-                    keyboardChip {
-                        this.attrs {
-                            onSelected = handlerForFile
-                            this.assignedShortcut = assignedShortcut
-                            uponUnmount = removePrefixOnUnmount
-                        }
+            }
+            styledDiv {
+                css {
+                    maxWidth = 10.pct
+                }
+                keyboardChip {
+                    this.attrs {
+                        onSelected = handlerForFile
+                        this.assignedShortcut = assignedShortcut
+                        uponUnmount = removePrefixOnUnmount
                     }
                 }
             }
@@ -171,25 +174,47 @@ external interface FileItemProps: RProps {
 
 private class FileItem: RComponent<FileItemProps, RState>() {
     override fun RBuilder.render() {
-        styledP {
-            css {
-                marginTop = 0.10.em
-                marginBottom = 0.px
-                color = Colors.baseText1
-            }
-            + props.fileDiff.fileHeader.fileNewPath.split("/").last()
-        }
         styledDiv {
             css {
-                marginTop = 0.px
-                marginLeft = 8.px
-                color = Colors.baseText
+                marginTop = 8.px
+                marginBottom = 0.px
             }
-            fileSizeChip {
-                fileSize = props.fileDiff.fileHeader.tShirtSize
-                avatarSize = AvatarSize.tiny
+            styledP {
+                css {
+                    margin(all = 0.px)
+                    color = Colors.baseText1
+                    alignContent = Align.baseline
+                }
+                styledSpan {
+                    css {
+                        float = Float.left
+                        color = Colors.warmGrey5
+                        minWidth = 10.pct
+                        fontSize = FontSizes.tiny
+                        marginRight = 4.px
+                    }
+                    + props.fileDiff.fileHeader.tShirtSize.name
+                }
+                styledSpan {
+                    css {
+                        minWidth = 70.pct
+                        fontSize = FontSizes.small
+                    }
+                    + props.fileDiff.fileHeader.fileNewPath.split("/").last()
+                }
             }
         }
+//        styledDiv {
+//            css {
+//                marginTop = 0.px
+//                marginLeft = 8.px
+//                color = Colors.baseText
+//            }
+//            fileSizeChip {
+//                fileSize = props.fileDiff.fileHeader.tShirtSize
+//                avatarSize = AvatarSize.tiny
+//            }
+//        }
     }
 
 }

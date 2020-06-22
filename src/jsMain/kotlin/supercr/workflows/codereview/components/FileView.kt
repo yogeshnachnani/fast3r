@@ -49,7 +49,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 }
                 styledDiv {
                     css {
-                        minHeight = 108.px
+                        minHeight = 20.px
                     }
                 }
             }
