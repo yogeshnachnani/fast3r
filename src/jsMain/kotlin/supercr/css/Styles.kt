@@ -2,11 +2,15 @@ package supercr.css
 
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
+import kotlinx.css.Contain
+import kotlinx.css.Image
 import kotlinx.css.LinearDimension
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.background
 import kotlinx.css.backgroundColor
+import kotlinx.css.backgroundImage
+import kotlinx.css.backgroundSize
 import kotlinx.css.color
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
@@ -21,7 +25,6 @@ import kotlinx.css.paddingBottom
 import kotlinx.css.paddingLeft
 import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
-import kotlinx.css.pc
 import kotlinx.css.position
 import kotlinx.css.px
 import kotlinx.css.vh
@@ -40,6 +43,13 @@ class TextStyles {
         const val removedText = "removedText"
     }
 }
+
+class GutterDecorationStyles {
+    companion object {
+        const val commentIcon = "ace_gutter-comment-icon"
+    }
+}
+
 enum class AvatarSize {
     tiny,
     small
@@ -205,5 +215,10 @@ var styles = CSSBuilder().apply {
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
         background = Colors.warmGreyBase.value
+    }
+    GutterDecorationStyles.commentIcon.cssClassName().invoke {
+//        backgroundImage = Image("url(\"data:image/svg+xml,%3Csvg class='bi bi-x-circle' width='1em' height='1em' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath fill-rule='evenodd' d='M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z'/%3E%3Cpath fill-rule='evenodd' d='M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z'/%3E%3C/svg%3E\");")
+        backgroundImage = Image("url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${Colors.accentHighlight2}' %3E%3Cpath d='M20,2H4C2.897,2,2,2.897,2,4v18l5.333-4H20c1.103,0,2-0.897,2-2V4C22,2.897,21.103,2,20,2z M20,16H6.667L4,18V4h16V16z'/%3E%3C/svg%3E%0A\");")
+        backgroundSize = "contain"
     }
 }
