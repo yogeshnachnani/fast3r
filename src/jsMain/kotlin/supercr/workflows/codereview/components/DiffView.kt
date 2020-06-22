@@ -46,21 +46,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             codeView {
                 id = rightEditorId()
                 codeText = props.newText
-                xsValueToUse = 6
-            }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
-                    md = 1
-                }
-                Paper {
-                    attrs {
-                        variant = "outlined"
-                        className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
-                    }
-                    + "For Comments"
-                }
+                xsValueToUse = 7
             }
         }
     }
@@ -68,8 +54,22 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     override fun componentDidMount() {
         leftEditor = ace.edit(leftEditorId())
         rightEditor = ace.edit(rightEditorId())
+        /** Highlight relevant diff items */
         TextDiffProcessor(leftEditor, rightEditor).processEditList(props.editList)
-//        Split(document.getElementById("main-editor")!!, "ace/theme/solarized_light", 2)
+        /** Hide Scrollbars. TODO: Find a less hacky way to do this */
+        leftEditor.renderer.scrollBarV.element.style["overflowY"] = "hidden"
+        rightEditor.renderer.scrollBarV.element.style["overflowY"] = "hidden"
+        /** Setup Right and left editor vertial scroll sync */
+        rightEditor.getSession().on("changeScrollTop", syncLeftEditorTopScroll)
+        leftEditor.getSession().on("changeScrollTop", syncRightEditorTopScroll)
+    }
+
+    private val syncRightEditorTopScroll: (Number) -> Unit = { scrollTopFromLeftEditor ->
+        rightEditor.getSession().setScrollTop(scrollTopFromLeftEditor)
+    }
+
+    private val syncLeftEditorTopScroll: (Number) -> Unit = { scrollTopFromRightEditor ->
+        leftEditor.getSession().setScrollTop(scrollTopFromRightEditor)
     }
 
     private fun leftEditorId(): String {
