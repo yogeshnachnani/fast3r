@@ -5,6 +5,7 @@ import io.btc.supercr.git.GitProject
 import io.btc.supercr.git.checkOrFetchRef
 import io.btc.supercr.git.fetchRef
 import io.btc.supercr.git.formatDiff
+import io.btc.supercr.git.formatDiffV2
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -65,6 +66,22 @@ class ProjectApi constructor(
                                 call.respond(HttpStatusCode.NotFound)
                             } else {
                                 call.respond(git.formatDiff(oldRef, newRef))
+                            }
+                        }
+                    }
+                    get("v2/diff") {
+                        val oldRef = call.request.queryParameters["oldRef"]
+                        val newRef = call.request.queryParameters["newRef"]
+                        val (project, git) = gitProject[call.parameters["id"]!!] ?: Pair(null, null)
+                        if (oldRef == null || newRef == null || project == null) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        } else {
+                            val fetchedOldRef = git!!.checkOrFetchRef(oldRef)
+                            val fetchedNewRef = git.checkOrFetchRef(newRef)
+                            if(!fetchedOldRef || !fetchedNewRef) {
+                                call.respond(HttpStatusCode.NotFound)
+                            } else {
+                                call.respond(git.formatDiffV2(oldRef, newRef))
                             }
                         }
                     }

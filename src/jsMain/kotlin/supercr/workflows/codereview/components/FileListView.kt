@@ -4,7 +4,7 @@ import Grid
 import ListItem
 import ListSubHeader
 import MaterialUIList
-import codereview.FileDiff
+import codereview.FileDiffV2
 import kotlinx.css.Align
 import kotlinx.css.Display
 import kotlinx.css.Float
@@ -57,7 +57,7 @@ enum class FileDiffListMode {
 external interface FileListViewProps : RProps{
     var fileList: List<FileDiffStateAndMetaData>
     var mode: FileDiffListMode
-    var selectedFile: FileDiff?
+    var selectedFile: FileDiffV2?
 }
 
 enum class FileReviewStatus {
@@ -67,7 +67,7 @@ enum class FileReviewStatus {
 }
 
 data class FileDiffStateAndMetaData(
-    val fileDiff: FileDiff,
+    val fileDiff: FileDiffV2,
     val assignedShortcut: String,
     val currentStatus: FileReviewStatus,
     val handler: () -> Unit
@@ -116,7 +116,7 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         }
     }
 
-    private fun RBuilder.renderFileItem(currentFileDiff: FileDiff, assignedShortcut: String, handlerForFile: () -> Unit) {
+    private fun RBuilder.renderFileItem(currentFileDiff: FileDiffV2, assignedShortcut: String, handlerForFile: () -> Unit) {
         ListItem {
             attrs {
                 divider = false
@@ -169,7 +169,7 @@ fun RBuilder.fileList(handler: FileListViewProps.() -> Unit): ReactElement {
 
 
 external interface FileItemProps: RProps {
-    var fileDiff: FileDiff
+    var fileDiff: FileDiffV2
 }
 
 private class FileItem: RComponent<FileItemProps, RState>() {
@@ -193,14 +193,14 @@ private class FileItem: RComponent<FileItemProps, RState>() {
                         fontSize = FontSizes.tiny
                         marginRight = 4.px
                     }
-                    + props.fileDiff.fileHeader.tShirtSize.name
+                    + props.fileDiff.tShirtSize.name
                 }
                 styledSpan {
                     css {
                         minWidth = 70.pct
                         fontSize = FontSizes.small
                     }
-                    + props.fileDiff.fileHeader.fileNewPath.split("/").last()
+                    + (props.fileDiff.newFile?.path ?: (props.fileDiff.oldFile!!.path)).split("/").last()
                 }
             }
         }

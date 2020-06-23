@@ -1,22 +1,20 @@
 package supercr.workflows.codereview.components
 
 import Grid
-import Paper
-import codereview.Edit
+import codereview.FileDiffV2
+import codereview.getNewText
+import codereview.getOldText
+import codereview.getUniqueIdentifier
+import kotlinx.css.pre
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
-import styled.getClassName
-import supercr.css.ComponentStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 
 external interface DiffViewProps: RProps {
-    var branchName: String
-    var oldText: String
-    var newText: String
-    var editList: List<Edit>
+    var fileDiff: FileDiffV2
     var identifier: String
 }
 external interface DiffViewState: RState {
@@ -40,22 +38,34 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             }
             codeView {
                 id = leftEditorId()
-                codeText = props.oldText
+                codeText = props.fileDiff.getOldText()
                 xsValueToUse = 6
             }
             codeView {
                 id = rightEditorId()
-                codeText = props.newText
+                codeText = props.fileDiff.getNewText()
                 xsValueToUse = 6
             }
         }
     }
 
+    override fun componentDidUpdate(prevProps: DiffViewProps, prevState: DiffViewState, snapshot: Any) {
+        onMountOrUpdate()
+    }
+
     override fun componentDidMount() {
+        onMountOrUpdate()
+    }
+
+    private fun onMountOrUpdate() {
         leftEditor = ace.edit(leftEditorId())
         rightEditor = ace.edit(rightEditorId())
         /** Highlight relevant diff items */
-        TextDiffProcessor(leftEditor, rightEditor).processEditList(props.editList)
+        TextDiffProcessor(leftEditor, rightEditor)
+            .apply {
+                processEditList(props.fileDiff.editList)
+                highlightLinesAddedForBalance(props.fileDiff.oldFile?.fileLines ?: listOf(), props.fileDiff.newFile?.fileLines ?: listOf())
+            }
         /** Hide Scrollbars. TODO: Find a less hacky way to do this */
         leftEditor.renderer.scrollBarV.element.style["overflowY"] = "hidden"
         rightEditor.renderer.scrollBarV.element.style["overflowY"] = "hidden"
@@ -73,11 +83,11 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private fun leftEditorId(): String {
-        return "left-${props.identifier}"
+        return "left-${props.fileDiff.getUniqueIdentifier()}"
     }
 
     private fun rightEditorId(): String {
-        return "right-${props.identifier}"
+        return "right-${props.fileDiff.getUniqueIdentifier()}"
     }
 }
 

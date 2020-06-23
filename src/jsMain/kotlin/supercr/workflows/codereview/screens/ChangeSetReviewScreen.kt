@@ -1,8 +1,8 @@
 package supercr.workflows.codereview.screens
 
 import Grid
-import codereview.FileDiff
-import codereview.FileDiffList
+import codereview.FileDiffListV2
+import codereview.FileDiffV2
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import react.RBuilder
@@ -20,12 +20,12 @@ import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.components.reviewScreenActionBar
 
 external interface ChangeSetReviewScreenProps : RProps {
-    var fileDiffList: FileDiffList
+    var fileDiffList: FileDiffListV2
     var pullRequestSummary: PullRequestSummary
 }
 
 external interface ChangeSetReviewScreenState : RState {
-    var selectedFile: FileDiff?
+    var selectedFile: FileDiffV2?
     var fileDiffShortutAndStatusList: List<FileDiffStateAndMetaData>
 }
 
@@ -93,7 +93,7 @@ class ChangeSetReviewScreen(
                 )
             }
     }
-    private fun createHandlerFor(fileDiff: FileDiff): () -> Unit {
+    private fun createHandlerFor(fileDiff: FileDiffV2): () -> Unit {
         return {
             val currentFileDiff = if (state.selectedFile != null && state.selectedFile == fileDiff) {
                 /** Basically toggling */

@@ -1,6 +1,6 @@
 package supercr.workflows.codereview.screens
 
-import codereview.FileDiffList
+import codereview.FileDiffListV2
 import git.provider.PullRequestSummary
 import react.RBuilder
 import react.RComponent
@@ -11,7 +11,7 @@ import react.setState
 
 external interface ChangeSetScreenProps : RProps {
     var pullRequestSummary: PullRequestSummary
-    var fileDiffList: FileDiffList
+    var fileDiffList: FileDiffListV2
 }
 
 external interface ChangeSetScreenState : RState {

@@ -3,7 +3,10 @@ package supercr.workflows.codereview.components
 import Grid
 import Paper
 import codereview.DiffChangeType
-import codereview.FileDiff
+import codereview.FileDiffV2
+import codereview.getNewText
+import codereview.getOldText
+import codereview.getUniqueIdentifier
 import kotlinx.css.minHeight
 import kotlinx.css.px
 import react.RBuilder
@@ -23,7 +26,7 @@ import supercr.css.TextStyles
  * Depending on whether the file is new/modified/deleted, we can show it in a different way
  */
 external interface FileViewProps: RProps {
-    var fileDiff: FileDiff
+    var fileDiff: FileDiffV2
 }
 
 external interface FileViewState: RState {
@@ -81,7 +84,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                 }
                 p {
-                    +props.fileDiff.fileHeader.fileNewPath
+                    +props.fileDiff.newFile!!.path
                 }
             }
             Grid {
@@ -91,7 +94,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.rawTextNew ?: "", xsValToUse = 12, classNameToUse = TextStyles.insertedTextNew)
+                renderAceEditorForSingleFiles(props.fileDiff.getNewText(), xsValToUse = 12, classNameToUse = TextStyles.insertedTextNew)
             }
         }
     }
@@ -110,7 +113,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                 }
                 p {
-                    +props.fileDiff.fileHeader.fileOldPath
+                    +props.fileDiff.oldFile!!.path
                 }
             }
             Grid {
@@ -120,14 +123,14 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.rawTextOld ?: "", xsValToUse = 12, classNameToUse = TextStyles.removedText)
+                renderAceEditorForSingleFiles(props.fileDiff.getOldText(), xsValToUse = 12, classNameToUse = TextStyles.removedText)
             }
         }
     }
 
     private fun RBuilder.renderAceEditorForSingleFiles(text: String, xsValToUse: Number, classNameToUse: String): ReactElement {
         return codeView {
-            id = props.fileDiff.fileHeader.identifier
+            id = props.fileDiff.getUniqueIdentifier()
             codeText = text
             className = classNameToUse
             xsValueToUse = xsValToUse
@@ -155,7 +158,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                         className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                     }
                     p {
-                        + "${ props.fileDiff.fileHeader.fileOldPath } -> "
+                        + "${ props.fileDiff.oldFile!!.path } -> "
                     }
                 }
             }
@@ -169,7 +172,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                         variant = "outlined"
                     }
                     p {
-                        + props.fileDiff.fileHeader.fileNewPath
+                        + props.fileDiff.newFile!!.path
                     }
                 }
             }
@@ -191,7 +194,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
                 }
                 p {
-                    + props.fileDiff.fileHeader.fileNewPath
+                    + ( props.fileDiff.newFile?.path ?: ( props.fileDiff.oldFile!!.path )  )
                 }
             }
             renderDiffPane()
@@ -209,10 +212,8 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 md = xsValToUse
             }
             diffView {
-                oldText = props.fileDiff.rawTextOld?:""
-                newText = props.fileDiff.rawTextNew?:""
-                editList = props.fileDiff.fileHeader.editList
-                identifier = props.fileDiff.fileHeader.identifier
+                fileDiff = props.fileDiff
+                identifier = props.fileDiff.getUniqueIdentifier()
             }
         }
     }

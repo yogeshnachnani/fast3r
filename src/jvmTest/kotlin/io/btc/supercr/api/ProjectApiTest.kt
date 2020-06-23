@@ -2,6 +2,7 @@ package io.btc.supercr.api
 
 import codereview.DiffChangeType
 import codereview.FileDiffList
+import codereview.FileDiffListV2
 import codereview.Project
 import io.btc.utils.TestUtils
 import io.btc.utils.TestUtils.Companion.validBtcRef
@@ -89,6 +90,20 @@ class ProjectApiTest {
         with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/diff?oldRef=$oldRef&newRef=$newRef")) {
             assertEquals(HttpStatusCode.OK, response.status())
             val returnedPayload = json.parse(FileDiffList.serializer(), response.content!!)
+            assertEquals(2, returnedPayload.fileDiffs.size )
+            assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.MODIFY }.size )
+            assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.ADD }.size )
+        }
+    }
+
+    @Test
+    fun `testDiff - should return diff for v2`()  = withTestApplication({superCrServer(jdbi)}) {
+        addProjectEntry()
+        val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
+        val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
+        with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/v2/diff?oldRef=$oldRef&newRef=$newRef")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val returnedPayload = json.parse(FileDiffListV2.serializer(), response.content!!)
             assertEquals(2, returnedPayload.fileDiffs.size )
             assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.MODIFY }.size )
             assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.ADD }.size )

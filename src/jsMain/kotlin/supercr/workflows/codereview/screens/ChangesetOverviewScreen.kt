@@ -1,7 +1,7 @@
 package supercr.workflows.codereview.screens
 
 import Grid
-import codereview.FileDiffList
+import codereview.FileDiffListV2
 import git.provider.PullRequestSummary
 import react.RBuilder
 import react.RComponent
@@ -15,7 +15,7 @@ import supercr.workflows.codereview.components.changeSummary
 import supercr.workflows.codereview.components.titleAndDescription
 
 external interface ChangesetOverviewScreenProps: RProps {
-    var fileDiffList: FileDiffList
+    var fileDiffList: FileDiffListV2
     var pullRequestSummary: PullRequestSummary
     var handleStartReview: () -> Unit
 }

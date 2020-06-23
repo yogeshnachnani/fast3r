@@ -17,6 +17,60 @@ data class FileDiffList(
 )
 
 @Serializable
+sealed class FileLineItem() {
+    @Serializable
+    data class LineComment(
+        val body: String,
+        val createdAt: String,
+        val updatedAt: String,
+        val userId: String
+    ): FileLineItem()
+
+}
+
+
+@Serializable
+data class FileLine(
+    val lineText: String,
+    /** Position in the actual content - as per file system (and git). Starts with 0 index */
+    val filePosition: Int?,
+
+    val lineItems: List<FileLineItem>
+)
+
+@Serializable
+data class FileData(
+    val objectId: String,
+    val fileLines: List<FileLine>,
+    val path: String
+)
+
+@Serializable
+data class FileDiffV2(
+    val oldFile: FileData? = null,
+    val newFile: FileData? = null,
+    val diffChangeType: DiffChangeType,
+    val tShirtSize: FileTShirtSize,
+    val editList: List<Edit>
+)
+
+fun FileDiffV2.getOldText(): String {
+    return oldFile?.fileLines?.joinToString(separator = "\n") { it.lineText } ?: ""
+}
+fun FileDiffV2.getNewText(): String {
+    return newFile?.fileLines?.joinToString(separator = "\n") { it.lineText } ?: ""
+}
+
+fun FileDiffV2.getUniqueIdentifier(): String {
+    return ( newFile?.objectId ?: oldFile?.objectId!! ).substring(0..5)
+}
+
+@Serializable
+data class FileDiffListV2(
+    val fileDiffs: List<FileDiffV2>
+)
+
+@Serializable
 data class FileDiff(
     val rawTextOld: String?,
     val rawTextNew: String?,

@@ -1,8 +1,8 @@
 package supercr.workflows.codereview.components
 
 import Paper
-import codereview.FileDiff
-import codereview.FileDiffList
+import codereview.FileDiffListV2
+import codereview.FileDiffV2
 import codereview.FileTShirtSize
 import codereview.FileTShirtSize.L
 import codereview.FileTShirtSize.M
@@ -22,7 +22,7 @@ import styled.styledP
 import supercr.css.ComponentStyles
 
 external interface ChangeSummaryProps : RProps {
-    var fileDiffList: FileDiffList
+    var fileDiffList: FileDiffListV2
 }
 
 external interface ChangeSummaryState : RState {
@@ -49,7 +49,7 @@ class ChangeSummary : RComponent<ChangeSummaryProps, ChangeSummaryState>() {
         val tshirtSizes = listOf(XS, S, M, L, XL)
         div {
             tshirtSizes.map { tshirtSize ->
-                val filesOfSize = props.fileDiffList.fileDiffs.filter { it.fileHeader.tShirtSize == tshirtSize }
+                val filesOfSize = props.fileDiffList.fileDiffs.filter { it.tShirtSize == tshirtSize }
                 if (filesOfSize.isNotEmpty()) {
                     p {
                         + filesOfSize.fileSizeDescription(tshirtSize)
@@ -59,11 +59,11 @@ class ChangeSummary : RComponent<ChangeSummaryProps, ChangeSummaryState>() {
         }
     }
 
-    private fun List<FileDiff>.fileSizeDescription(fileTShirtSize: FileTShirtSize): String {
+    private fun List<FileDiffV2>.fileSizeDescription(fileTShirtSize: FileTShirtSize): String {
         return "    $size ${fileTShirtSize.name} ${if (size > 1) {"files"} else { "file"}}"
     }
 
-    private fun List<FileDiff>.filesChangedDescription(): String {
+    private fun List<FileDiffV2>.filesChangedDescription(): String {
         return "$size ${if (size > 1) {"files"} else { "file"}} changed"
     }
 }

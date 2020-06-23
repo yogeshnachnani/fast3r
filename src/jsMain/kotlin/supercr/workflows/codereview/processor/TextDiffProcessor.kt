@@ -3,6 +3,7 @@ package supercr.workflows.codereview.processor
 import Range
 import codereview.DiffEditType
 import codereview.Edit
+import codereview.FileLine
 import supercr.css.TextStyles
 
 /**
@@ -16,92 +17,80 @@ class TextDiffProcessor constructor(
      * Process the [editList] to highlight the diff in oth the editors
      */
     fun processEditList(editList: List<Edit>) {
-        editList.fold(initial = 0L) { numLinesAddedToRightEditor, currentEdit ->
-            /**
-             * Basically, we base all our highlights with the 'right hand side' offsets.
-             * Which means that if we want to highlight the 'changed' lines on the left hand side of the diff,
-             * we derive the line numbers using the 'right hand side' - [Edit.beginB] as the offset.
-             * Of course, the [Edit] list line numbers are of the original source.
-             * While showing the diff, we may insert some lines on the right hand side as well (in the case of deleted lines, for eg)
-             * Which means we need to keep a track of how many lines we've inserted in the right side, which is captured in the accumulator here
-             *
-             * Note: Given the logic explained above, it is important that we _always_ process [editorWithOldText] and then [editorWithNewText]
-             */
-            val numLinesAddedForCurrentEdit = currentEdit.processEdit(numLinesAddedToRightEditor)
-//            currentEdit.processForOldEditor(numLinesAddedToRightEditor, editorWithOldText)
-//            val numLinesAddedForCurrentEdit = currentEdit.processForNewEditor(numLinesAddedToRightEditor, editorWithNewText)
-            numLinesAddedToRightEditor + numLinesAddedForCurrentEdit
-        }
+        editList
+            .filter { it.editType == DiffEditType.REPLACE }
+            .also { console.log("Processing ${it.size} REPLACE edits from $editList") }
+            .forEach { currentEdit ->
+                currentEdit.processEdit()
+            }
     }
 
-    private fun Edit.processEdit(offset: Long): Long {
-        /**
-         * The region highlighted by [Edit.beginA] to [Edit.endA] has been 'replaced' _in the original "text" document
-         * Note that if there were any INSERTS or REPLACES in the [editorWithOldText] before this, then those would have
-         * brought the 'document' lines in the [editorWithOldText] at par with lines in [editorWithNewText]
-         * Thus, we always use [Edit.beginB] as the starting point of the region to highlight in all of the following methods
-         *
-         */
-        return when(editType) {
-            DiffEditType.INSERT -> {
-                processInsertForOldEditor(offset)
-                processInsertForNewEditor(offset)
-                0L
+    fun highlightLinesAddedForBalance(oldFileLines: List<FileLine>, newFileLines: List<FileLine>) {
+        oldFileLines
+            .mapIndexed { index, fileLine -> Pair(index.toLong(), fileLine) }
+            .filter { it.second.filePosition == null }
+            .also { console.log("Will highlight ${it.map { it.first }} lines in the old editor") }
+            .forEach { (rowIndex, rowAddedInOldText) ->
+                highlighLinesWithGutter(editor = editorWithOldText, fromRow = rowIndex, numLines = 1, cssClazz = TextStyles.textInsertedForBalance)
+                highlighLinesWithGutter(editor = editorWithNewText, fromRow = rowIndex, numLines = 1, cssClazz = TextStyles.insertedTextNew)
             }
-            DiffEditType.DELETE -> {
-                processDeleteForOldEditor(offset)
-                processDeleteForNewEditor(offset)
+        newFileLines
+            .mapIndexed { index, fileLine -> Pair(index.toLong(), fileLine) }
+            .filter { it.second.filePosition == null }
+            .also { console.log("Will highlight ${it.map { it.first }} lines in the new editor") }
+            .forEach { (rowIndex, rowAddedInNewText) ->
+                highlighLinesWithGutter(editorWithNewText, rowIndex, 1, TextStyles.textInsertedForBalance)
+                highlighLinesWithGutter(editorWithOldText, rowIndex, 1, TextStyles.removedText)
             }
-            DiffEditType.REPLACE -> {
-                /** If there is new text on the right hand side, that means we have to fill empty lines */
-                if (lengthB > lengthA) {
-                    val numLines = lengthB - lengthA
-                    insertEmptyLinesAt(editor = editorWithOldText, rowNumber = beginB + offset + lengthA, numLines = numLines)
-                    highlighLinesWithGutter(editorWithOldText, beginB + offset + lengthA, numLines, TextStyles.textInsertedForBalance)
-                }
-                /** At this point, we have the same number or rows to process in both [editorWithOldText] and [editorWithNewText] */
-                val fromRow = beginB + offset
-                val upTillRow = fromRow + lengthB
-                (fromRow until upTillRow).map { rowIndex ->
-                    val oldText = getLineAt(rowIndex, editorWithOldText)
-                    val newText = getLineAt(rowIndex, editorWithNewText)
-                    LineDiffProcessor.getDiffMarkers(oldText, newText)
-                        .let { (markersForOldTextEditor, markersForNewTextEditor) ->
-                            // TODO : If the diff marker starts at column '0', then we highlight the section starting with column 0. This leaves a small gap between the gutter and the starting of the highlight. Fix that
-                            markersForOldTextEditor.map { marker ->
-                                highlightLineSection(
-                                    rowIndex = rowIndex,
-                                    fromColumn = marker.fromColumn,
-                                    toColumn = marker.toColumn,
-                                    editor = editorWithOldText,
-                                    cssClazz = when(marker.highlightType) {
-                                        HighlightType.TextAdded -> TextStyles.insertedTextNew
-                                        HighlightType.TextRemoved -> TextStyles.removedText
-                                    }
-                                )
-                            }
-                            markersForNewTextEditor.map { marker ->
-                                highlightLineSection(
-                                    rowIndex = rowIndex,
-                                    fromColumn = marker.fromColumn,
-                                    toColumn = marker.toColumn,
-                                    editor = editorWithNewText,
-                                    cssClazz = when(marker.highlightType) {
-                                        HighlightType.TextAdded -> TextStyles.insertedTextNew
-                                        HighlightType.TextRemoved -> TextStyles.removedText
-                                    }
-                                )
-                            }
-                        }
+    }
 
-                }
-                /** Finally, highlight the gutters */
-                highlightGutter(editor = editorWithNewText, fromRow = beginB + offset, numLines = lengthB, cssClazz = TextStyles.insertedTextNew)
-                highlightGutter(editor = editorWithOldText, fromRow = beginB + offset, numLines = lengthA, cssClazz = TextStyles.removedText)
-                0L
-            }
-            DiffEditType.EMPTY -> TODO()
+    private fun Edit.processEdit() {
+        console.log("Processing edit : $this")
+        require(editType == DiffEditType.REPLACE)
+        /** If there is new text on the right hand side, that means we have to highlight the empty lines we inserted in oldText for balance */
+        if (lengthB > lengthA) {
+            val numLines = lengthB - lengthA
+            highlighLinesWithGutter(editorWithOldText, beginB + lengthA, numLines, TextStyles.textInsertedForBalance)
         }
+        /** We have the same number or rows to process in both [editorWithOldText] and [editorWithNewText] */
+        val fromRow = beginB
+        val upTillRow = fromRow + lengthB
+        (fromRow until upTillRow).map { rowIndex ->
+            val oldText = getLineAt(rowIndex, editorWithOldText)
+            val newText = getLineAt(rowIndex, editorWithNewText)
+            LineDiffProcessor.getDiffMarkers(oldText, newText)
+                .let { (markersForOldTextEditor, markersForNewTextEditor) ->
+                    // TODO : If the diff marker starts at column '0', then we highlight the section starting with column 0. This leaves a small gap between the gutter and the starting of the highlight. Fix that
+                    markersForOldTextEditor.map { marker ->
+                        highlightLineSection(
+                            rowIndex = rowIndex,
+                            fromColumn = marker.fromColumn,
+                            toColumn = marker.toColumn,
+                            editor = editorWithOldText,
+                            cssClazz = when(marker.highlightType) {
+                                HighlightType.TextAdded -> TextStyles.insertedTextNew
+                                HighlightType.TextRemoved -> TextStyles.removedText
+                            }
+                        )
+                    }
+                    markersForNewTextEditor.map { marker ->
+                        highlightLineSection(
+                            rowIndex = rowIndex,
+                            fromColumn = marker.fromColumn,
+                            toColumn = marker.toColumn,
+                            editor = editorWithNewText,
+                            cssClazz = when(marker.highlightType) {
+                                HighlightType.TextAdded -> TextStyles.insertedTextNew
+                                HighlightType.TextRemoved -> TextStyles.removedText
+                            }
+                        )
+                    }
+                }
+
+        }
+        /** Finally, highlight the gutters */
+        highlightGutter(editor = editorWithNewText, fromRow = beginB , numLines = lengthB, cssClazz = TextStyles.insertedTextNew)
+        highlightGutter(editor = editorWithOldText, fromRow = beginB , numLines = lengthA, cssClazz = TextStyles.removedText)
     }
 
     private fun getLineAt(rowIndex: Long, editor: dynamic): String {
@@ -115,39 +104,6 @@ class TextDiffProcessor constructor(
             "text",
             false
         )
-    }
-
-    private fun Edit.processInsertForOldEditor(offset: Long) {
-        val numLines = lengthB - lengthA
-        insertEmptyLinesAt(editor = editorWithOldText, rowNumber = beginB + offset, numLines = numLines)
-        highlighLinesWithGutter(editorWithOldText, beginB + offset, numLines, TextStyles.textInsertedForBalance)
-    }
-
-    private fun Edit.processInsertForNewEditor(offset: Long) {
-        highlighLinesWithGutter(editor = editorWithNewText, fromRow = beginB + offset, numLines = lengthB, cssClazz = TextStyles.insertedTextNew)
-    }
-
-    private fun Edit.processDeleteForNewEditor(offset: Long): Long {
-        val numLinesInDocument = editorWithNewText.getSession().getLength() as Number
-        return if (numLinesInDocument.toLong() - 1 <= endB  )  {
-            /** Handle deletions at end of file */
-            insertEmptyLinesAt(editor = editorWithNewText ,rowNumber = numLinesInDocument.toLong(),  numLines = lengthB + 1)
-            highlighLinesWithGutter(editorWithNewText, numLinesInDocument.toLong(), lengthB + 1, TextStyles.textInsertedForBalance)
-            0L
-        } else {
-            /** We are not at the end of file */
-            insertEmptyLinesAt(editor = editorWithNewText ,rowNumber = beginB + offset,  numLines = lengthA)
-            highlighLinesWithGutter(editorWithNewText, beginB + offset, lengthA, TextStyles.textInsertedForBalance)
-            lengthA
-        }
-    }
-
-    private fun Edit.processDeleteForOldEditor(offset: Long) {
-        /** [Edit.beginA] and [Edit.endA] denote the line numbers of the _old_ text
-         * We must use the line numbers of the new text - denoted by [Edit.beginB] and [Edit.endB] to
-         * highlight the part that was _removed_ from old text
-         */
-        highlighLinesWithGutter(editorWithOldText, beginB + offset, lengthA, TextStyles.removedText)
     }
 
     private fun highlighLinesWithGutter(editor: dynamic, fromRow: Long, numLines: Long, cssClazz: String) {
@@ -164,12 +120,5 @@ class TextDiffProcessor constructor(
             editor.getSession().addGutterDecoration(rowNumber.toDouble() , cssClazz)
         }
     }
-
-    private fun insertEmptyLinesAt(editor: dynamic, rowNumber: Long,numLines: Long) {
-        val emptyLinesArray = generateEmptyLineArray(numLines)
-        editor.getSession().getDocument().insertFullLines(rowNumber, emptyLinesArray)
-    }
-
-    private fun generateEmptyLineArray(numLines: Long) = Array(numLines.toInt()) { "" }
 
 }

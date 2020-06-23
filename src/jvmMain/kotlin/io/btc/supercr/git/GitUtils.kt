@@ -4,8 +4,11 @@ import codereview.DiffChangeType
 import codereview.Edit
 import codereview.FileDiff
 import codereview.FileDiffList
+import codereview.FileDiffListV2
+import codereview.FileDiffV2
 import codereview.FileHeader
 import io.btc.supercr.git.GitUtils.Companion.gitUtilsLogger
+import io.btc.supercr.git.processor.process
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
@@ -61,6 +64,34 @@ fun Git.fetchRef(ref: String): Boolean {
  */
 fun Git.checkOrFetchRef(ref: String): Boolean {
     return true
+}
+
+fun Git.formatDiffV2(oldRef: String, newRef: String): FileDiffListV2 {
+    val diffFormatter = DiffFormatter(System.out)
+        .also {
+            it.setRepository(this.repository)
+            it.isDetectRenames = true
+        }
+    return diffFormatter.scan(
+        ObjectId.fromString(oldRef),
+        ObjectId.fromString(newRef)
+    )
+        .map { diffEntry ->
+            val oldFileText = if (diffEntry.oldMode == FileMode.MISSING) {
+                null
+            } else {
+                repository.fetchContents(  diffEntry.oldId.toObjectId())
+            }
+            val newFileText = if (diffEntry.newMode == FileMode.MISSING) {
+                null
+            } else {
+                repository.fetchContents(diffEntry.newId.toObjectId())
+            }
+            diffFormatter.process(diffEntry = diffEntry, oldFileText = oldFileText, newFileText = newFileText)
+        }
+        .let {
+            FileDiffListV2(it)
+        }
 }
 
 fun Git.formatDiff(oldRef: String, newRef: String): FileDiffList {
