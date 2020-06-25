@@ -2,6 +2,8 @@ package io.btc.utils
 
 import APP_NAME
 import io.btc.supercr.api.initDb
+import io.btc.supercr.db.FileLineComment
+import io.btc.supercr.db.FileReviewInfo
 import org.jdbi.v3.core.Jdbi
 import java.io.File
 
@@ -34,4 +36,15 @@ fun Jdbi.clearTestDb() {
             """.trimIndent())
             .execute()
     }
+}
+fun getTestComment(fileReviewInfo: FileReviewInfo, commentBody: String, rowNumber: Long): FileLineComment {
+    val createdAt = getCurrentTimeInIsoDateTime()
+    return FileLineComment(
+        fileReviewId = fileReviewInfo.id,
+        rowNumber = rowNumber,
+        body = commentBody,
+        createdAt = createdAt,
+        updatedAt = createdAt,
+        userId = "foobar"
+    )
 }

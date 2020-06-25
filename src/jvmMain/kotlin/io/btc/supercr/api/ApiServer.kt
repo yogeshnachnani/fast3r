@@ -3,9 +3,11 @@ package io.btc.supercr.api
 import APP_NAME
 import DEFAULT_PORT
 import HOME
+import io.btc.supercr.db.FileLineItemsRepository
 import io.btc.supercr.db.ProjectRepository
 import io.btc.supercr.git.GitProject
 import io.btc.supercr.git.GitUtils
+import io.btc.supercr.review.ReviewController
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -55,7 +57,7 @@ fun Application.superCrServer(jdbi: Jdbi) {
         get("/") {
             call.respond(mapOf("OK" to true))
         }
-        ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)))
+        ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)), ReviewController(FileLineItemsRepository(jdbi)))
     }
     install(CORS) {
         host("localhost:8080")
@@ -101,7 +103,7 @@ internal fun Jdbi.runMigrations() {
                     path TEXT, 
                     projectIdentifier TEXT, 
                     pullRequestNumber INTEGER, 
-                    commitSha TEXT)
+                    fileType TEXT)
             """.trimIndent())
             .execute()
     }

@@ -7,7 +7,6 @@ import org.jdbi.v3.sqlobject.kotlin.BindKotlin
 import org.jdbi.v3.sqlobject.kotlin.attach
 import org.jdbi.v3.sqlobject.statement.SqlBatch
 import org.jdbi.v3.sqlobject.statement.SqlQuery
-import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
 interface FileLineItemsDao {
     @SqlBatch("""
@@ -17,8 +16,8 @@ interface FileLineItemsDao {
     fun insertComment(@BindKotlin comments: List<FileLineComment>): IntArray
 
     @SqlBatch("""
-        INSERT INTO file_review_info (id, path, projectIdentifier, pullRequestNumber, commitSha) 
-        VALUES (:id, :path, :projectIdentifier, :pullRequestNumber, :commitSha) 
+        INSERT INTO file_review_info (id, path, projectIdentifier, pullRequestNumber, fileType) 
+        VALUES (:id, :path, :projectIdentifier, :pullRequestNumber, :fileType) 
     """)
     fun insertFileReviewInfo(@BindKotlin reviewInfo: List<FileReviewInfo>): IntArray
 
@@ -68,14 +67,18 @@ class FileLineItemsRepository constructor(
         }
     }
 
-    fun retrieveCommentsForPullRequest(pullRequestNumber: Long, projectIdentfier: String): Map<FileReviewInfo, List<FileLineComment>> {
+    fun retrieveCommentsForReviewId(reviewId: Long, projectIdentfier: String): Map<FileReviewInfo, List<FileLineComment>> {
         return jdbi.withHandle<Map<FileReviewInfo, List<FileLineComment>>, RuntimeException> { handle ->
             val fileLineItemsDao: FileLineItemsDao = handle.attach()
-            fileLineItemsDao.retrieveFilesForReview(pullRequestNumber, projectIdentfier)
+            fileLineItemsDao.retrieveFilesForReview(reviewId, projectIdentfier)
                 .let { fileReviewInfos ->
-                    val comments = fileLineItemsDao.retrieveCommentsForFiles(fileReviewInfos.map { it.id })
-                    comments.groupBy { comment ->
-                        fileReviewInfos.find { it.id == comment.fileReviewId }!!
+                    if (fileReviewInfos.isEmpty()) {
+                        emptyMap()
+                    } else {
+                        val comments = fileLineItemsDao.retrieveCommentsForFiles(fileReviewInfos.map { it.id })
+                        comments.groupBy { comment ->
+                            fileReviewInfos.find { it.id == comment.fileReviewId }!!
+                        }
                     }
                 }
         }

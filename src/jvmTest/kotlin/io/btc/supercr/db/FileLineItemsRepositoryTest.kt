@@ -2,11 +2,13 @@ package io.btc.supercr.db
 
 import io.btc.utils.clearTestDb
 import io.btc.utils.getCurrentTimeInIsoDateTime
+import io.btc.utils.getTestComment
 import io.btc.utils.initTestDb
 import org.jdbi.v3.core.Jdbi
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class FileLineItemsRepositoryTest {
     private lateinit var jdbi: Jdbi
@@ -22,33 +24,35 @@ class FileLineItemsRepositoryTest {
         jdbi.clearTestDb()
         fileLineItemsRepository = FileLineItemsRepository(jdbi)
     }
-    val testFile1 = FileReviewInfo("src/foobar", PROJECT_ID, PULL_REQUEST_NUMBER, "abcdefgh")
+    val testFile1 = FileReviewInfo("src/foobar", PROJECT_ID, PULL_REQUEST_NUMBER, FileType.OLD_FILE)
     val testComment0File1 = getTestComment(testFile1, "This is comment 1", 0)
     val testComment1File1 = getTestComment(testFile1, "This is comment 2", 2)
+
+    val testFile2 = FileReviewInfo("src/foobar", PROJECT_ID, PULL_REQUEST_NUMBER, FileType.NEW_FILE)
+    val testComment0File2 = getTestComment(testFile2, "This is comment 1", 0)
+    val testComment1File2 = getTestComment(testFile2, "This is comment 2", 2)
 
 
     @Test
     fun testCommentInsertionAndRetrieval() {
         val reviewAndComments = mapOf(
-            testFile1 to listOf(testComment0File1, testComment1File1)
+            testFile1 to listOf(testComment0File1, testComment1File1),
+            testFile2 to listOf(testComment0File2, testComment1File2)
         )
         fileLineItemsRepository.addComments(reviewAndComments)
 
-        fileLineItemsRepository.retrieveCommentsForPullRequest(PULL_REQUEST_NUMBER, PROJECT_ID)
+        fileLineItemsRepository.retrieveCommentsForReviewId(PULL_REQUEST_NUMBER, PROJECT_ID)
             .also { results ->
                 assertEquals(reviewAndComments, results)
             }
     }
 
-    private fun getTestComment(fileReviewInfo: FileReviewInfo, commentBody: String, rowNumber: Long): FileLineComment {
-        val createdAt = getCurrentTimeInIsoDateTime()
-        return FileLineComment(
-            fileReviewId = fileReviewInfo.id,
-            rowNumber = rowNumber,
-            body = commentBody,
-            createdAt = createdAt,
-            updatedAt = createdAt,
-            userId = "foobar"
-        )
+    @Test
+    fun shouldReturnGracefullyIfNoCommentsFound() {
+        fileLineItemsRepository.retrieveCommentsForReviewId(PULL_REQUEST_NUMBER, PROJECT_ID)
+            .also { results ->
+                assertTrue(results.isEmpty())
+            }
     }
+
 }

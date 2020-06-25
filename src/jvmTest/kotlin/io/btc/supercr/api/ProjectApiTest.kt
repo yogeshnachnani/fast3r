@@ -3,10 +3,16 @@ package io.btc.supercr.api
 import codereview.DiffChangeType
 import codereview.FileDiffList
 import codereview.FileDiffListV2
+import codereview.FileLineItem
 import codereview.Project
+import io.btc.supercr.db.FileLineComment
+import io.btc.supercr.db.FileLineItemsRepository
+import io.btc.supercr.db.FileReviewInfo
+import io.btc.supercr.db.FileType
 import io.btc.utils.TestUtils
 import io.btc.utils.TestUtils.Companion.validBtcRef
 import io.btc.utils.clearTestDb
+import io.btc.utils.getTestComment
 import io.btc.utils.initTestDb
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -29,6 +35,7 @@ class ProjectApiTest {
     private val testProject = Project(providerPath = "theboringtech/btcmain", localPath = TestUtils.btcRepoDir, name = "BTC")
     private val testRequestAsJson = json.stringify(Project.serializer(), testProject)
     private lateinit var jdbi: Jdbi
+    private lateinit var fileLineItemsRepository: FileLineItemsRepository
 
     @Before
     fun setUp() {
@@ -36,6 +43,7 @@ class ProjectApiTest {
             jdbi = initTestDb()
         }
         jdbi.clearTestDb()
+        fileLineItemsRepository = FileLineItemsRepository(jdbi)
     }
 
     @Test
@@ -107,6 +115,54 @@ class ProjectApiTest {
             assertEquals(2, returnedPayload.fileDiffs.size )
             assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.MODIFY }.size )
             assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.ADD }.size )
+        }
+    }
+
+    @Test
+    fun `testDiff - should return diff for v2 with comments`()  = withTestApplication({superCrServer(jdbi)}) {
+        addProjectEntry()
+        val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
+        val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
+        val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/v2/diff?oldRef=$oldRef&newRef=$newRef")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            json.parse(FileDiffListV2.serializer(), response.content!!)
+        }
+        /** Now, create comments in the db */
+        val newFileReviewInfo = FileReviewInfo(returnedFileDiff.fileDiffs.first().newFile!!.path, testProject.id, 1L, FileType.NEW_FILE)
+        val newFileComment0 = getTestComment(newFileReviewInfo, "Comment 0", 0)
+        val newFileComment1 = getTestComment(newFileReviewInfo, "Comment 1", 1)
+
+        val oldFileReviewInfo = FileReviewInfo(returnedFileDiff.fileDiffs.first().oldFile!!.path, testProject.id, 1L, FileType.OLD_FILE)
+        val oldFileComment0 = getTestComment(oldFileReviewInfo, "Comment 10", 0)
+        val oldFileComment1 = getTestComment(oldFileReviewInfo, "Comment 11", 1)
+
+        val reviewAndComments = mapOf(
+            newFileReviewInfo to listOf(newFileComment0, newFileComment1),
+            oldFileReviewInfo to listOf(oldFileComment0, oldFileComment1)
+        )
+        fileLineItemsRepository.addComments(reviewAndComments)
+        /** Now retrieve */
+
+        val expectedCommentsOnOldFile = listOf(
+            Pair(0, "Comment 10"),
+            Pair(1, "Comment 11")
+        )
+
+        val expectedCommentsOnNewFile = listOf(
+            Pair(0, "Comment 0"),
+            Pair(1, "Comment 1")
+        )
+
+        with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/v2/diff?oldRef=$oldRef&newRef=$newRef")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val returnedFileDiffWithComments = json.parse(FileDiffListV2.serializer(), response.content!!)
+            val commentDataForOldFile = returnedFileDiffWithComments.fileDiffs.first().oldFile!!.fileLines
+                .flatMap { fileLine -> fileLine.lineItems.map { comment -> Pair(fileLine.filePosition!!, (comment as FileLineItem.LineComment).body) } }
+            assertEquals(expectedCommentsOnOldFile, commentDataForOldFile)
+
+            val commentDataForNewFile = returnedFileDiffWithComments.fileDiffs.first().newFile!!.fileLines
+                .flatMap { fileLine -> fileLine.lineItems.map { comment -> Pair(fileLine.filePosition!!, (comment as FileLineItem.LineComment).body) } }
+            assertEquals(expectedCommentsOnNewFile, commentDataForNewFile)
         }
     }
 

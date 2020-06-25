@@ -6,6 +6,7 @@ import io.btc.supercr.git.checkOrFetchRef
 import io.btc.supercr.git.fetchRef
 import io.btc.supercr.git.formatDiff
 import io.btc.supercr.git.formatDiffV2
+import io.btc.supercr.review.ReviewController
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -17,7 +18,8 @@ import io.ktor.routing.route
 
 class ProjectApi constructor(
     routing: Routing,
-    private val gitProject: GitProject
+    private val gitProject: GitProject,
+    private val reviewController: ReviewController
 ): ApiController(routing) {
 
     override fun initRoutes(routing: Routing) {
@@ -81,7 +83,9 @@ class ProjectApi constructor(
                             if(!fetchedOldRef || !fetchedNewRef) {
                                 call.respond(HttpStatusCode.NotFound)
                             } else {
-                                call.respond(git.formatDiffV2(oldRef, newRef))
+                                val gitDiff =  git.formatDiffV2(oldRef, newRef)
+                                val diffWithComments = reviewController.retrieveCommentsFor(gitDiff, project, 1L)
+                                call.respond(diffWithComments)
                             }
                         }
                     }
