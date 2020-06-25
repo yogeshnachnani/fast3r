@@ -85,5 +85,24 @@ internal fun Jdbi.runMigrations() {
                 CREATE TABLE IF NOT EXISTS project(id TEXT UNIQUE,name TEXT, localPath TEXT, providerPath TEXT)
             """.trimIndent())
             .execute()
+        handle.createUpdate("""
+                CREATE TABLE IF NOT EXISTS file_line_comments(
+                    fileReviewId TEXT, 
+                    rowNumber TEXT, 
+                    body TEXT,
+                    createdAt TEXT,
+                    updatedAt TEXT,
+                    userId TEXT)
+            """.trimIndent())
+            .execute()
+        handle.createUpdate("""
+                CREATE TABLE IF NOT EXISTS file_review_info (
+                    id TEXT, 
+                    path TEXT, 
+                    projectIdentifier TEXT, 
+                    pullRequestNumber INTEGER, 
+                    commitSha TEXT)
+            """.trimIndent())
+            .execute()
     }
 }

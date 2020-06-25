@@ -25,5 +25,13 @@ fun Jdbi.clearTestDb() {
                 DELETE FROM project
             """.trimIndent())
             .execute()
+        handle.createUpdate("""
+                DELETE FROM file_line_comments
+            """.trimIndent())
+            .execute()
+        handle.createUpdate("""
+                DELETE FROM file_review_info
+            """.trimIndent())
+            .execute()
     }
 }
