@@ -5,13 +5,15 @@ import codereview.FileDiffList
 import codereview.FileDiffListV2
 import codereview.FileLineItem
 import codereview.Project
-import io.btc.supercr.db.FileLineComment
+import codereview.retrieveAllLineItems
 import io.btc.supercr.db.FileLineItemsRepository
 import io.btc.supercr.db.FileReviewInfo
 import io.btc.supercr.db.FileType
+import io.btc.supercr.db.ReviewInfo
 import io.btc.utils.TestUtils
 import io.btc.utils.TestUtils.Companion.validBtcRef
 import io.btc.utils.clearTestDb
+import io.btc.utils.getCurrentTimeInIsoDateTime
 import io.btc.utils.getTestComment
 import io.btc.utils.initTestDb
 import io.ktor.http.ContentType
@@ -28,6 +30,8 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 
 class ProjectApiTest {
@@ -105,66 +109,112 @@ class ProjectApiTest {
     }
 
     @Test
-    fun `testDiff - should return diff for v2`()  = withTestApplication({superCrServer(jdbi)}) {
-        addProjectEntry()
-        val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
-        val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
-        with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/v2/diff?oldRef=$oldRef&newRef=$newRef")) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            val returnedPayload = json.parse(FileDiffListV2.serializer(), response.content!!)
-            assertEquals(2, returnedPayload.fileDiffs.size )
-            assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.MODIFY }.size )
-            assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.ADD }.size )
+    fun `testReview - should throw not found if review requested for non existent project`() = withTestApplication({superCrServer(jdbi)}) {
+        with(handleRequest(HttpMethod.Post, "/projects/foo/review") {
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(TestUtils.samplePullRequestSummaryJson)
+        }) {
+            assertEquals(HttpStatusCode.NotFound, response.status())
         }
     }
 
     @Test
-    fun `testDiff - should return diff for v2 with comments`()  = withTestApplication({superCrServer(jdbi)}) {
+    fun `testReview - should create a fresh review for a given PR`()= withTestApplication({superCrServer(jdbi)}) {
         addProjectEntry()
+        val createdReviewInfo = createReviewInfo()
+        assertTrue(createdReviewInfo.rowId != null)
+    }
+
+    @Test
+    fun `testReview - should retrieve existing review for a given PR if already registered`() = withTestApplication({superCrServer(jdbi)}){
+        addProjectEntry()
+        val createdReviewInfo = createReviewInfo()
+
+        val secondTimeReviewInfo = with(handleRequest(HttpMethod.Post, "/projects/${testProject.id}/review") {
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(TestUtils.samplePullRequestSummaryJson)
+        }) {
+            json.parse(ReviewInfo.serializer(), response.content!!)
+        }
+        assertEquals(createdReviewInfo, secondTimeReviewInfo)
+    }
+
+    @Test
+    fun `testReview - should return diff without comments`()  = withTestApplication({superCrServer(jdbi)}) {
+        addProjectEntry()
+        val createdReview = createReviewInfo()
         val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
         val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
-        val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/v2/diff?oldRef=$oldRef&newRef=$newRef")) {
+        val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/review/${createdReview.rowId!!}?oldRef=$oldRef&newRef=$newRef")) {
             assertEquals(HttpStatusCode.OK, response.status())
             json.parse(FileDiffListV2.serializer(), response.content!!)
         }
-        /** Now, create comments in the db */
-        val newFileReviewInfo = FileReviewInfo(returnedFileDiff.fileDiffs.first().newFile!!.path, testProject.id, 1L, FileType.NEW_FILE)
-        val newFileComment0 = getTestComment(newFileReviewInfo, "Comment 0", 0)
-        val newFileComment1 = getTestComment(newFileReviewInfo, "Comment 1", 1)
 
-        val oldFileReviewInfo = FileReviewInfo(returnedFileDiff.fileDiffs.first().oldFile!!.path, testProject.id, 1L, FileType.OLD_FILE)
-        val oldFileComment0 = getTestComment(oldFileReviewInfo, "Comment 10", 0)
-        val oldFileComment1 = getTestComment(oldFileReviewInfo, "Comment 11", 1)
+        /** Basic sanity check - because I'm too lazy to write 2 tests for retrieval */
+        assertEquals(2, returnedFileDiff.fileDiffs.size )
+        assertEquals(1, returnedFileDiff.fileDiffs.filter { it.diffChangeType == DiffChangeType.MODIFY }.size )
+        assertEquals(1, returnedFileDiff.fileDiffs.filter { it.diffChangeType == DiffChangeType.ADD }.size )
 
-        val reviewAndComments = mapOf(
-            newFileReviewInfo to listOf(newFileComment0, newFileComment1),
-            oldFileReviewInfo to listOf(oldFileComment0, oldFileComment1)
-        )
-        fileLineItemsRepository.addComments(reviewAndComments)
-        /** Now retrieve */
+        /** Verify we have no comments */
+        assertTrue(returnedFileDiff.fileDiffs[0].oldFile!!.retrieveAllLineItems().isEmpty())
+        assertTrue(returnedFileDiff.fileDiffs[0].newFile!!.retrieveAllLineItems().isEmpty())
+        assertTrue(returnedFileDiff.fileDiffs[1].oldFile!!.retrieveAllLineItems().isEmpty())
+        assertTrue(returnedFileDiff.fileDiffs[1].newFile!!.retrieveAllLineItems().isEmpty())
+    }
 
-        val expectedCommentsOnOldFile = listOf(
-            Pair(0, "Comment 10"),
-            Pair(1, "Comment 11")
-        )
-
-        val expectedCommentsOnNewFile = listOf(
-            Pair(0, "Comment 0"),
-            Pair(1, "Comment 1")
-        )
-
-        with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/v2/diff?oldRef=$oldRef&newRef=$newRef")) {
+    @Test
+    fun `testReview - should store and retrieve comments`()  = withTestApplication({superCrServer(jdbi)}) {
+        addProjectEntry()
+        val createdReview = createReviewInfo()
+        val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
+        val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
+        val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/review/${createdReview.rowId!!}?oldRef=$oldRef&newRef=$newRef")) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val returnedFileDiffWithComments = json.parse(FileDiffListV2.serializer(), response.content!!)
-            val commentDataForOldFile = returnedFileDiffWithComments.fileDiffs.first().oldFile!!.fileLines
-                .flatMap { fileLine -> fileLine.lineItems.map { comment -> Pair(fileLine.filePosition!!, (comment as FileLineItem.LineComment).body) } }
-            assertEquals(expectedCommentsOnOldFile, commentDataForOldFile)
+            json.parse(FileDiffListV2.serializer(), response.content!!)
+        }
 
-            val commentDataForNewFile = returnedFileDiffWithComments.fileDiffs.first().newFile!!.fileLines
-                .flatMap { fileLine -> fileLine.lineItems.map { comment -> Pair(fileLine.filePosition!!, (comment as FileLineItem.LineComment).body) } }
-            assertEquals(expectedCommentsOnNewFile, commentDataForNewFile)
+        /** Now, create comments in the db */
+        val newfileLinesForNewFile = returnedFileDiff.fileDiffs.first().newFile!!.fileLines.mapIndexed { index, fileLine ->
+            if (fileLine.filePosition != null) {
+                fileLine.copy(lineItems = listOf(FileLineItem.Comment("Comment on $index", getCurrentTimeInIsoDateTime(), getCurrentTimeInIsoDateTime(), "user1")))
+            } else {
+                fileLine
+            }
+        }
+        val newDiffWithComments = returnedFileDiff.fileDiffs.first().copy(
+            newFile = returnedFileDiff.fileDiffs.first().newFile!!.copy(fileLines = newfileLinesForNewFile)
+        )
+        val completeDiffWithComments = returnedFileDiff.copy(fileDiffs = listOf(newDiffWithComments, returnedFileDiff.fileDiffs[1]))
+
+        with(handleRequest(HttpMethod.Post, "/projects/${testProject.id}/review/${createdReview.rowId}") {
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(json.stringify(FileDiffListV2.serializer(), completeDiffWithComments))
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+
+        val returnedFileDiffWithComments = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/review/${createdReview.rowId!!}?oldRef=$oldRef&newRef=$newRef")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            json.parse(FileDiffListV2.serializer(), response.content!!)
+        }
+        val commentBodies = returnedFileDiffWithComments.fileDiffs[0].newFile!!
+            .retrieveAllLineItems()
+            .flatMap { (_, _, comments) ->
+                comments.map { (it as FileLineItem.Comment).body }
+            }
+        assertTrue(commentBodies.all { it.startsWith("Comment on") })
+
+    }
+
+    private fun TestApplicationEngine.createReviewInfo(): ReviewInfo {
+        return with(handleRequest(HttpMethod.Post, "/projects/${testProject.id}/review") {
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(TestUtils.samplePullRequestSummaryJson)
+        }) {
+            json.parse(ReviewInfo.serializer(), response.content!!)
         }
     }
+
 
     private fun TestApplicationEngine.addProjectEntry() {
         with(handleRequest(HttpMethod.Post, "/projects") {

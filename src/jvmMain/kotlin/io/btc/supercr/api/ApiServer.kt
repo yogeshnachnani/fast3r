@@ -99,12 +99,25 @@ internal fun Jdbi.runMigrations() {
             .execute()
         handle.createUpdate("""
                 CREATE TABLE IF NOT EXISTS file_review_info (
-                    id TEXT, 
                     path TEXT, 
-                    projectIdentifier TEXT, 
-                    pullRequestNumber INTEGER, 
+                    reviewId INTEGER, 
                     fileType TEXT)
             """.trimIndent())
+            .execute()
+        handle.createUpdate("""
+            CREATE UNIQUE INDEX IF NOT EXISTS uk_file_review_info_all on file_review_info(path, reviewId, fileType)
+            """.trimIndent())
+            .execute()
+        handle.createUpdate("""
+                CREATE TABLE IF NOT EXISTS review_info (
+                    projectIdentifier TEXT, 
+                    provider TEXT, 
+                    providerId INTEGER)
+            """.trimIndent())
+            .execute()
+        handle.createUpdate("""
+            CREATE UNIQUE INDEX IF NOT EXISTS uk_review_info_all on review_info(projectIdentifier, provider, providerId)
+        """.trimIndent())
             .execute()
     }
 }

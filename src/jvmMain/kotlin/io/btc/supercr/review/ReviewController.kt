@@ -2,17 +2,34 @@ package io.btc.supercr.review
 
 import codereview.FileData
 import codereview.FileDiffListV2
-import codereview.Project
+import codereview.FileLineItem
+import codereview.retrieveAllLineItems
 import io.btc.supercr.db.FileLineComment
 import io.btc.supercr.db.FileLineItemsRepository
+import io.btc.supercr.db.FileReviewInfo
 import io.btc.supercr.db.FileType
+import io.btc.supercr.db.ReviewInfo
+import io.btc.supercr.db.toFileLineComment
 import io.btc.supercr.db.toLineComment
 
 class ReviewController constructor(
     private val fileLineItemsRepository: FileLineItemsRepository
 ) {
-    fun retrieveCommentsFor(fileDiffListV2: FileDiffListV2, project: Project, reviewId: Long): FileDiffListV2 {
-        return fileLineItemsRepository.retrieveCommentsForReviewId(reviewId, project.id)
+    fun storeCommentsFor(fileDiffListV2: FileDiffListV2, reviewId: Long) {
+        fileDiffListV2.fileDiffs
+            .flatMap { fileDiff ->
+                val oldFileInfoAndComments = fileDiff.oldFile?.convertToFileInfoAndLineComments(reviewId, FileType.OLD_FILE)
+                val newFileInfoAndComments = fileDiff.newFile?.convertToFileInfoAndLineComments(reviewId, FileType.NEW_FILE)
+                listOfNotNull(oldFileInfoAndComments, newFileInfoAndComments)
+            }
+            .toMap()
+            .apply {
+                fileLineItemsRepository.addComments(this)
+            }
+    }
+
+    fun retrieveCommentsFor(fileDiffListV2: FileDiffListV2, reviewId: Long): FileDiffListV2 {
+        return fileLineItemsRepository.retrieveCommentsForReviewId(reviewId)
             .let { fileReviewInfoAndComments  ->
                 fileDiffListV2.fileDiffs.map { fileDiff ->
                     val commentsForOldFile = if(fileDiff.oldFile != null) {
@@ -48,6 +65,29 @@ class ReviewController constructor(
             }
     }
 
+    fun getOrCreateReview(reviewInfo: ReviewInfo): ReviewInfo {
+        return fileLineItemsRepository.getOrCreateReview(reviewInfo)
+    }
+
+    fun fetchReview(reviewId: Long): ReviewInfo? {
+        return fileLineItemsRepository.retrieveReview(reviewId)
+    }
+
+    private fun FileData.convertToFileInfoAndLineComments(reviewId: Long, fileType: FileType): Pair<FileReviewInfo, List<FileLineComment>>? {
+        val lineItems = this.retrieveAllLineItems()
+        return if (lineItems.isNotEmpty()) {
+            val fileReviewInfo = FileReviewInfo(null,  this.path, reviewId, fileType)
+            val lineComments = lineItems.flatMap { (_, filePosition, comments) ->
+                comments.map {
+                    ( it  as FileLineItem.Comment ).toFileLineComment(filePosition!!.toLong())
+                }
+            }
+            Pair(fileReviewInfo, lineComments)
+        } else {
+            null
+        }
+    }
+
     private fun Map<Long, List<FileLineComment>>.appendCommentDataTo(
         fileData: FileData?
     ): FileData? {
@@ -67,10 +107,11 @@ class ReviewController constructor(
                         fileLine
                     }
                 }.let {
-                fileData.copy(fileLines = it)
-            }
+                    fileData.copy(fileLines = it)
+                }
         } else {
             fileData
         }
     }
+
 }

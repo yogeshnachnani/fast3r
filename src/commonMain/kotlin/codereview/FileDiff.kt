@@ -19,7 +19,7 @@ data class FileDiffList(
 @Serializable
 sealed class FileLineItem() {
     @Serializable
-    data class LineComment(
+    data class Comment(
         val body: String,
         val createdAt: String,
         val updatedAt: String,
@@ -44,6 +44,17 @@ data class FileData(
     val fileLines: List<FileLine>,
     val path: String
 )
+/** Retrieves line items as Triples of (viewPosition, filePosition, lineItem) */
+fun FileData.retrieveAllLineItems(): List<Triple<Int, Int?, List<FileLineItem>>> {
+    return this.fileLines
+        .mapIndexedNotNull { index, fileLine ->
+            if (fileLine.lineItems.isNotEmpty()) {
+                Triple(index, fileLine.filePosition, fileLine.lineItems)
+            } else {
+                null
+            }
+        }
+}
 
 @Serializable
 data class FileDiffV2(

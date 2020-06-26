@@ -1,6 +1,11 @@
 package io.btc.supercr.api
 
+import codereview.FileDiffListV2
 import codereview.Project
+import git.provider.PullRequestSummary
+import io.btc.supercr.db.ReviewInfo
+import io.btc.supercr.db.ReviewStorageProvider
+import io.btc.supercr.db.toReviewInfo
 import io.btc.supercr.git.GitProject
 import io.btc.supercr.git.checkOrFetchRef
 import io.btc.supercr.git.fetchRef
@@ -71,24 +76,54 @@ class ProjectApi constructor(
                             }
                         }
                     }
-                    get("v2/diff") {
-                        val oldRef = call.request.queryParameters["oldRef"]
-                        val newRef = call.request.queryParameters["newRef"]
-                        val (project, git) = gitProject[call.parameters["id"]!!] ?: Pair(null, null)
-                        if (oldRef == null || newRef == null || project == null) {
-                            call.respond(HttpStatusCode.BadRequest)
-                        } else {
-                            val fetchedOldRef = git!!.checkOrFetchRef(oldRef)
-                            val fetchedNewRef = git.checkOrFetchRef(newRef)
-                            if(!fetchedOldRef || !fetchedNewRef) {
+                    route("review") {
+                        post {
+                            val projectId = call.parameters["id"]!!
+                            /** First ensure that the project is present in the db */
+                            if (gitProject[projectId] == null) {
                                 call.respond(HttpStatusCode.NotFound)
                             } else {
-                                val gitDiff =  git.formatDiffV2(oldRef, newRef)
-                                val diffWithComments = reviewController.retrieveCommentsFor(gitDiff, project, 1L)
-                                call.respond(diffWithComments)
+                                val reviewInfo = with(call.receive<PullRequestSummary>()) {
+                                    this.toReviewInfo(projectId)
+                                }
+                                reviewController.getOrCreateReview(reviewInfo)
+                                    .also { reviewInfoFromDb ->
+                                        call.respond(HttpStatusCode.Created ,reviewInfoFromDb)
+                                    }
+                            }
+                        }
+                        route("{review_id}") {
+                            get {
+                                val oldRef = call.request.queryParameters["oldRef"]
+                                val newRef = call.request.queryParameters["newRef"]
+                                val reviewId = call.parameters["review_id"]!!.toLong()
+                                val projectIdentifier = call.parameters["id"]!!
+                                val (project, git) = gitProject[projectIdentifier] ?: Pair(null, null)
+                                val reviewInfo = reviewController.fetchReview(reviewId)
+                                if (oldRef == null || newRef == null || project == null || reviewInfo == null) {
+                                    call.respond(HttpStatusCode.BadRequest)
+                                } else {
+                                    val fetchedOldRef = git!!.checkOrFetchRef(oldRef)
+                                    val fetchedNewRef = git.checkOrFetchRef(newRef)
+                                    if(!fetchedOldRef || !fetchedNewRef) {
+                                        call.respond(HttpStatusCode.NotFound)
+                                    } else {
+                                        val gitDiff =  git.formatDiffV2(oldRef, newRef)
+                                        val diffWithComments = reviewController.retrieveCommentsFor(gitDiff, reviewInfo.rowId!!)
+                                        call.respond(diffWithComments)
+                                    }
+                                }
+                            }
+                            post {
+                                val reviewId = call.parameters["review_id"]!!.toLong()
+                                with(call.receive<FileDiffListV2>()) {
+                                    reviewController.storeCommentsFor(this, reviewId)
+                                }
+                                call.respond(HttpStatusCode.OK)
                             }
                         }
                     }
+
                 }
             }
         }
