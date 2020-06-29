@@ -1,35 +1,58 @@
 package supercr.css
 
+import kotlinx.css.BorderStyle
+import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
 import kotlinx.css.Contain
+import kotlinx.css.Display
+import kotlinx.css.FontWeight
 import kotlinx.css.Image
 import kotlinx.css.LinearDimension
 import kotlinx.css.Overflow
 import kotlinx.css.Position
+import kotlinx.css.StyledElement
 import kotlinx.css.background
 import kotlinx.css.backgroundColor
 import kotlinx.css.backgroundImage
 import kotlinx.css.backgroundSize
+import kotlinx.css.borderColor
+import kotlinx.css.borderRadius
+import kotlinx.css.borderStyle
+import kotlinx.css.borderWidth
+import kotlinx.css.boxShadow
+import kotlinx.css.boxSizing
 import kotlinx.css.color
+import kotlinx.css.display
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
+import kotlinx.css.fontWeight
 import kotlinx.css.height
 import kotlinx.css.hsl
+import kotlinx.css.letterSpacing
+import kotlinx.css.lineHeight
+import kotlinx.css.margin
+import kotlinx.css.marginBottom
+import kotlinx.css.marginLeft
+import kotlinx.css.marginRight
 import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minHeight
 import kotlinx.css.overflow
+import kotlinx.css.padding
 import kotlinx.css.paddingBottom
 import kotlinx.css.paddingLeft
 import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.position
+import kotlinx.css.properties.BoxShadows
+import kotlinx.css.properties.LineHeight
 import kotlinx.css.px
 import kotlinx.css.vh
 import kotlinx.css.width
 import kotlinx.css.zIndex
+import kotlinx.html.TEXTAREA
 import styled.StyleSheet
 
 private fun String.cssClassName(): String {
@@ -161,6 +184,30 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         maxWidth = 190.px
         fontSize = FontSizes.small
     }
+
+    val compactCommentListItem by css {
+        paddingLeft = 0.px
+        paddingRight = 0.px
+        paddingBottom = 0.px
+        paddingTop = 0.px
+        maxWidth = 190.px
+        fontSize = FontSizes.small
+        display = Display.block
+    }
+    val commentInputBox by css {
+        fontSize = FontSizes.small
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText4
+        marginLeft = 5.px
+        marginRight = 5.px
+        marginBottom = 8.px
+        maxWidth = 170.px
+        width = 170.px
+//        height = 32.px
+        padding(vertical = 4.px, horizontal = 8.px)
+//        put("resize", "none")
+    }
+
     val fileListSectionSeparator by css {
         color = Colors.warmGrey2
     }
@@ -170,6 +217,14 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
+    }
+
+    val commentPaper by css {
+        backgroundColor = Colors.background7
+        fontSize = FontSizes.normal
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText1
+        maxWidth = 190.px
     }
 
     val actionBar by css {

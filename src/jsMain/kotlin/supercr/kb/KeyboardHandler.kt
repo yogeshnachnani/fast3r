@@ -69,43 +69,70 @@ object UniversalKeyboardShortcutHandler {
     fun unregisterEnterKeyShortcut() {
         this.enterKeyHandler = null
     }
+    fun registerCtrlEnterKeyShortcut(handler: () -> Unit) {
+        this.ctrlEnterKeyHandler = handler
+    }
+    fun unregisterCtrlEnterKeyShortcut() {
+        this.ctrlEnterKeyHandler = null
+    }
+    fun registerEscapeHandler(handler: ( () -> Unit )?) {
+        this.escapeKeyHandler = handler
+    }
+    fun unregisterEscapeKeyShortcut() {
+        this.escapeKeyHandler = null
+    }
+    fun disableShortcuts() {
+        this.isDisabled = true
+    }
+    fun enableShortcuts() {
+        this.isDisabled = false
+    }
 
     private var currentSelectedPrefix = ""
     private var currentPartialMatches = mutableSetOf<() -> Unit>()
     private var isInitialised = false
     private var enterKeyHandler: ( () -> Unit )? = null
+    private var escapeKeyHandler: ( () -> Unit )? = null
+    private var ctrlEnterKeyHandler: ( () -> Unit )? = null
+    private var isDisabled: Boolean = false
 
     private val keydownListener: (Event) -> Unit ={ keydownEvent ->
         val kbEvent = keydownEvent as KeyboardEvent
         when(kbEvent.key) {
             "Enter" -> {
                 kbEvent.preventDefault()
-                enterKeyHandler?.invoke()
+                if (kbEvent.ctrlKey) {
+                    ctrlEnterKeyHandler?.invoke()
+                } else {
+                    enterKeyHandler?.invoke()
+                }
             }
             "Escape" -> {
                 kbEvent.preventDefault()
-                invokeAndClearSelection(null)
+                invokeAndClearSelection(escapeKeyHandler)
             }
             else -> {
-                val newSelectedPrefix = "$currentSelectedPrefix${kbEvent.key}"
-                KeyboardShortcutTrie[newSelectedPrefix]
-                    .also { (fullMatch, partialMatchHandlers )->
-                        if (fullMatch == null && partialMatchHandlers.isEmpty()) {
-                            /** We didn't hit anything */
-                            invokeAndClearSelection(null)
-                        } else {
-                            kbEvent.preventDefault()
-                            if (fullMatch != null) {
-                                invokeAndClearSelection(fullMatch)
+                if (!this.isDisabled) {
+                    val newSelectedPrefix = "$currentSelectedPrefix${kbEvent.key}"
+                    KeyboardShortcutTrie[newSelectedPrefix]
+                        .also { (fullMatch, partialMatchHandlers )->
+                            if (fullMatch == null && partialMatchHandlers.isEmpty()) {
+                                /** We didn't hit anything */
+                                invokeAndClearSelection(null)
                             } else {
-                                setCurrentPrefix(newSelectedPrefix)
-                                partialMatchHandlers.forEach {
-                                    it.invoke()
-                                    currentPartialMatches.add(it)
+                                kbEvent.preventDefault()
+                                if (fullMatch != null) {
+                                    invokeAndClearSelection(fullMatch)
+                                } else {
+                                    setCurrentPrefix(newSelectedPrefix)
+                                    partialMatchHandlers.forEach {
+                                        it.invoke()
+                                        currentPartialMatches.add(it)
+                                    }
                                 }
                             }
                         }
-                    }
+                }
             }
         }
     }
@@ -127,6 +154,10 @@ object UniversalKeyboardShortcutHandler {
      */
     fun clear() {
         invokeAndClearSelection(null)
+        this.enterKeyHandler = null
+        this.escapeKeyHandler = null
+        this.ctrlEnterKeyHandler = null
+        this.isDisabled = false
     }
 }
 

@@ -1,7 +1,11 @@
 @file:JsModule("@material-ui/core")
 @file:JsNonModule
 
+import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.events.Event
 import react.RClass
+import react.RReadableRef
+import react.ReactElement
 import react.dom.WithClassName
 import styled.CustomStyledProps
 import styled.StyledProps
@@ -12,6 +16,8 @@ external val Button: RClass<ButtonProps>
 external interface ButtonProps: WithClassName {
     var variant: String
     var color: String
+    /** Small, medium, large. Default is medium */
+    var size: String
     var onClick: () -> Unit
 }
 
@@ -131,4 +137,26 @@ external interface ListSubHeaderProps: WithClassName {
     var disableSticky: Boolean
     /** IF true, [ListSubHeader] will be indented */
     var inset: Boolean
+}
+
+@JsName("OutlinedInput")
+external val OutlinedInput: RClass<OutlinedInputProps>
+
+external interface OutlinedInputProps: WithClassName {
+    /** If true, the input element will be focused during the first mount*/
+    var autoFocus: Boolean
+
+    var fullWidth: Boolean
+
+    var inputRef: RReadableRef<HTMLInputElement>
+    var multiline: Boolean
+    var onChange: (Event) -> Unit
+    /** The short hint displayed in the input before the user enters a value.*/
+    var placeholder: String
+    /** Number of rows to display when multiline option is set to true */
+    var rows: Number
+    /** Max number of rows to display when multiline option is set to true */
+    var rowsMax: Number
+
+    var label: ReactElement
 }

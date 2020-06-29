@@ -1,12 +1,10 @@
 import datastructures.KeyboardShortcutTrie
 import datastructures.isNoMatch
-import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.KeyboardEventInit
 import supercr.kb.UniversalKeyboardShortcutHandler
 import kotlin.browser.window
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -129,6 +127,56 @@ class UniversalKeyboardHandlerTest {
         window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("o")))
         assertEquals(listOf("f", "fo", "") ,matchedStringsList)
         assertEquals(1 ,fullMatchInvoked)
+    }
+
+    @Test
+    fun shouldDisableHandlingOfKeyPressIfToldToDoSo() {
+
+        var fullMatchInvoked = 0
+        val fullMatchHandler : () -> Unit = {
+            fullMatchInvoked++
+        }
+        val matchedStringsList = mutableListOf<String>()
+        val partialMatchHandler : (String) -> Unit = { matchedString ->
+            matchedStringsList.add(matchedString)
+        }
+        UniversalKeyboardShortcutHandler.registerShortcut("foo", fullMatchHandler, partialMatchHandler)
+        UniversalKeyboardShortcutHandler.disableShortcuts()
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("f")))
+        assertTrue(matchedStringsList.isEmpty())
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("o")))
+        assertTrue(matchedStringsList.isEmpty())
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("o")))
+        assertTrue(matchedStringsList.isEmpty())
+        assertEquals(0 ,fullMatchInvoked)
+    }
+
+    @Test
+    fun shouldInvokeEscHandlerIfRegistered() {
+
+        var handlerInvoked = 0
+        val fullMatchHandler : () -> Unit = {
+            handlerInvoked++
+        }
+        UniversalKeyboardShortcutHandler.registerEscapeHandler(fullMatchHandler)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("Escape")))
+        assertEquals(1 ,handlerInvoked)
+    }
+
+    @Test
+    fun shouldHandleEnter() {
+        var handlerInvoked = 0
+        val fullMatchHandler : () -> Unit = {
+            handlerInvoked++
+        }
+        UniversalKeyboardShortcutHandler.registerEnterKeyShortcut(fullMatchHandler)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("Enter")))
+        assertEquals(1 ,handlerInvoked)
     }
 
 }

@@ -1,7 +1,5 @@
-import codereview.DiffChangeType
-import codereview.Edit
 import codereview.FileDiffListV2
-import codereview.FileHeader
+import codereview.FileLineItem
 import git.provider.PullRequestSummary
 import react.ReactElement
 import react.buildElement
@@ -15,8 +13,10 @@ import kotlin.browser.document
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import supercr.css.ComponentStyles
+import supercr.workflows.codereview.components.commentThread
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetScreen
+import kotlin.js.Date
 
 @JsModule("../../../../processedResources/js/main/pull_request_big_one.json")
 external val bigPullRequest: dynamic
@@ -38,11 +38,31 @@ fun main () {
      */
     document.body!!.insertAdjacentHTML("afterbegin", "<div id='root' style='height:100vh; width:100vw;'></div>" )
     UniversalKeyboardShortcutHandler.init()
-    renderDiffView()
+//    renderDiffView()
 //    renderGettingStarted()
 //    renderMainScreen()
 //    tryOutKeyboardEnabledList()
 //    renderFileView()
+    renderComments()
+}
+
+private fun renderComments() {
+    val sampleComments = mutableListOf(
+        FileLineItem.Comment("This is a single line comment", "2020-06-26T09:44:44.018189Z", "2020-06-26T09:44:44.018189Z", "yogeshnachnani"),
+        FileLineItem.Comment("This is a much longer comment so it should ideally span more lines", "2020-06-26T09:44:44.018189Z", "2020-06-26T09:44:44.018189Z", "yogeshnachnani")
+    )
+    render(document.getElementById("root"))  {
+        commentThread {
+            attrs {
+                comments = sampleComments
+                onCommentAdd = { commentBody ->
+                    sampleComments.add(
+                        FileLineItem.Comment(commentBody, Date().toISOString(), Date().toISOString(), "yogeshnachnani")
+                    )
+                }
+            }
+        }
+    }
 }
 
 private fun renderFileView() {
