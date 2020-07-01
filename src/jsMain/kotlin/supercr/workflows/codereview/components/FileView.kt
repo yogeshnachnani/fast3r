@@ -3,9 +3,8 @@ package supercr.workflows.codereview.components
 import Grid
 import Paper
 import codereview.DiffChangeType
+import codereview.FileData
 import codereview.FileDiffV2
-import codereview.getNewText
-import codereview.getOldText
 import codereview.getUniqueIdentifier
 import kotlinx.css.minHeight
 import kotlinx.css.px
@@ -20,6 +19,7 @@ import styled.getClassName
 import styled.styledDiv
 import supercr.css.ComponentStyles
 import supercr.css.TextStyles
+import supercr.workflows.codereview.screens.FileDiffCommentHandler
 
 /**
  * Show the diff/details for a file.
@@ -27,6 +27,7 @@ import supercr.css.TextStyles
  */
 external interface FileViewProps: RProps {
     var fileDiff: FileDiffV2
+    var fileDiffCommentHandler: FileDiffCommentHandler
 }
 
 external interface FileViewState: RState {
@@ -94,7 +95,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.getNewText(), xsValToUse = 12, classNameToUse = TextStyles.insertedTextNew)
+                renderAceEditorForSingleFiles(props.fileDiff.newFile!!, xsValToUse = 12, classNameToUse = TextStyles.insertedTextNew)
             }
         }
     }
@@ -123,17 +124,19 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.getOldText(), xsValToUse = 12, classNameToUse = TextStyles.removedText)
+                renderAceEditorForSingleFiles(props.fileDiff.oldFile!!, xsValToUse = 12, classNameToUse = TextStyles.removedText)
             }
         }
     }
 
-    private fun RBuilder.renderAceEditorForSingleFiles(text: String, xsValToUse: Number, classNameToUse: String): ReactElement {
+    private fun RBuilder.renderAceEditorForSingleFiles(fileDataToRender: FileData, xsValToUse: Number, classNameToUse: String): ReactElement {
         return codeView {
-            id = props.fileDiff.getUniqueIdentifier()
-            codeText = text
-            className = classNameToUse
-            xsValueToUse = xsValToUse
+            attrs {
+                id = props.fileDiff.getUniqueIdentifier()
+                fileData = fileDataToRender
+                className = classNameToUse
+                xsValueToUse = xsValToUse
+            }
         }
     }
 
@@ -214,6 +217,8 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             diffView {
                 fileDiff = props.fileDiff
                 identifier = props.fileDiff.getUniqueIdentifier()
+                oldFileNewCommentHandler = props.fileDiffCommentHandler.oldFileCommentHandler!!
+                newFileNewCommentHandler = props.fileDiffCommentHandler.newFileCommentHandler!!
             }
         }
     }

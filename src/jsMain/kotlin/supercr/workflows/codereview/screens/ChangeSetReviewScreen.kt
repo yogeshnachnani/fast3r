@@ -3,8 +3,10 @@ package supercr.workflows.codereview.screens
 import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
+import codereview.FileLineItem
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
+import kotlinx.css.map
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -13,11 +15,11 @@ import react.ReactElement
 import react.setState
 import supercr.kb.UniversalKeyboardShortcutHandler
 import supercr.workflows.codereview.components.ActionBarShortcut
-import supercr.workflows.codereview.components.FileDiffStateAndMetaData
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.components.reviewScreenActionBar
+import kotlin.js.Date
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffListV2
@@ -27,6 +29,34 @@ external interface ChangeSetReviewScreenProps : RProps {
 external interface ChangeSetReviewScreenState : RState {
     var selectedFile: FileDiffV2?
     var fileDiffShortutAndStatusList: List<FileDiffStateAndMetaData>
+}
+data class FileDiffStateAndMetaData(
+    val fileDiff: FileDiffV2,
+    val assignedShortcut: String,
+    val currentStatus: FileReviewStatus,
+    val handler: () -> Unit,
+    val commentHandler: FileDiffCommentHandler
+)
+
+data class FileDiffCommentHandler(
+    var oldFileCommentHandler: FileCommentHandler?,
+    var newFileCommentHandler: FileCommentHandler?
+)
+
+class FileCommentHandler(
+    var comments: Map<Int, List<FileLineItem.Comment>>
+) {
+    val addNewComment: (String, Int) -> Unit = { commentBody, position ->
+        val existingComments = this.comments[position] ?: listOf()
+        val createdAt = Date().toISOString()
+        val newComment = FileLineItem.Comment(
+            body = commentBody,
+            createdAt = createdAt,
+            updatedAt = createdAt,
+            userId = "yogeshnachnani"
+        )
+        this.comments = comments.plus(Pair(position, existingComments.plus(newComment)))
+    }
 }
 
 class ChangeSetReviewScreen(
@@ -65,6 +95,7 @@ class ChangeSetReviewScreen(
                 if (state.selectedFile != null) {
                     fileView {
                         fileDiff = props.fileDiffList.fileDiffs.find { it == state.selectedFile }!!
+                        fileDiffCommentHandler = state.fileDiffShortutAndStatusList.first { it.fileDiff == state.selectedFile!! }.commentHandler
                     }
                     reviewScreenActionBar {
                         actions = listOf(
@@ -89,10 +120,31 @@ class ChangeSetReviewScreen(
                     fileDiff = fileDiff,
                     assignedShortcut = prefix,
                     currentStatus = FileReviewStatus.TO_BE_REVIEWED,
-                    handler = handler
+                    handler = handler,
+                    commentHandler = createCommentHandlerFor(fileDiff)
                 )
             }
     }
+
+    private fun createCommentHandlerFor(fileDiff: FileDiffV2): FileDiffCommentHandler {
+        return FileDiffCommentHandler(
+            oldFileCommentHandler = if (fileDiff.oldFile != null) {
+                FileCommentHandler(
+                    comments = mapOf()
+                )
+            } else {
+                null
+            },
+            newFileCommentHandler = if (fileDiff.newFile != null) {
+                FileCommentHandler(
+                    comments = mapOf()
+                )
+            } else {
+                null
+            }
+        )
+    }
+
     private fun createHandlerFor(fileDiff: FileDiffV2): () -> Unit {
         return {
             val currentFileDiff = if (state.selectedFile != null && state.selectedFile == fileDiff) {

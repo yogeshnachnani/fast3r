@@ -65,11 +65,8 @@ data class FileDiffV2(
     val editList: List<Edit>
 )
 
-fun FileDiffV2.getOldText(): String {
-    return oldFile?.fileLines?.joinToString(separator = "\n") { it.lineText } ?: ""
-}
-fun FileDiffV2.getNewText(): String {
-    return newFile?.fileLines?.joinToString(separator = "\n") { it.lineText } ?: ""
+fun FileData.getText(): String {
+    return fileLines.joinToString(separator = "\n") { it.lineText }
 }
 
 fun FileDiffV2.getUniqueIdentifier(): String {

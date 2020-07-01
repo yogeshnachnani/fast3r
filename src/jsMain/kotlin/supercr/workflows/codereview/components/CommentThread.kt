@@ -33,6 +33,7 @@ import supercr.utils.iso8601ToHuman
 
 external interface CommentThreadProps : RProps {
     var comments: List<FileLineItem.Comment>
+    var newComments: List<FileLineItem.Comment>
     var onCommentAdd: (String) -> Unit
 }
 
@@ -42,7 +43,7 @@ external interface CommentThreadState : RState {
 
 class CommentThread(
     constructorProps: CommentThreadProps
-) : RComponent<CommentThreadProps, CommentThreadState>() {
+) : RComponent<CommentThreadProps, CommentThreadState>(constructorProps) {
     override fun RBuilder.render() {
         Paper {
             attrs {
@@ -54,7 +55,9 @@ class CommentThread(
                 attrs {
                     className = ComponentStyles.getClassName { ComponentStyles::compactCommentListItem }
                 }
-                props.comments.mapIndexed { index, comment -> showComment(comment, index == props.comments.lastIndex) }
+                props.comments
+                    .plus(props.newComments)
+                    .mapIndexed { index, comment -> showComment(comment, index == props.comments.lastIndex) }
                 if (state.showCommentInput) {
                     renderCommentInput()
                 }

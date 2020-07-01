@@ -43,6 +43,7 @@ import supercr.css.Colors
 import supercr.css.ComponentStyles
 import supercr.css.FontSizes
 import supercr.kb.components.keyboardChip
+import supercr.workflows.codereview.screens.FileDiffStateAndMetaData
 
 enum class FileDiffListMode {
     compact,
@@ -65,13 +66,6 @@ enum class FileReviewStatus {
     REVIEWED,
     SAVED_FOR_LATER
 }
-
-data class FileDiffStateAndMetaData(
-    val fileDiff: FileDiffV2,
-    val assignedShortcut: String,
-    val currentStatus: FileReviewStatus,
-    val handler: () -> Unit
-)
 
 external interface FileListViewState: RState {
 }

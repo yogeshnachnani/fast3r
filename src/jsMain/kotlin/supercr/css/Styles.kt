@@ -139,6 +139,8 @@ object FontFamilies {
     const val nonCode = "Inter, Roboto, Sans-serif"
 }
 
+val commentBoxWidth = 190.px
+
 object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val fullHeight by css {
         height = 100.vh
@@ -224,7 +226,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
-        maxWidth = 190.px
+        maxWidth = commentBoxWidth
     }
 
     val actionBar by css {

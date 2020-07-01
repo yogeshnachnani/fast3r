@@ -2,27 +2,43 @@ package supercr.workflows.codereview.components
 
 import AceEditor
 import Grid
-import kotlinx.css.px
+import MouseEvent
+import RowColObject
+import codereview.FileData
+import codereview.FileLineItem
+import codereview.getText
+import codereview.retrieveAllLineItems
 import react.RBuilder
 import react.RComponent
+import react.RElementBuilder
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.setState
+import styled.css
 import styled.getClassName
+import styled.styledDiv
 import supercr.css.ComponentStyles
+import supercr.css.GutterDecorationStyles
 
 external interface CodeViewProps: RProps {
-    var codeText: String
+    var fileData: FileData
     var id: String
     /** If present, will apply the clazzName to the editor */
     var className: String
     var xsValueToUse: Number
 }
 
+external interface CodeViewState: RState {
+}
+
+
 /**
  * A simple wrapper over [AceEditor] with sensible defaults
  */
-class CodeView : RComponent<CodeViewProps, RState>() {
+class CodeView(
+    constructorProps: CodeViewProps
+): RComponent<CodeViewProps, CodeViewState>(constructorProps) {
     /** These are required to load the editor properly */
     val ace = js("require('ace-builds/src-noconflict/ace')")
     val webpackResolver = js("require('ace-builds/webpack-resolver')")
@@ -41,7 +57,7 @@ class CodeView : RComponent<CodeViewProps, RState>() {
                     theme = "clouds_midnight"
                     name = props.id
                     readOnly = true
-                    value = props.codeText
+                    value = props.fileData.getText()
                     width = "inherit"
                     highlightActiveLine = true
                     height = "800px"
@@ -53,8 +69,9 @@ class CodeView : RComponent<CodeViewProps, RState>() {
     }
 }
 
-fun RBuilder.codeView(handler: CodeViewProps.() -> Unit): ReactElement {
+
+fun RBuilder.codeView(handler: RElementBuilder<CodeViewProps>.() -> Unit): ReactElement {
     return child(CodeView::class) {
-        this.attrs(handler)
+        handler()
     }
 }
