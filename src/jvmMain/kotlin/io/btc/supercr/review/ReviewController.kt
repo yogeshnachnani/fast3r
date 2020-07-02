@@ -3,12 +3,12 @@ package io.btc.supercr.review
 import codereview.FileData
 import codereview.FileDiffListV2
 import codereview.FileLineItem
+import codereview.FileType
+import codereview.ReviewInfo
 import codereview.retrieveAllLineItems
 import io.btc.supercr.db.FileLineComment
 import io.btc.supercr.db.FileLineItemsRepository
 import io.btc.supercr.db.FileReviewInfo
-import io.btc.supercr.db.FileType
-import io.btc.supercr.db.ReviewInfo
 import io.btc.supercr.db.toFileLineComment
 import io.btc.supercr.db.toLineComment
 

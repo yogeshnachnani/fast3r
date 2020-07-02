@@ -3,32 +3,36 @@ package supercr.workflows.codereview.screens
 import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
+import codereview.FileLine
 import codereview.FileLineItem
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
-import kotlinx.css.map
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
-import supercr.kb.UniversalKeyboardShortcutHandler
 import supercr.workflows.codereview.components.ActionBarShortcut
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.components.reviewScreenActionBar
+import supercr.workflows.codereview.processor.FileCommentHandler
+import supercr.workflows.codereview.processor.FileDiffCommentHandler
+import supercr.workflows.codereview.processor.retrieveChangedFileDiffList
 import kotlin.js.Date
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffListV2
     var pullRequestSummary: PullRequestSummary
+    var onReviewDone: (FileDiffListV2) -> Unit
 }
 
 external interface ChangeSetReviewScreenState : RState {
     var selectedFile: FileDiffV2?
     var fileDiffShortutAndStatusList: List<FileDiffStateAndMetaData>
+    var reviewDone: Boolean
 }
 data class FileDiffStateAndMetaData(
     val fileDiff: FileDiffV2,
@@ -38,27 +42,6 @@ data class FileDiffStateAndMetaData(
     val commentHandler: FileDiffCommentHandler
 )
 
-data class FileDiffCommentHandler(
-    var oldFileCommentHandler: FileCommentHandler?,
-    var newFileCommentHandler: FileCommentHandler?
-)
-
-class FileCommentHandler(
-    var comments: Map<Int, List<FileLineItem.Comment>>
-) {
-    val addNewComment: (String, Int) -> Unit = { commentBody, position ->
-        val existingComments = this.comments[position] ?: listOf()
-        val createdAt = Date().toISOString()
-        val newComment = FileLineItem.Comment(
-            body = commentBody,
-            createdAt = createdAt,
-            updatedAt = createdAt,
-            userId = "yogeshnachnani"
-        )
-        this.comments = comments.plus(Pair(position, existingComments.plus(newComment)))
-    }
-}
-
 class ChangeSetReviewScreen(
     constructorProps: ChangeSetReviewScreenProps
 ) : RComponent<ChangeSetReviewScreenProps, ChangeSetReviewScreenState>(constructorProps) {
@@ -66,6 +49,7 @@ class ChangeSetReviewScreen(
     override fun ChangeSetReviewScreenState.init(props: ChangeSetReviewScreenProps) {
         fileDiffShortutAndStatusList = generateFileDiffAndMetaData()
         selectedFile = props.fileDiffList.fileDiffs.first()
+        reviewDone = false
     }
 
     override fun RBuilder.render() {
@@ -179,10 +163,17 @@ class ChangeSetReviewScreen(
         }
         val pendingReview = newFileSet.filter { it.currentStatus == FileReviewStatus.TO_BE_REVIEWED }
         if (pendingReview.isEmpty()) {
-            /** We have reached the end of the review */
+            val firstSavedForLaterFile = newFileSet.firstOrNull { it.currentStatus == FileReviewStatus.SAVED_FOR_LATER }?.fileDiff
+            val isReviewDone = firstSavedForLaterFile == null
             setState {
-                selectedFile = newFileSet.firstOrNull { it.currentStatus == FileReviewStatus.SAVED_FOR_LATER }?.fileDiff
+                selectedFile = firstSavedForLaterFile
                 fileDiffShortutAndStatusList = newFileSet
+                reviewDone = isReviewDone
+            }
+            if (isReviewDone) {
+                props.onReviewDone(
+                    newFileSet.map { Pair(it.fileDiff, it.commentHandler) }.retrieveChangedFileDiffList()
+                )
             }
         } else {
             /** Bring on the next file */

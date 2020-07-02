@@ -19,7 +19,7 @@ import styled.getClassName
 import styled.styledDiv
 import supercr.css.ComponentStyles
 import supercr.css.TextStyles
-import supercr.workflows.codereview.screens.FileDiffCommentHandler
+import supercr.workflows.codereview.processor.FileDiffCommentHandler
 
 /**
  * Show the diff/details for a file.

@@ -24,7 +24,7 @@ import react.setState
 import supercr.css.GutterDecorationStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
-import supercr.workflows.codereview.screens.FileCommentHandler
+import supercr.workflows.codereview.processor.FileCommentHandler
 
 external interface DiffViewProps: RProps {
     var fileDiff: FileDiffV2

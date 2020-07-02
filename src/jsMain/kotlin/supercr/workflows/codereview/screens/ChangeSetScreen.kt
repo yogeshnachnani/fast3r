@@ -12,6 +12,7 @@ import react.setState
 external interface ChangeSetScreenProps : RProps {
     var pullRequestSummary: PullRequestSummary
     var fileDiffList: FileDiffListV2
+    var onReviewDone: (FileDiffListV2) -> Unit
 }
 
 external interface ChangeSetScreenState : RState {
@@ -47,6 +48,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
         changeSetReview {
             pullRequestSummary = props.pullRequestSummary
             fileDiffList = props.fileDiffList
+            onReviewDone = props.onReviewDone
         }
     }
 

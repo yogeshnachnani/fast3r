@@ -1,5 +1,6 @@
 package io.btc.supercr.db
 
+import codereview.ReviewInfo
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.customizer.BindList

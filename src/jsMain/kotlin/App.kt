@@ -1,6 +1,13 @@
 import codereview.FileDiffListV2
 import codereview.FileLineItem
+import codereview.SuperCrClient
 import git.provider.PullRequestSummary
+import io.ktor.client.HttpClient
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import react.ReactElement
 import react.buildElement
 import react.dom.render
@@ -27,7 +34,7 @@ external val fileDiffForBigPullRequest: dynamic
 @JsModule("../../../../processedResources/js/main/file_diffv2_for_small_change.json")
 external val fileDiffV2ForSmallRequest: dynamic
 
-fun main () {
+fun main ()  {
     document.head!!.insertAdjacentHTML("afterbegin", "<style>$styles</style>")
     ComponentStyles.inject()
     /**
@@ -109,10 +116,28 @@ private fun renderDiffView() {
     val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
     val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
+    val superCrClient = SuperCrClient(
+        httpClient = HttpClient() {
+            install(JsonFeature) {
+                serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
+            }
+        }
+    )
+    val handlePostReview: (FileDiffListV2) -> Unit = { updatedFileList ->
+        GlobalScope.async(context = Dispatchers.Main) {
+            val project = superCrClient.getAllProjects().find { it.providerPath == "theboringtech/btcmain" }!!
+            console.log("Using Project $project")
+            val (reviewInfo, errorMessage) = superCrClient.startReview(project, samplePullRequestSummary)
+            console.log("Got review $reviewInfo")
+            superCrClient.postReview(reviewInfo!!, updatedFileList)
+        }
+    }
+
     render(document.getElementById("root")) {
         changeSetScreen {
             pullRequestSummary = samplePullRequestSummary
             fileDiffList = sampleFileDiff
+            onReviewDone = handlePostReview
         }
     }
 }

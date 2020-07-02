@@ -3,8 +3,8 @@ package io.btc.supercr.api
 import codereview.FileDiffListV2
 import codereview.Project
 import git.provider.PullRequestSummary
-import io.btc.supercr.db.ReviewInfo
-import io.btc.supercr.db.ReviewStorageProvider
+import codereview.ReviewInfo
+import codereview.ReviewStorageProvider
 import io.btc.supercr.db.toReviewInfo
 import io.btc.supercr.git.GitProject
 import io.btc.supercr.git.checkOrFetchRef
