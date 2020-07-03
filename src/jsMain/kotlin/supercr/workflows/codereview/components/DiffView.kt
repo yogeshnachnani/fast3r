@@ -25,15 +25,20 @@ import supercr.css.GutterDecorationStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
 import supercr.workflows.codereview.processor.FileCommentHandler
+import supercr.workflows.codereview.processor.enableHunkTraversal
+import supercr.workflows.codereview.processor.nextEditPosition
 
 external interface DiffViewProps: RProps {
     var fileDiff: FileDiffV2
     var identifier: String
     var oldFileNewCommentHandler: FileCommentHandler
     var newFileNewCommentHandler: FileCommentHandler
+    var addMoreActionsToActionBar: (List<ActionBarShortcut>) -> Unit
 }
 external interface DiffViewState: RState {
     var currentCommentBoxPosition: RowColObject?
+    /** The index of the current Hunk (or Edit) in fileDiff.editList */
+    var currentHunkIndex: Int
 }
 
 class AceWrapper(
@@ -53,6 +58,10 @@ class AceWrapper(
                 forEditor.getSession().addGutterDecoration(viewPosition, GutterDecorationStyles.commentIcon)
             }
     }
+
+    fun scrollToLine(lineNumber: Int, center: Boolean, animate: Boolean) {
+        editor.scrollToLine(lineNumber.toDouble(), center, animate)
+    }
 }
 
 class DiffView: RComponent<DiffViewProps, DiffViewState>() {
@@ -65,6 +74,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     override fun DiffViewState.init() {
         currentCommentBoxPosition = null
+        currentHunkIndex = -1
     }
 
     override fun RBuilder.render() {
@@ -95,6 +105,11 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 renderCommentBox()
             }
         }
+    }
+
+    override fun shouldComponentUpdate(nextProps: DiffViewProps, nextState: DiffViewState): Boolean {
+        console.log("Asking the all important question of moving from ${props.identifier} to ${nextProps.identifier}")
+        return (nextProps.identifier != props.identifier) || (nextState.currentCommentBoxPosition != state.currentCommentBoxPosition)
     }
 
     override fun componentDidUpdate(prevProps: DiffViewProps, prevState: DiffViewState, snapshot: Any) {
@@ -177,6 +192,19 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         /** Gutter Listeners */
         applyGutterListener(leftEditor)
         applyGutterListener(rightEditor)
+
+        addActionCommandsIfApplicable()
+    }
+
+    private fun addActionCommandsIfApplicable() {
+        if (props.fileDiff.enableHunkTraversal()) {
+            props.addMoreActionsToActionBar(
+                listOf(
+                    ActionBarShortcut("Next Hunk", "sl", jumpToNextHunk),
+                    ActionBarShortcut("Prev Hunk", "sh", {console.log("Will move hunk backword")})
+                )
+            )
+        }
     }
 
     private val handleNewComments: (String) -> Unit = { commentBody ->
@@ -262,6 +290,19 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         }
     }
 
+    private val jumpToNextHunk: () -> Unit = {
+        val (nextEditIndex, positionToJumpTo) = props.fileDiff.nextEditPosition(state.currentHunkIndex)
+        console.log("Seems like we'll be jumping to $positionToJumpTo . and next edit index is $nextEditIndex")
+        if (nextEditIndex == null) {
+            console.log("Seems we have reached the end")
+        } else {
+            leftEditorWrapper!!.scrollToLine(lineNumber = positionToJumpTo!! + 1, center = true, animate = true)
+            rightEditorWrapper!!.scrollToLine(lineNumber = positionToJumpTo + 1, center = true, animate = true)
+            setState {
+                currentHunkIndex = nextEditIndex
+            }
+        }
+    }
 }
 
 fun RBuilder.diffView(handler: DiffViewProps.() -> Unit): ReactElement {

@@ -28,6 +28,7 @@ import supercr.workflows.codereview.processor.FileDiffCommentHandler
 external interface FileViewProps: RProps {
     var fileDiff: FileDiffV2
     var fileDiffCommentHandler: FileDiffCommentHandler
+    var addMoreActionsToActionBar: (List<ActionBarShortcut>) -> Unit
 }
 
 external interface FileViewState: RState {
@@ -219,6 +220,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 identifier = props.fileDiff.getUniqueIdentifier()
                 oldFileNewCommentHandler = props.fileDiffCommentHandler.oldFileCommentHandler!!
                 newFileNewCommentHandler = props.fileDiffCommentHandler.newFileCommentHandler!!
+                addMoreActionsToActionBar = props.addMoreActionsToActionBar
             }
         }
     }

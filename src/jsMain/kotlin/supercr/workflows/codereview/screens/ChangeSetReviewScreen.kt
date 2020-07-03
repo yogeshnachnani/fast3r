@@ -3,8 +3,6 @@ package supercr.workflows.codereview.screens
 import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
-import codereview.FileLine
-import codereview.FileLineItem
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import react.RBuilder
@@ -21,7 +19,6 @@ import supercr.workflows.codereview.components.reviewScreenActionBar
 import supercr.workflows.codereview.processor.FileCommentHandler
 import supercr.workflows.codereview.processor.FileDiffCommentHandler
 import supercr.workflows.codereview.processor.retrieveChangedFileDiffList
-import kotlin.js.Date
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffListV2
@@ -33,6 +30,7 @@ external interface ChangeSetReviewScreenState : RState {
     var selectedFile: FileDiffV2?
     var fileDiffShortutAndStatusList: List<FileDiffStateAndMetaData>
     var reviewDone: Boolean
+    var additionalActions: Set<ActionBarShortcut>
 }
 data class FileDiffStateAndMetaData(
     val fileDiff: FileDiffV2,
@@ -41,15 +39,15 @@ data class FileDiffStateAndMetaData(
     val handler: () -> Unit,
     val commentHandler: FileDiffCommentHandler
 )
-
+/** TODO: There are too many places where state is being set. Fix that! */
 class ChangeSetReviewScreen(
     constructorProps: ChangeSetReviewScreenProps
 ) : RComponent<ChangeSetReviewScreenProps, ChangeSetReviewScreenState>(constructorProps) {
-
     override fun ChangeSetReviewScreenState.init(props: ChangeSetReviewScreenProps) {
         fileDiffShortutAndStatusList = generateFileDiffAndMetaData()
         selectedFile = props.fileDiffList.fileDiffs.first()
         reviewDone = false
+        additionalActions = emptySet()
     }
 
     override fun RBuilder.render() {
@@ -80,12 +78,10 @@ class ChangeSetReviewScreen(
                     fileView {
                         fileDiff = props.fileDiffList.fileDiffs.find { it == state.selectedFile }!!
                         fileDiffCommentHandler = state.fileDiffShortutAndStatusList.first { it.fileDiff == state.selectedFile!! }.commentHandler
+                        addMoreActionsToActionBar = handleActionAddition
                     }
                     reviewScreenActionBar {
-                        actions = listOf(
-                            ActionBarShortcut("Next File", "]]", handleNextFileCommand),
-                            ActionBarShortcut("Save for Later", "sl", handleSaveForLater)
-                        )
+                        actions = defaultActions.plus(state.additionalActions)
                     }
                 }
             }
@@ -139,6 +135,7 @@ class ChangeSetReviewScreen(
             }
             setState {
                 selectedFile = currentFileDiff
+                additionalActions = emptySet()
             }
         }
     }
@@ -149,6 +146,18 @@ class ChangeSetReviewScreen(
     private val handleSaveForLater: () -> Unit = {
         changeCurrentFileStateTo(FileReviewStatus.SAVED_FOR_LATER)
     }
+
+    private val handleActionAddition: (List<ActionBarShortcut>) -> Unit = { newAction ->
+        val existingActions = state.additionalActions
+        setState {
+            additionalActions = existingActions.plus(newAction)
+        }
+    }
+
+    private val defaultActions = listOf(
+        ActionBarShortcut("Next File", "fj", handleNextFileCommand),
+        ActionBarShortcut("Save for Later", "fl", handleSaveForLater)
+    )
 
     private fun changeCurrentFileStateTo(statusToChangeTo: FileReviewStatus) {
         /** TODO: Possible bug here if the shortcut is called before any file is selected */
@@ -169,6 +178,7 @@ class ChangeSetReviewScreen(
                 selectedFile = firstSavedForLaterFile
                 fileDiffShortutAndStatusList = newFileSet
                 reviewDone = isReviewDone
+                additionalActions = emptySet()
             }
             if (isReviewDone) {
                 props.onReviewDone(
@@ -181,6 +191,7 @@ class ChangeSetReviewScreen(
             setState {
                 selectedFile = nextFile
                 fileDiffShortutAndStatusList = newFileSet
+                additionalActions = emptySet()
             }
         }
     }
