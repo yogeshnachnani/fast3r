@@ -1,5 +1,8 @@
 package io.btc.supercr.db
 
+import codereview.FileType
+import codereview.ReviewInfo
+import codereview.ReviewStorageProvider
 import io.btc.utils.clearTestDb
 import io.btc.utils.getTestComment
 import io.btc.utils.initTestDb

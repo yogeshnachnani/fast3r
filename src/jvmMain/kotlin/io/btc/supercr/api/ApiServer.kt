@@ -6,6 +6,7 @@ import HOME
 import io.btc.supercr.db.FileLineItemsRepository
 import io.btc.supercr.db.ProjectRepository
 import io.btc.supercr.git.GitProject
+import io.btc.supercr.git.GitProjectCache
 import io.btc.supercr.git.GitUtils
 import io.btc.supercr.review.ReviewController
 import io.ktor.application.Application
@@ -45,7 +46,11 @@ fun Application.superCrServerProduction() {
     this.superCrServer(initDb())
 }
 
-fun Application.superCrServer(jdbi: Jdbi) {
+fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = true) {
+    val gitProjectCache = GitProjectCache()
+    if (isProduction) {
+        gitProjectCache.initCache()
+    }
     install(DefaultHeaders)
     install(CallLogging) {
         level = Level.INFO
@@ -58,6 +63,7 @@ fun Application.superCrServer(jdbi: Jdbi) {
             call.respond(mapOf("OK" to true))
         }
         ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)), ReviewController(FileLineItemsRepository(jdbi)))
+        RepoApi(this, gitProjectCache)
     }
     install(CORS) {
         host("localhost:8080")

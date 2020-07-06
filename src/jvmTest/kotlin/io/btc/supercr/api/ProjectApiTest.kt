@@ -5,11 +5,10 @@ import codereview.FileDiffList
 import codereview.FileDiffListV2
 import codereview.FileLineItem
 import codereview.Project
+import codereview.ReviewInfo
 import codereview.retrieveAllLineItems
 import io.btc.supercr.db.FileLineItemsRepository
 import io.btc.supercr.db.FileReviewInfo
-import io.btc.supercr.db.FileType
-import io.btc.supercr.db.ReviewInfo
 import io.btc.utils.TestUtils
 import io.btc.utils.TestUtils.Companion.validBtcRef
 import io.btc.utils.clearTestDb

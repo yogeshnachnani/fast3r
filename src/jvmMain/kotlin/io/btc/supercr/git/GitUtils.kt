@@ -9,6 +9,7 @@ import codereview.FileDiffV2
 import codereview.FileHeader
 import io.btc.supercr.git.GitUtils.Companion.gitUtilsLogger
 import io.btc.supercr.git.processor.process
+import org.apache.commons.io.FileUtils
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
@@ -159,3 +160,4 @@ private fun Repository.fetchContents(objectId: ObjectId): String {
             toReturn
         }
 }
+

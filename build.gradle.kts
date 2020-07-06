@@ -129,6 +129,8 @@ kotlin {
                 implementation("org.jdbi:jdbi3-kotlin:$jdbiVersion")
                 implementation("org.jdbi:jdbi3-kotlin-sqlobject:$jdbiVersion")
                 implementation("org.jdbi:jdbi3-sqlite:$jdbiVersion")
+                /** Other utils */
+                implementation("commons-io:commons-io:2.6")
             }
         }
 
