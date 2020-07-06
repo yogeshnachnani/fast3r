@@ -9,62 +9,72 @@ import git.provider.PullRequestSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.css.Display
+import kotlinx.css.FontWeight
+import kotlinx.css.color
+import kotlinx.css.display
+import kotlinx.css.fontSize
+import kotlinx.css.fontWeight
+import kotlinx.css.marginLeft
+import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.css
+import styled.getClassName
+import styled.styledSpan
+import supercr.css.Colors
+import supercr.css.ComponentStyles
+import supercr.css.FontSizes
 
 external interface PullRequestListProps: RProps {
-    var githubClient: GithubClient
-    var projects: List<Project>
+    var pullRequests: List<Pair<Project, PullRequestSummary>>
 }
 
 external interface PullRequestListState: RState {
-    var pullRequests: List<PullRequestSummary>
 }
 
 class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>() {
     override fun RBuilder.render() {
         MaterialUIList {
             ListSubHeader {
+                attrs {
+                    className = ComponentStyles.getClassName { ComponentStyles::genericListHeader }
+                }
                 + "Pull Requests"
             }
-            state.pullRequests.mapIndexed { index, currentPullRequest ->
+            props.pullRequests.mapIndexed { index, (project, currentPullRequest) ->
                 ListItem {
                     attrs {
                         button = true
                         divider = true
+
                     }
-                    + currentPullRequest.title
+                    styledSpan {
+                        css {
+                            marginLeft = 8.px
+                            fontSize = FontSizes.medium
+                        }
+                        + " ${currentPullRequest.title}  | "
+                    }
+                    styledSpan {
+                        css {
+                            display = Display.inlineBlock
+                            marginLeft = 4.px
+                            fontWeight = FontWeight.w700
+                            color = Colors.warmGrey5
+                        }
+                        +project.name
+                    }
                 }
             }
         }
     }
 
     override fun componentDidMount() {
-        // TODO: Instead of iterating over projects, see if you can retrieve the pull requests where a given user is the asignee
-        props.projects.map { project ->
-            GlobalScope.async(context = Dispatchers.Main) {
-                props.githubClient.listPullRequests(project)
-                    .let { retrievedPullRequests ->
-                        /** TODO : Figure out if it's better to update the state in one shot or for each retrieval like this */
-                        setState {
-                            pullRequests += retrievedPullRequests
-                        }
-                    }
-            }.invokeOnCompletion { throwable ->
-                if (throwable != null) {
-                    console.error("Something bad happened")
-                    console.error(throwable)
-                }
-            }
-        }
-    }
-
-    override fun PullRequestListState.init() {
-        pullRequests = emptyList()
     }
 }
 

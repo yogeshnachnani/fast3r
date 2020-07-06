@@ -3,11 +3,20 @@ package supercr.workflows.overview.screens
 import Grid
 import codereview.Project
 import git.provider.GithubClient
+import git.provider.PullRequestSummary
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.css.height
+import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.setState
+import styled.css
+import styled.styledDiv
 import supercr.workflows.overview.components.projectList
 import supercr.workflows.overview.components.pullRequestList
 import supercr.workflows.overview.components.userStats
@@ -18,6 +27,7 @@ external interface OverviewScreenProps: RProps {
 }
 
 external interface OverviewScreenState: RState {
+    var pullRequests: List<Pair<Project, PullRequestSummary>>
 }
 
 class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
@@ -37,9 +47,20 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                     item = true
                     md = 8
                 }
+                styledDiv {
+                    css {
+                        height = 100.px
+                    }
+                }
+            }
+            Grid {
+                attrs {
+                    container = false
+                    item = true
+                    md = 8
+                }
                 pullRequestList {
-                    githubClient = props.getGithubClient()
-                    projects = props.projects
+                    pullRequests = state.pullRequests
                 }
             }
             Grid {
@@ -54,6 +75,29 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
     }
 
     override fun OverviewScreenState.init() {
+        pullRequests = emptyList()
+    }
+
+    override fun componentDidMount() {
+        // TODO: Instead of iterating over projects, see if you can retrieve the pull requests where a given user is the asignee
+        props.projects.map { project ->
+            GlobalScope.async(context = Dispatchers.Main) {
+                props.getGithubClient().listPullRequests(project)
+                    .let { retrievedPullRequests ->
+                        val newlyRetrievedPrs = retrievedPullRequests.map { Pair(project, it) }
+                        val existingPrInfo = state.pullRequests
+                        /** TODO : Figure out if it's better to update the state in one shot or for each retrieval like this */
+                        setState {
+                            pullRequests = existingPrInfo.plus(newlyRetrievedPrs).distinctBy { it.second.title }
+                        }
+                    }
+            }.invokeOnCompletion { throwable ->
+                if (throwable != null) {
+                    console.error("Something bad happened")
+                    console.error(throwable)
+                }
+            }
+        }
     }
 
     private fun RBuilder.renderRightSection(): ReactElement {

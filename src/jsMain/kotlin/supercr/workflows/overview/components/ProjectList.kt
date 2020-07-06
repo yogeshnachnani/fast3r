@@ -11,6 +11,8 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import styled.getClassName
+import supercr.css.ComponentStyles
 
 external interface ProjectListProps: RProps {
     var projects: List<Project>
@@ -52,6 +54,9 @@ class ProjectList: RComponent<ProjectListProps, RState>() {
     private fun RBuilder.renderProjectList(): ReactElement{
         return MaterialUIList {
             ListSubHeader {
+                attrs {
+                    className = ComponentStyles.getClassName { ComponentStyles::genericListHeader }
+                }
                 + "Projects"
             }
             props.projects.mapIndexed { index, currentProject ->

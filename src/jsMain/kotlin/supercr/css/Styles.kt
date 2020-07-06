@@ -26,6 +26,7 @@ import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
+import kotlinx.css.fontStyle
 import kotlinx.css.fontWeight
 import kotlinx.css.height
 import kotlinx.css.hsl
@@ -178,6 +179,12 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         paddingLeft = 0.px
         paddingRight = 0.px
     }
+    val genericListHeader by css {
+        fontSize = FontSizes.large
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText1
+        fontWeight = FontWeight.w700
+    }
     val compactFileListItem by css {
         paddingLeft = 0.px
         paddingRight = 0.px
@@ -261,12 +268,14 @@ var styles = CSSBuilder().apply {
     "html" {
         fontFamily = FontFamilies.default
         fontSize = FontSizes.normal
+        color = Colors.baseText1
         overflow = Overflow.hidden
         backgroundColor = Colors.background9
     }
     "body" {
         fontFamily = FontFamilies.default
         fontSize = FontSizes.normal
+        color = Colors.baseText1
         overflow = Overflow.hidden
         backgroundColor = Colors.background9
     }
