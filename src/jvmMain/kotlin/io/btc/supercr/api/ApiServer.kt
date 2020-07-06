@@ -43,10 +43,10 @@ class ApiServer constructor(
 }
 
 fun Application.superCrServerProduction() {
-    this.superCrServer(initDb())
+    this.superCrServer(initDb(), isProduction = true)
 }
 
-fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = true) {
+fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = false) {
     val gitProjectCache = GitProjectCache()
     if (isProduction) {
         gitProjectCache.initCache()
