@@ -53,7 +53,10 @@ class GithubClient(
             method = HttpMethod.Get
         })
         return if (filterForCurrentUser) {
-            pullRequests.filter { pullRequest -> pullRequest.assignees.any { assignee -> assignee.login == oauthClient.getUser() } }
+            pullRequests.filter { pullRequest ->
+                pullRequest.assignees.any { assignee -> assignee.login == oauthClient.getUser() }
+                    || pullRequest.requested_reviewers.any { reviewer -> reviewer.login == oauthClient.getUser() }
+            }
         } else {
             pullRequests
         }
