@@ -9,9 +9,11 @@ enum class GithubAuthorAssociation{
     NONE
 }
 
+@Serializable
 enum class GithubPullRequestState{
     open,
-    closed
+    closed,
+    all
 }
 
 

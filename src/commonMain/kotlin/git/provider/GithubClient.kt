@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.request
@@ -41,11 +42,21 @@ class GithubClient(
         })
     }
 
-    suspend fun listPullRequests(project: Project): List<PullRequestSummary> {
-        return httpClient.request<List<PullRequestSummary>>(buildRequest().apply {
+    suspend fun listPullRequests(
+        project: Project,
+        state: GithubPullRequestState = GithubPullRequestState.open,
+        filterForCurrentUser: Boolean = true
+    ): List<PullRequestSummary> {
+        val pullRequests = httpClient.request<List<PullRequestSummary>>(buildRequest().apply {
             url("$GITHUB_API_BASE_URL$REPOS_PATH/${project.providerPath}/$PULLS_PATH")
+            parameter("state", state.name)
             method = HttpMethod.Get
         })
+        return if (filterForCurrentUser) {
+            pullRequests.filter { pullRequest -> pullRequest.assignees.any { assignee -> assignee.login == oauthClient.getUser() } }
+        } else {
+            pullRequests
+        }
     }
 
     suspend fun getPullRequestDetails(pullRequestSummary: PullRequestSummary): PullRequestDetails {
