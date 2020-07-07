@@ -1,32 +1,30 @@
 package supercr.workflows.codereview.components
 
-import AceEditor
-import Grid
-import MouseEvent
-import RowColObject
-import codereview.FileData
-import codereview.FileLineItem
-import codereview.getText
-import codereview.retrieveAllLineItems
+import EditSession
+import Editor
+import kotlinx.css.LinearDimension
+import kotlinx.css.height
+import kotlinx.css.px
+import kotlinx.css.width
+import kotlinx.html.id
+import org.w3c.dom.HTMLDivElement
 import react.RBuilder
 import react.RComponent
 import react.RElementBuilder
 import react.RProps
 import react.RState
 import react.ReactElement
-import react.setState
+import react.createRef
 import styled.css
 import styled.getClassName
 import styled.styledDiv
 import supercr.css.ComponentStyles
-import supercr.css.GutterDecorationStyles
+import kotlin.js.json
 
 external interface CodeViewProps: RProps {
-    var fileData: FileData
+    var fileText: String
     var id: String
-    /** If present, will apply the clazzName to the editor */
-    var className: String
-    var xsValueToUse: Number
+    var divId: String
 }
 
 external interface CodeViewState: RState {
@@ -34,7 +32,7 @@ external interface CodeViewState: RState {
 
 
 /**
- * A simple wrapper over [AceEditor] with sensible defaults
+ * A simple wrapper over Ace [Editor] with sensible defaults
  */
 class CodeView(
     constructorProps: CodeViewProps
@@ -42,30 +40,58 @@ class CodeView(
     /** These are required to load the editor properly */
     val ace = js("require('ace-builds/src-noconflict/ace')")
     val webpackResolver = js("require('ace-builds/webpack-resolver')")
-    val theme = js("require('ace-builds/src-noconflict/theme-solarized_light')")
-    val split = js("require('ace-builds/src-noconflict/ext-split')")
+    val theme = js("require('ace-builds/src-noconflict/theme-clouds_midnight')")
+    val mode = js("require('ace-builds/src-noconflict/mode-java')")
+    private lateinit var internalEditor: Editor
+    private var internalDivRef = createRef<HTMLDivElement>()
+
     override fun RBuilder.render() {
-        Grid {
-            attrs {
-                item = true
-                container = false
-                md = props.xsValueToUse
+        styledDiv {
+            css {
+                width = LinearDimension.inherit
+                height = 800.px
+                classes.add(ComponentStyles.getClassName { ComponentStyles::codeViewEditor })
             }
-            AceEditor {
-                attrs {
-                    mode = "java"
-                    theme = "clouds_midnight"
-                    name = props.id
-                    readOnly = true
-                    value = props.fileData.getText()
-                    width = "inherit"
-                    highlightActiveLine = true
-                    height = "800px"
-                    className = "${props.className} ${ ComponentStyles.getClassName { ComponentStyles::codeViewEditor } }"
-                    wrapEnabled = false
-                }
+            attrs {
+                ref = internalDivRef
+                id = props.divId
             }
         }
+    }
+
+    override fun shouldComponentUpdate(nextProps: CodeViewProps, nextState: CodeViewState): Boolean {
+        /** Update only if the id has changed (which means we have new text) */
+        return nextProps.id != props.id
+    }
+
+    override fun componentDidMount() {
+        val aceOpts = json(
+            "theme" to "ace/theme/clouds_midnight",
+            "readOnly" to true,
+            "highlightActiveLine" to true,
+            "fontSize" to 12,
+            "showGutter" to true,
+            "tabSize" to 4,
+            "mode" to "ace/mode/java"
+        )
+        console.log("our opts are $aceOpts")
+        internalEditor = ace.edit(
+            props.divId,
+            aceOpts
+        ) as Editor
+        val editSession = EditSession(props.fileText)
+        internalEditor.setSession(editSession)
+        /** Hide Scrollbars. TODO: Find a less hacky way to do this */
+        internalEditor.renderer.scrollBarV.element.style.overflowY = "hidden"
+    }
+
+    override fun getSnapshotBeforeUpdate(prevProps: CodeViewProps, prevState: CodeViewState): Any {
+        return 0
+    }
+
+    override fun componentDidUpdate(prevProps: CodeViewProps, prevState: CodeViewState, snapshot: Any) {
+        val newEditSession = EditSession(props.fileText)
+        internalEditor.setSession(newEditSession)
     }
 }
 

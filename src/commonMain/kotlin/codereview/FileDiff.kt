@@ -73,6 +73,14 @@ fun FileDiffV2.getUniqueIdentifier(): String {
     return ( newFile?.objectId ?: oldFile?.objectId!! ).substring(0..5)
 }
 
+fun FileDiffV2.hasOldFile(): Boolean {
+    return oldFile != null && oldFile.fileLines.isNotEmpty()
+}
+
+fun FileDiffV2.hasNewFile(): Boolean {
+    return newFile != null && newFile.fileLines.isNotEmpty()
+}
+
 @Serializable
 data class FileDiffListV2(
     val fileDiffs: List<FileDiffV2>

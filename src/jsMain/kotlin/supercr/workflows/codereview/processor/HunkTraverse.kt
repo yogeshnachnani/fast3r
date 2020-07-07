@@ -2,9 +2,12 @@ package supercr.workflows.codereview.processor
 
 import codereview.FileData
 import codereview.FileDiffV2
+import codereview.hasNewFile
+import codereview.hasOldFile
 
-fun FileDiffV2.enableHunkTraversal(): Boolean {
-    return oldFile != null && newFile != null
+fun FileDiffV2.hasBothFiles(): Boolean {
+    console.log("checking if file diff has both files: ${ oldFile?.fileLines?.size } and new file ${newFile?.fileLines?.size}")
+    return hasOldFile() && hasNewFile()
 }
 
 fun FileDiffV2.getNextHunk(viewPositionLeft: Number, viewPositionRight: Number): Int? {

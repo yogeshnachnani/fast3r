@@ -3,7 +3,6 @@ package supercr.workflows.codereview.components
 import Grid
 import Paper
 import codereview.DiffChangeType
-import codereview.FileData
 import codereview.FileDiffV2
 import codereview.getUniqueIdentifier
 import kotlinx.css.minHeight
@@ -18,7 +17,6 @@ import styled.css
 import styled.getClassName
 import styled.styledDiv
 import supercr.css.ComponentStyles
-import supercr.css.TextStyles
 import supercr.workflows.codereview.processor.FileDiffCommentHandler
 
 /**
@@ -96,7 +94,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.newFile!!, xsValToUse = 12, classNameToUse = TextStyles.insertedTextNew)
+                renderDiffPane()
             }
         }
     }
@@ -125,18 +123,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     justify = "space-evenly"
                     spacing = 2
                 }
-                renderAceEditorForSingleFiles(props.fileDiff.oldFile!!, xsValToUse = 12, classNameToUse = TextStyles.removedText)
-            }
-        }
-    }
-
-    private fun RBuilder.renderAceEditorForSingleFiles(fileDataToRender: FileData, xsValToUse: Number, classNameToUse: String): ReactElement {
-        return codeView {
-            attrs {
-                id = props.fileDiff.getUniqueIdentifier()
-                fileData = fileDataToRender
-                className = classNameToUse
-                xsValueToUse = xsValToUse
+                renderDiffPane()
             }
         }
     }
@@ -208,12 +195,12 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
     /**
      * Renders a [DiffView] in a [Grid] item with the given xs value
       */
-    private fun RBuilder.renderDiffPane(xsValToUse: Number = 12) : ReactElement {
+    private fun RBuilder.renderDiffPane() : ReactElement {
         return Grid {
             attrs {
                 item = true
                 container = false
-                md = xsValToUse
+                md = 12
             }
             diffView {
                 fileDiff = props.fileDiff
