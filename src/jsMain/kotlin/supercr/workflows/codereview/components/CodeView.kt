@@ -79,7 +79,7 @@ class CodeView(
             props.divId,
             aceOpts
         ) as Editor
-        val editSession = EditSession(props.fileText)
+        val editSession = EditSession(props.fileText, "ace/mode/java")
         internalEditor.setSession(editSession)
         /** Hide Scrollbars. TODO: Find a less hacky way to do this */
         internalEditor.renderer.scrollBarV.element.style.overflowY = "hidden"
@@ -90,7 +90,7 @@ class CodeView(
     }
 
     override fun componentDidUpdate(prevProps: CodeViewProps, prevState: CodeViewState, snapshot: Any) {
-        val newEditSession = EditSession(props.fileText)
+        val newEditSession = EditSession(props.fileText, "ace/mode/java")
         internalEditor.setSession(newEditSession)
     }
 }

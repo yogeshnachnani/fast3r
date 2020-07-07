@@ -24,7 +24,8 @@ external class Editor {
 }
 @JsName("EditSession")
 external class EditSession(
-    text: String
+    text: String,
+    textMode: String
 ) {
     fun addGutterDecoration(row: Number, className: String)
     fun setScrollTop(scrollTop: Number)
