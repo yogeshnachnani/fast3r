@@ -60,14 +60,6 @@ private fun String.cssClassName(): String {
     return "." + this
 }
 
-class TextStyles {
-    companion object {
-        const val insertedTextNew = "insertedText"
-        const val textInsertedForBalance = "insertedTextOld"
-        const val removedText = "removedText"
-    }
-}
-
 class GutterDecorationStyles {
     companion object {
         const val commentIcon = "ace_gutter-comment-icon"
@@ -247,24 +239,25 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val actionBarItem by css {
         width = LinearDimension.fitContent
     }
-}
 
-var styles = CSSBuilder().apply {
-    TextStyles.insertedTextNew.cssClassName().invoke {
-        background = "#51fc81"
+    val diffViewNewText by css {
+        backgroundColor = Colors.accentPrimary3
         position = Position.absolute
         zIndex = 20
     }
-    TextStyles.removedText.cssClassName().invoke {
+    val diffViewTextAddedForBalance by css {
+        backgroundColor = Colors.accentPrimary1
+        position = Position.absolute
+        zIndex = 20
+    }
+    val diffViewDeletedText by css {
         background = "#ffeef0"
         position = Position.absolute
         zIndex = 20
     }
-    TextStyles.textInsertedForBalance.cssClassName().invoke {
-        background = Color.lightBlue.value
-        position = Position.absolute
-        zIndex = 20
-    }
+}
+
+var styles = CSSBuilder().apply {
     "html" {
         fontFamily = FontFamilies.default
         fontSize = FontSizes.normal
@@ -280,7 +273,10 @@ var styles = CSSBuilder().apply {
         backgroundColor = Colors.background9
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
-        background = Colors.warmGreyBase.value
+        background = Colors.warmGrey1.value
+    }
+    ".ace-clouds-midnight .ace_marker-layer .ace_active-line" {
+        background = Colors.warmGrey1.value
     }
     GutterDecorationStyles.commentIcon.cssClassName().invoke {
 //        backgroundImage = Image("url(\"data:image/svg+xml,%3Csvg class='bi bi-x-circle' width='1em' height='1em' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath fill-rule='evenodd' d='M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z'/%3E%3Cpath fill-rule='evenodd' d='M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z'/%3E%3C/svg%3E\");")
