@@ -1,5 +1,6 @@
 package supercr.workflows.codereview.processor
 
+import Editor
 import Range
 import codereview.DiffEditType
 import codereview.Edit
@@ -11,8 +12,8 @@ import supercr.css.ComponentStyles
  * Basically used to create appropriate decorations in our text editors
  */
 class TextDiffProcessor constructor(
-    private val editorWithOldText: dynamic,
-    private val editorWithNewText: dynamic
+    private val editorWithOldText: Editor,
+    private val editorWithNewText: Editor
 ) {
     /**
      * Process the [editList] to highlight the diff in oth the editors
@@ -94,11 +95,11 @@ class TextDiffProcessor constructor(
         highlightGutter(editor = editorWithOldText, fromRow = beginB , numLines = lengthA, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewDeletedText })
     }
 
-    private fun getLineAt(rowIndex: Long, editor: dynamic): String {
+    private fun getLineAt(rowIndex: Long, editor: Editor): String {
         return ( editor.getSession().getLine(rowIndex.toDouble()) as String )
     }
 
-    private fun highlightLineSection(rowIndex: Long, fromColumn: Long, toColumn: Long, editor: dynamic, cssClazz: String) {
+    private fun highlightLineSection(rowIndex: Long, fromColumn: Long, toColumn: Long, editor: Editor, cssClazz: String) {
         editor.getSession().addMarker(
             Range(rowIndex.toDouble(), fromColumn.toDouble(), rowIndex.toDouble(), toColumn.toDouble()),
             cssClazz,
@@ -107,16 +108,16 @@ class TextDiffProcessor constructor(
         )
     }
 
-    private fun highlighLinesWithGutter(editor: dynamic, fromRow: Long, numLines: Long, cssClazz: String) {
+    private fun highlighLinesWithGutter(editor: Editor, fromRow: Long, numLines: Long, cssClazz: String) {
         highlightLines(editor, fromRow, numLines, cssClazz)
         highlightGutter(editor, fromRow, numLines, cssClazz)
     }
 
-    private fun highlightLines(editor: dynamic, fromRow: Long, numLines: Long, cssClazz: String) {
+    private fun highlightLines(editor: Editor, fromRow: Long, numLines: Long, cssClazz: String) {
         editor.getSession().highlightLines(fromRow.toDouble(), ( fromRow + numLines - 1 ) .toDouble(), cssClazz)
     }
 
-    private fun highlightGutter(editor: dynamic ,fromRow: Long, numLines: Long, cssClazz: String) {
+    private fun highlightGutter(editor: Editor ,fromRow: Long, numLines: Long, cssClazz: String) {
         (fromRow until (fromRow + numLines)).map { rowNumber ->
             editor.getSession().addGutterDecoration(rowNumber.toDouble() , cssClazz)
         }
