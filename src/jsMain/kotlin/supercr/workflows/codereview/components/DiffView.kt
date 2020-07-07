@@ -25,6 +25,8 @@ import kotlinx.css.position
 import kotlinx.css.px
 import kotlinx.css.top
 import react.setState
+import styled.getClassName
+import supercr.css.ComponentStyles
 import supercr.css.GutterDecorationStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
@@ -137,13 +139,28 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     override fun componentDidUpdate(prevProps: DiffViewProps, prevState: DiffViewState, snapshot: Any) {
         if (props.fileDiff.hasBothFiles()) {
-            onMountOrUpdate()
+            decorateDiffView()
+        } else {
+            decorateSingleFileView()
         }
     }
 
     override fun componentDidMount() {
         if (props.fileDiff.hasBothFiles()) {
-            onMountOrUpdate()
+            decorateDiffView()
+        } else {
+            decorateSingleFileView()
+        }
+    }
+
+    private fun decorateSingleFileView() {
+        val (editor, lines, className) = if (props.fileDiff.hasNewFile()) {
+            Triple(ace.edit(RIGHT_EDITOR_DIV_ID) as Editor, props.fileDiff.newFile!!.fileLines, ComponentStyles.getClassName { ComponentStyles::diffViewNewText })
+        } else {
+            Triple(ace.edit(LEFT_EDITOR_DIV_ID) as Editor, props.fileDiff.oldFile!!.fileLines, ComponentStyles.getClassName { ComponentStyles::diffViewDeletedText })
+        }
+        lines.forEachIndexed { index, _ ->
+            editor.getSession().addGutterDecoration(index.toDouble(),  className)
         }
     }
 
@@ -180,7 +197,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     }
 
-    private fun onMountOrUpdate() {
+    private fun decorateDiffView() {
         val leftEditor = ace.edit(LEFT_EDITOR_DIV_ID) as Editor
         val rightEditor = ace.edit(RIGHT_EDITOR_DIV_ID) as Editor
         leftEditorWrapper = AceWrapper(
