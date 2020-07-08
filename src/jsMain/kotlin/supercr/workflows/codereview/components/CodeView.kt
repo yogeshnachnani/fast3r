@@ -74,7 +74,6 @@ class CodeView(
             "tabSize" to 4,
             "mode" to "ace/mode/java"
         )
-        console.log("our opts are $aceOpts")
         internalEditor = ace.edit(
             props.divId,
             aceOpts

@@ -35,6 +35,7 @@ external interface CommentThreadProps : RProps {
     var comments: List<FileLineItem.Comment>
     var newComments: List<FileLineItem.Comment>
     var onCommentAdd: (String) -> Unit
+    var hideMe: () -> Unit
 }
 
 external interface CommentThreadState : RState {
@@ -58,16 +59,16 @@ class CommentThread(
                 props.comments
                     .plus(props.newComments)
                     .mapIndexed { index, comment -> showComment(comment, index == props.comments.lastIndex) }
-                if (state.showCommentInput) {
+                if (state.showCommentInput || props.comments.isEmpty()) {
                     renderCommentInput()
                 }
             }
         }
     }
 
-    override fun CommentThreadState.init(props: CommentThreadProps) {
-        showCommentInput = props.comments.isEmpty()
-    }
+//    override fun CommentThreadState.init(props: CommentThreadProps) {
+//        showCommentInput = props.comments.isEmpty()
+//    }
 
     private val showCommentInputBox : () -> Unit = {
         setState {
@@ -78,6 +79,10 @@ class CommentThread(
     private val discardComment: () -> Unit = {
         setState {
             showCommentInput = false
+        }
+        if (props.comments.isEmpty()) {
+            /** This will unmount this component */
+            props.hideMe()
         }
     }
 
@@ -97,7 +102,7 @@ class CommentThread(
                 className = ComponentStyles.getClassName { ComponentStyles::commentInputBox }
                 rows = 1
                 rowsMax = 5
-                placeholder = "Reply.. "
+                placeholder = "Comment.. "
                 onInputCtrlEnter = handleCommentAddition
                 onEscape = discardComment
             }

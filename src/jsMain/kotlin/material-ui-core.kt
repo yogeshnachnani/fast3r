@@ -2,6 +2,7 @@
 @file:JsNonModule
 
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.events.Event
 import react.RClass
 import react.RReadableRef
@@ -148,7 +149,7 @@ external interface OutlinedInputProps: WithClassName {
 
     var fullWidth: Boolean
 
-    var inputRef: RReadableRef<HTMLInputElement>
+    var inputRef: RReadableRef<HTMLTextAreaElement>
     var multiline: Boolean
     var onChange: (Event) -> Unit
     /** The short hint displayed in the input before the user enters a value.*/

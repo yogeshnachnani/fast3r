@@ -21,7 +21,6 @@ class TextDiffProcessor constructor(
     fun processEditList(editList: List<Edit>) {
         editList
             .filter { it.editType == DiffEditType.REPLACE }
-            .also { console.log("Processing ${it.size} REPLACE edits from $editList") }
             .forEach { currentEdit ->
                 currentEdit.processEdit()
             }
@@ -31,7 +30,6 @@ class TextDiffProcessor constructor(
         oldFileLines
             .mapIndexed { index, fileLine -> Pair(index.toLong(), fileLine) }
             .filter { it.second.filePosition == null }
-            .also { console.log("Will highlight ${it.map { it.first }} lines in the old editor") }
             .forEach { (rowIndex, rowAddedInOldText) ->
                 highlighLinesWithGutter(editor = editorWithOldText, fromRow = rowIndex, numLines = 1, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalance })
                 highlighLinesWithGutter(editor = editorWithNewText, fromRow = rowIndex, numLines = 1, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewText })
@@ -39,7 +37,6 @@ class TextDiffProcessor constructor(
         newFileLines
             .mapIndexed { index, fileLine -> Pair(index.toLong(), fileLine) }
             .filter { it.second.filePosition == null }
-            .also { console.log("Will highlight ${it.map { it.first }} lines in the new editor") }
             .forEach { (rowIndex, rowAddedInNewText) ->
                 highlighLinesWithGutter(editorWithNewText, rowIndex, 1, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalance })
                 highlighLinesWithGutter(editorWithOldText, rowIndex, 1, ComponentStyles.getClassName { ComponentStyles::diffViewDeletedText } )
@@ -47,7 +44,6 @@ class TextDiffProcessor constructor(
     }
 
     private fun Edit.processEdit() {
-        console.log("Processing edit : $this")
         require(editType == DiffEditType.REPLACE)
         /** If there is new text on the right hand side, that means we have to highlight the empty lines we inserted in oldText for balance */
         if (lengthB > lengthA) {

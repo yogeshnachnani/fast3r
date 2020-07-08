@@ -6,7 +6,6 @@ import codereview.hasNewFile
 import codereview.hasOldFile
 
 fun FileDiffV2.hasBothFiles(): Boolean {
-    console.log("checking if file diff has both files: ${ oldFile?.fileLines?.size } and new file ${newFile?.fileLines?.size}")
     return hasOldFile() && hasNewFile()
 }
 

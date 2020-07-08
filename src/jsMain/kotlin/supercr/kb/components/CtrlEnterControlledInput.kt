@@ -2,9 +2,10 @@ package supercr.kb.components
 
 import OutlinedInput
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLTextAreaElement
+import org.w3c.dom.events.FocusEvent
 import react.RBuilder
 import react.RComponent
-import react.RProps
 import react.RReadableRef
 import react.RState
 import react.ReactElement
@@ -25,7 +26,12 @@ external interface CtrlEnterControlledInputState : RState {
 }
 
 class CtrlEnterControlledInput : RComponent<CtrlEnterControlledInputProps, CtrlEnterControlledInputState>() {
-    private var textAreaRef: RReadableRef<HTMLInputElement> = createRef()
+    private lateinit var textAreaRef: RReadableRef<HTMLTextAreaElement>
+
+    override fun CtrlEnterControlledInputState.init() {
+        textAreaRef = createRef()
+    }
+
     override fun RBuilder.render() {
         OutlinedInput {
             attrs {
@@ -41,11 +47,14 @@ class CtrlEnterControlledInput : RComponent<CtrlEnterControlledInputProps, CtrlE
     }
 
     override fun componentDidMount() {
+        textAreaRef.current?.onfocus = disableKeyboardHandlerOnFocus
+        textAreaRef.current?.onblur = enableKeyboardHandlerOnBlur
         UniversalKeyboardShortcutHandler.disableShortcuts()
         if (props.onEscape != null) {
             UniversalKeyboardShortcutHandler.registerEscapeHandler(props.onEscape)
         }
         UniversalKeyboardShortcutHandler.registerCtrlEnterKeyShortcut(handleCtrlEnter)
+        textAreaRef.current?.focus()
     }
 
     override fun componentWillUnmount() {
@@ -60,6 +69,14 @@ class CtrlEnterControlledInput : RComponent<CtrlEnterControlledInputProps, CtrlE
             props.onInputCtrlEnter(commentBody)
             forceUpdate()
         }
+    }
+
+    private val enableKeyboardHandlerOnBlur: (FocusEvent) -> Unit = {
+        UniversalKeyboardShortcutHandler.enableShortcuts()
+    }
+
+    private val disableKeyboardHandlerOnFocus: (FocusEvent) -> Unit = {
+        UniversalKeyboardShortcutHandler.disableShortcuts()
     }
 }
 
