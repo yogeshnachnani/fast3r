@@ -1,5 +1,6 @@
+package io.btc
+
 import io.btc.supercr.api.ApiServer
-import io.btc.supercr.git.GitUtils
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
@@ -11,9 +12,18 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator
 import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import java.io.File
 
+class ApiServerBackend {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            ApiServer()
+        }
+    }
+}
+
 fun main() {
     println("Hello from the world of kotlin")
-//    tryoutGit()
+//    io.btc.tryoutGit()
 //    tryFetchRef()
     ApiServer()
 }

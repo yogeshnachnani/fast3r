@@ -8,8 +8,9 @@ val jdbiVersion = "3.12.2"
 
 
 plugins {
-    kotlin("multiplatform") version "1.3.71"
-    kotlin("plugin.serialization") version "1.3.71"
+    java
+    kotlin("multiplatform") version "1.3.72"
+    kotlin("plugin.serialization") version "1.3.72"
 }
 
 group = "io.btc"
@@ -29,6 +30,12 @@ kotlin {
                     useChromeHeadless()
                 }
             }
+            /**
+             * see https://youtrack.jetbrains.com/issue/KT-36484. This is fixed in 1.4-M2 (we were/are at 1.3.71 while writing this)
+             */
+            dceTask {
+                keep("ktor-ktor-io.\$\$importsForInline\$\$.ktor-ktor-io.io.ktor.utils.io")
+            }
         }
         nodejs {
             useCommonJs()
@@ -39,6 +46,36 @@ kotlin {
         val main by compilations.getting {
             kotlinOptions {
                 jvmTarget = "1.8"
+            }
+        }
+        tasks {
+            register<Jar>("buildFatJar") {
+                group = "application"
+                manifest {
+                    attributes["Main-Class"] = "io.btc.ApiServerBackend"
+//                    attributes["Class-Path"] = main.compileDependencyFiles.map { it.name }.joinToString(separator =  " ")
+                }
+                archiveBaseName.set("${project.name}-fat")
+                from(main.output.classesDirs, main.compileDependencyFiles)
+//              from(main.compileDependencyFiles.asFileTree.map { if (it.isDirectory) it else zipTree(it) })
+//                from (
+//                    main.configuration
+//                    main.compileDependencyFiles.map {
+//                        if(it.isDirectory) {
+//                            it
+//                        } else {
+//                            zipTree(it)
+//                        }
+//                    }
+//                )
+//                from(main.output.classesDirs, main.compileDependencyFiles)
+                with(jar.get() as CopySpec)
+            }
+            register<JavaExec>("runLocally") {
+                group = "application"
+                setMain("AppKt")
+                classpath = main.output.classesDirs
+                classpath += main.compileDependencyFiles
             }
         }
         val test by compilations.getting {
