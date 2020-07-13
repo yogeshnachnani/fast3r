@@ -131,6 +131,7 @@ kotlin {
                 implementation(npm("ace-builds", "~1.4.10"))
                 // Material UI
                 implementation(npm("@material-ui/core"))
+                implementation(npm("@material-ui/styles"))
 
                 /** Webpack */
                 implementation(npm("file-loader", "~6.0.0"))
