@@ -88,7 +88,7 @@ private class KeyboardShortcutTrieNode {
     private var fullMatchHandler :( () -> Unit )? = null
     private var partialMatchHandlers: MutableList<() -> Unit> = mutableListOf()
     companion object {
-        private val setOfChars = setOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
+        private val setOfChars = setOf('a', 'b', 'c', 'd', 'e',  'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'x', 'y', 'z')
     }
 
     fun addShortcut(shortcutString: CharSequence, fullMatchHandler: () -> Unit, partialMatchHandler: () -> Unit) {

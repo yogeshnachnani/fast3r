@@ -57,16 +57,16 @@ class KeyboardShortcutTrieNodeTest {
         val noOp: () -> Unit = {
 
         }
-        assertEquals(26 , KeyboardShortcutTrie.listAvailableChars("").count())
-        assertEquals(26 , KeyboardShortcutTrie.listAvailableChars("a").count())
+        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("").count())
+        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("a").count())
         KeyboardShortcutTrie["a"] = PrefixMatchHandlers(noOp, noOp)
-        assertEquals(25 , KeyboardShortcutTrie.listAvailableChars("").count())
+        assertEquals(23 , KeyboardShortcutTrie.listAvailableChars("").count())
         /**
-         * The following test means that we can make 26 strings starting with the prefix 'a' : aa, ab, ac.. az
+         * The following test means that we can make 24 strings starting with the prefix 'a' : aa, ab, ac.. az
          */
-        assertEquals(26 , KeyboardShortcutTrie.listAvailableChars("a").count())
-        assertEquals(26 , KeyboardShortcutTrie.listAvailableChars("b").count())
-        assertEquals(26 , KeyboardShortcutTrie.listAvailableChars("abc").count())
+        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("a").count())
+        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("b").count())
+        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("abc").count())
 
     }
 
@@ -173,9 +173,9 @@ class KeyboardShortcutTrieNodeTest {
         /**
          * We want 26 components - all shortcuts should fit in a single character
          */
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString = null, numberOfComponents = 26)
+        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString = null, numberOfComponents = 24)
             .also { results ->
-                assertEquals(26, results.size)
+                assertEquals(24, results.size)
                 results.forEachIndexed { _, s ->
                     assertEquals(1, s.count())
                 }
@@ -237,9 +237,9 @@ class KeyboardShortcutTrieNodeTest {
         }
         KeyboardShortcutTrie["ab"] = PrefixMatchHandlers(noOp, noOp)
 
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString =  "a", numberOfComponents = 25)
+        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString =  "a", numberOfComponents = 23)
             .also { results ->
-                assertEquals(25, results.size)
+                assertEquals(23, results.size)
                 results.forEachIndexed { _, s ->
                     assertEquals(1, s.count())
                 }
@@ -266,18 +266,18 @@ class KeyboardShortcutTrieNodeTest {
         /** Just ensuring that we have "ab" inserted first */
         KeyboardShortcutTrie["ab"] = PrefixMatchHandlers(fullMatch = functionForAb, partialMatchHandler = noOp)
         KeyboardShortcutTrie["a"] = PrefixMatchHandlers(fullMatch = functionForAb, partialMatchHandler = noOp)
-        assertEquals(25, KeyboardShortcutTrie.listAvailableChars("").size)
-        assertEquals(25, KeyboardShortcutTrie.listAvailableChars("a").size)
+        assertEquals(23, KeyboardShortcutTrie.listAvailableChars("").size)
+        assertEquals(23, KeyboardShortcutTrie.listAvailableChars("a").size)
         assertNotNull(KeyboardShortcutTrie["ab"].fullMatch)
         assertNotNull(KeyboardShortcutTrie["a"].fullMatch)
 
         KeyboardShortcutTrie.remove("ab")
-        assertEquals(25, KeyboardShortcutTrie.listAvailableChars("").size)
-        assertEquals(26, KeyboardShortcutTrie.listAvailableChars("a").size)
+        assertEquals(23, KeyboardShortcutTrie.listAvailableChars("").size)
+        assertEquals(24, KeyboardShortcutTrie.listAvailableChars("a").size)
         assertTrue(KeyboardShortcutTrie["ab"].isNoMatch())
 
         KeyboardShortcutTrie.remove("a")
-        assertEquals(26, KeyboardShortcutTrie.listAvailableChars("").size)
+        assertEquals(24, KeyboardShortcutTrie.listAvailableChars("").size)
         assertTrue(KeyboardShortcutTrie["a"].isNoMatch())
     }
 
