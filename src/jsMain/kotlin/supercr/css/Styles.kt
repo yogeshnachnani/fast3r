@@ -209,6 +209,20 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 //        put("resize", "none")
     }
 
+    val reopLocalPathInputBox by css {
+        fontSize = FontSizes.small
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText4
+        marginLeft = 5.px
+        marginRight = 5.px
+        marginBottom = 8.px
+        maxWidth = 150.px
+        width = 150.px
+//        height = 32.px
+        padding(vertical = 4.px, horizontal = 8.px)
+//        put("resize", "none")
+    }
+
     val fileListSectionSeparator by css {
         color = Colors.warmGrey2
     }
@@ -218,6 +232,22 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
+    }
+
+    val loginComponentPaper by css {
+        backgroundColor = Colors.background7
+        fontSize = FontSizes.normal
+        fontFamily = FontFamilies.nonCode
+        color = Colors.baseText1
+        marginTop = 150.px
+        padding(32.px)
+    }
+    val repoInitialiserRepoPathInput by css {
+        ".MuiOutlinedInput-input" {
+            fontSize = FontSizes.normal
+            fontFamily = FontFamilies.code
+            color = Colors.baseText1
+        }
     }
 
     val commentPaper by css {

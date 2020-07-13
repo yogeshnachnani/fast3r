@@ -32,6 +32,7 @@ import supercr.css.FontSizes
 
 external interface PullRequestListProps: RProps {
     var pullRequests: List<Pair<Project, PullRequestSummary>>
+    var onPullRequestSelect: (Int) -> Unit
 }
 
 external interface PullRequestListState: RState {
@@ -51,7 +52,7 @@ class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>()
                     attrs {
                         button = true
                         divider = true
-
+                        onClick = createPullRequestSelectHandler(index)
                     }
                     styledSpan {
                         css {
@@ -71,6 +72,12 @@ class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>()
                     }
                 }
             }
+        }
+    }
+
+    private fun createPullRequestSelectHandler(pullRequestIndex: Int): () -> Unit {
+        return {
+            props.onPullRequestSelect(pullRequestIndex)
         }
     }
 

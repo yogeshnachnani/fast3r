@@ -2,6 +2,7 @@ package codereview
 
 import DEFAULT_PORT
 import git.provider.PullRequestSummary
+import git.provider.RepoSummary
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
@@ -33,6 +34,14 @@ class SuperCrClient(
             url("$baseUrl/projects/_all")
             method = HttpMethod.Get
         })
+    }
+
+    suspend fun fetchDetectedProjectsFor(repoSummaries: List<RepoSummary>): Map<RepoSummary, Project> {
+        return httpClient.post<Map<RepoSummary, Project>> {
+            body = repoSummaries
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            url("$baseUrl/repos/guess")
+        }
     }
 
     suspend fun addProject(project: Project): Boolean {

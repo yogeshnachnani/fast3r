@@ -42,6 +42,7 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
             overviewScreen {
                 projects = state.projects
                 getGithubClient = this@MainScreen.getGithubClient
+                superCrClient = this@MainScreen.superCrClient
             }
         }
     }
@@ -56,7 +57,7 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
                 }
         }.invokeOnCompletion { throwable ->
             if (throwable != null) {
-                console.error("Something bad happened")
+                console.error("Something bad happened while listing projects in main screen")
                 console.error(throwable)
             }
         }
@@ -64,7 +65,8 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
 
     override fun MainScreenState.init() {
         projects = emptyList()
-        accessToken = "4da05160ff8311a45f31fe8fd6ab374b8a6f9fe9"
+        /** TODO: fix this. Get from backend or something */
+        accessToken = "417a060c57755029fba76f508f87deaec5442470"
     }
 
     private val receiveGithubAccessToken: (String) -> Unit = { receivedAccessToken ->
@@ -85,8 +87,18 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
     }
 
     private val receiveProjects: (List<Project>) -> Unit = { receivedProjects ->
+        GlobalScope.async(context = Dispatchers.Main) {
+            receivedProjects.map { project ->
+                superCrClient.addProject(project)
+            }
+        }.invokeOnCompletion { throwable ->
+            if (throwable != null) {
+                console.error("Something bad happened")
+                console.error(throwable)
+            }
+        }
         setState {
-            projects += receivedProjects
+            projects = receivedProjects
         }
     }
 

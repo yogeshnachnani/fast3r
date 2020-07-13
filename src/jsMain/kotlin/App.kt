@@ -35,7 +35,7 @@ external val fileDiffForBigPullRequest: dynamic
 external val fileDiffV2ForSmallRequest: dynamic
 
 fun main ()  {
-    document.head!!.insertAdjacentHTML("afterbegin", "<style>$styles</style>")
+    document.head!!.insertAdjacentHTML("beforeend", "<style>$styles</style>")
     ComponentStyles.inject()
     /**
      * The official documentation specifies that we create a <div id = 'root'> in index.html
@@ -43,11 +43,11 @@ fun main ()  {
      * As a workaround, we create the root div element here instead
      * See here for more details - https://stackoverflow.com/questions/61839800/unit-testing-in-kotlin-js/62058511#62058511
      */
-    document.body!!.insertAdjacentHTML("afterbegin", "<div id='root' style='height:100vh; width:100vw;'></div>" )
+    document.body!!.insertAdjacentHTML("beforeend", "<div id='root' style='height:100vh; width:100vw;'></div>" )
     UniversalKeyboardShortcutHandler.init()
-    renderDiffView()
+//    renderDiffView()
 //    renderGettingStarted()
-//    renderMainScreen()
+    renderMainScreen()
 //    tryOutKeyboardEnabledList()
 //    renderFileView()
 //    renderComments()
@@ -98,8 +98,13 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
 
 private fun renderMainScreen() {
     render(document.getElementById("root")) {
-        mainScreen {
+        StylesProvider {
+            attrs {
+                injectFirst = true
+            }
+            mainScreen {
 
+            }
         }
     }
 }
@@ -116,28 +121,20 @@ private fun renderDiffView() {
     val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
     val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
-    val superCrClient = SuperCrClient(
+    val client = SuperCrClient(
         httpClient = HttpClient() {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
             }
         }
     )
-    val handlePostReview: (FileDiffListV2) -> Unit = { updatedFileList ->
-        GlobalScope.async(context = Dispatchers.Main) {
-            val project = superCrClient.getAllProjects().find { it.providerPath == "theboringtech/btcmain" }!!
-            console.log("Using Project $project")
-            val (reviewInfo, errorMessage) = superCrClient.startReview(project, samplePullRequestSummary)
-            console.log("Got review $reviewInfo")
-            superCrClient.postReview(reviewInfo!!, updatedFileList)
-        }
-    }
-
     render(document.getElementById("root")) {
         changeSetScreen {
             pullRequestSummary = samplePullRequestSummary
-            fileDiffList = sampleFileDiff
-            onReviewDone = handlePostReview
+            superCrClient = client
+            onReviewDone = { foo, bar ->
+
+            }
         }
     }
 }

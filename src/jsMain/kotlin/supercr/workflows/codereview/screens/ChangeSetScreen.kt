@@ -1,22 +1,34 @@
 package supercr.workflows.codereview.screens
 
 import codereview.FileDiffListV2
+import codereview.Project
+import codereview.ReviewInfo
+import codereview.SuperCrClient
 import git.provider.PullRequestSummary
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.styledP
+import supercr.css.ComponentStyles
+import supercr.css.styles
+import kotlin.browser.document
 
 external interface ChangeSetScreenProps : RProps {
     var pullRequestSummary: PullRequestSummary
-    var fileDiffList: FileDiffListV2
-    var onReviewDone: (FileDiffListV2) -> Unit
+    var project: Project
+    var superCrClient: SuperCrClient
+    var onReviewDone: (ReviewInfo ,FileDiffListV2) -> Unit
 }
 
 external interface ChangeSetScreenState : RState {
     var inReview: Boolean
+    var fileDiffList: FileDiffListV2?
 }
 
 /**
@@ -26,6 +38,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
 
     override fun ChangeSetScreenState.init() {
         inReview = false
+        fileDiffList = null
     }
 
     override fun RBuilder.render() {
@@ -36,18 +49,39 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
         }
     }
 
+    override fun componentDidMount() {
+        GlobalScope.async(context = Dispatchers.Main) {
+            val (reviewInfo, errString) = props.superCrClient.startReview(props.project, props.pullRequestSummary)
+            val diff = props.superCrClient.getReviewDiff(reviewInfo!!, props.pullRequestSummary)
+            setState {
+                fileDiffList = diff
+            }
+        }.invokeOnCompletion { throwable ->
+        if (throwable != null) {
+            console.error("Something bad happened")
+            console.error(throwable)
+        }
+    }
+    }
+
     private fun RBuilder.renderOverviewScreen() {
-        changeSetOverviewScreen {
-            pullRequestSummary = props.pullRequestSummary
-            fileDiffList = props.fileDiffList
-            handleStartReview = startReview
+        if (state.fileDiffList != null) {
+            changeSetOverviewScreen {
+                pullRequestSummary = props.pullRequestSummary
+                fileDiffList = state.fileDiffList!!
+                handleStartReview = startReview
+            }
+        } else {
+            styledP {
+                + "loading.."
+            }
         }
     }
 
     private fun RBuilder.renderReviewScreen() {
         changeSetReview {
             pullRequestSummary = props.pullRequestSummary
-            fileDiffList = props.fileDiffList
+            fileDiffList = state.fileDiffList!!
             onReviewDone = props.onReviewDone
         }
     }
@@ -58,6 +92,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
             inReview = true
         }
     }
+
 }
 
 fun RBuilder.changeSetScreen(handler: ChangeSetScreenProps.() -> Unit): ReactElement {

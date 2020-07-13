@@ -3,6 +3,7 @@ package supercr.workflows.codereview.screens
 import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
+import codereview.ReviewInfo
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import react.RBuilder
@@ -22,8 +23,9 @@ import supercr.workflows.codereview.processor.retrieveChangedFileDiffList
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffListV2
+    var reviewInfo: ReviewInfo
     var pullRequestSummary: PullRequestSummary
-    var onReviewDone: (FileDiffListV2) -> Unit
+    var onReviewDone: (ReviewInfo , FileDiffListV2) -> Unit
 }
 
 external interface ChangeSetReviewScreenState : RState {
@@ -90,7 +92,7 @@ class ChangeSetReviewScreen(
 
     private fun generateFileDiffAndMetaData(): List<FileDiffStateAndMetaData> {
         return KeyboardShortcutTrie.generatePossiblePrefixCombos(
-            prefixString = null,
+            prefixString = "d",
             numberOfComponents = props.fileDiffList.fileDiffs.size
         )
             .mapIndexed { index, prefix ->
@@ -182,7 +184,7 @@ class ChangeSetReviewScreen(
             }
             if (isReviewDone) {
                 props.onReviewDone(
-                    newFileSet.map { Pair(it.fileDiff, it.commentHandler) }.retrieveChangedFileDiffList()
+                    props.reviewInfo ,newFileSet.map { Pair(it.fileDiff, it.commentHandler) }.retrieveChangedFileDiffList()
                 )
             }
         } else {

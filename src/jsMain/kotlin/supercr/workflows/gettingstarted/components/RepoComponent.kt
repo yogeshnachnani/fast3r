@@ -1,6 +1,7 @@
 package supercr.workflows.gettingstarted.components
 
 import ListItem
+import OutlinedInput
 import codereview.Project
 import codereview.SuperCrClient
 import git.provider.RepoSummary
@@ -8,24 +9,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.css.Display
+import kotlinx.css.LinearDimension
 import kotlinx.css.display
+import kotlinx.css.margin
+import kotlinx.css.pct
+import kotlinx.css.px
+import kotlinx.css.width
 import kotlinx.html.js.onChangeFunction
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLTextAreaElement
 import react.RBuilder
 import react.RComponent
 import react.RProps
+import react.RReadableRef
 import react.RState
 import react.ReactElement
 import react.createRef
 import react.dom.p
 import react.setState
 import styled.css
+import styled.getClassName
+import styled.styledDiv
 import styled.styledInput
+import styled.styledP
+import supercr.css.ComponentStyles
 
 external interface RepoComponentProps: RProps {
-    var superCrClient: SuperCrClient
     var repoSummary: RepoSummary
-    var onSetupComplete: (Project) -> Boolean
+    var guessedProject: Project
+    var onLocalPathChange: (Project, String) -> Unit
 }
 
 external interface RepoComponentState: RState {
@@ -33,32 +45,8 @@ external interface RepoComponentState: RState {
 }
 
 class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
-    private val inputFileRef = createRef<HTMLInputElement>()
 
-    private val handleSelection: () -> Unit = {
-//        inputFileRef.current!!.click() TODO See below. Below if condition is just a hack to select the 'right folder'
-        val project = if (props.repoSummary.full_name == "theboringtech/btcmain") {
-            Project(localPath = "/home/yogesh/work/btc", providerPath = props.repoSummary.full_name, name = props.repoSummary.name)
-        } else {
-            Project(localPath = "/home/yogesh/work/theboringtech.github.io", providerPath = props.repoSummary.full_name, name = props.repoSummary.name)
-        }
-        GlobalScope.async(context = Dispatchers.Main) {
-            props.superCrClient.addProject(project)
-                .let { successfullyProcessed ->
-                    setState {
-                        isProcessed = successfullyProcessed
-                    }
-                    if (successfullyProcessed) {
-                        props.onSetupComplete(project)
-                    }
-                }
-        }.invokeOnCompletion { cause: Throwable? ->
-            if (cause != null) {
-                console.error("Something bad happened")
-                console.error(cause)
-            }
-        }
-    }
+    private val inputRef: RReadableRef<HTMLTextAreaElement> = createRef()
 
     override fun RepoComponentState.init() {
         isProcessed = false
@@ -67,25 +55,35 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
     override fun RBuilder.render() {
         ListItem {
             attrs {
-                button = true
+                button = false
                 alignItems = "center"
                 divider = true
-                onClick = handleSelection
                 disabled = state.isProcessed
+                key = props.repoSummary.full_name
             }
-            p {
-                +props.repoSummary.full_name
-            }
-            /** TODO: Make this work once we switch to electron or Kvision. Right now it just sits there - never used */
-            styledInput {
+            styledDiv {
                 css {
-                    display = Display.none
+                    display = Display.flex
+                    width = 600.px
                 }
-                attrs {
-                    ref = inputFileRef
+                styledP {
+                    css {
+                        display = Display.inlineBlock
+                        margin(18.px)
+                    }
+                    +props.repoSummary.full_name
                 }
-                attrs.onChangeFunction = { event ->
-                    console.log("Got the value as ${inputFileRef.current?.files}")
+                OutlinedInput {
+                    attrs {
+                        autoFocus = false
+                        multiline = false
+                        rows = 1
+                        rowsMax = 1
+                        placeholder = props.guessedProject.localPath
+                        inputRef = this.inputRef
+                        fullWidth = true
+                        className = ComponentStyles.getClassName { ComponentStyles::repoInitialiserRepoPathInput }
+                    }
                 }
             }
         }

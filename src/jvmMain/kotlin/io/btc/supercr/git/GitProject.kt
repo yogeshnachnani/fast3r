@@ -67,7 +67,7 @@ class GitProjectCache {
                         knownProjectsByProviderPath[providerPath] = Project(
                             localPath = it.parent,
                             providerPath = providerPath,
-                            name = it.name
+                            name = it.parentFile.name
                         )
                     }
                 }

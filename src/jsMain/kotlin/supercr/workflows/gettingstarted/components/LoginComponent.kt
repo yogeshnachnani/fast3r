@@ -3,6 +3,12 @@ package supercr.workflows.gettingstarted.components
 import Button
 import Grid
 import Paper
+import kotlinx.css.Display
+import kotlinx.css.display
+import kotlinx.css.marginTop
+import kotlinx.css.maxWidth
+import kotlinx.css.px
+import kotlinx.css.width
 import kotlinx.html.InputType
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
@@ -14,6 +20,13 @@ import react.createRef
 import react.dom.defaultValue
 import react.dom.input
 import react.dom.p
+import styled.css
+import styled.getClassName
+import styled.styledDiv
+import styled.styledInput
+import styled.styledP
+import supercr.css.ComponentStyles
+import supercr.kb.components.enterActivatedButton
 
 interface LoginComponentProps: RProps {
     var onLoginButtonPressed: (String) -> Unit
@@ -23,84 +36,42 @@ class LoginComponent: RComponent<LoginComponentProps, RState>() {
     private val personalAccessTokenInputRef = createRef<HTMLInputElement>()
 
     override fun RBuilder.render() {
-        Grid {
+        Paper {
             attrs {
-                item = false
-                container = true
-                alignItems = "center"
-                direction = "row"
-                justify = "center"
-                spacing = 4
+                square = true
+                elevation = 3
+                className = ComponentStyles.getClassName { ComponentStyles::loginComponentPaper }
             }
-        }
-        Grid {
-            attrs {
-                item = true
-                container = false
-            }
-            Paper {
-                attrs {
-                    square = true
-                    elevation = 3
+            styledP {
+                css {
+                    marginTop = 15.px
                 }
-                Grid {
-                    attrs {
-                        item = false
-                        container = true
-                        alignItems = "center"
-                        direction = "row"
-                        justify = "center"
-                        spacing = 2
-                    }
-                    Grid {
-                        attrs {
-                            item = true
-                            container = false
-                            md = 12
-                        }
-                        p {
-                            + "Welcome to the fastest CR experience. Lets Get Started"
-                        }
-                        input(type = InputType.password) {
-                            ref = personalAccessTokenInputRef
-                            attrs.placeholder = "Enter your github personal access token"
-                            attrs.defaultValue = "4da05160ff8311a45f31fe8fd6ab374b8a6f9fe9"
-                        }
-                    }
-                    Grid {
-                        attrs {
-                            item = true
-                            container = false
-                            md = 4
-                        }
-                    }
-                    Grid {
-                        attrs {
-                            item = true
-                            container = false
-                            md = 4
-                        }
-                        Button {
-                            attrs {
-                                variant = "contained"
-                                color = "primary"
-                                onClick= {
-                                    props.onLoginButtonPressed(personalAccessTokenInputRef.current!!.value)
-                                }
-                            }
-                            + "Login"
-                        }
-                    }
-                    Grid {
-                        attrs {
-                            item = true
-                            container = false
-                            md = 4
-                        }
-                    }
+                + "Welcome to the Fast3r. Please enter your github personal access token"
+            }
+            styledInput(type = InputType.password) {
+                css {
+                    display = Display.block
+                    marginTop = 15.px
+                }
+                ref = personalAccessTokenInputRef
+                attrs.defaultValue = "417a060c57755029fba76f508f87deaec5442470"
+            }
+            styledDiv {
+                css {
+                    width = 190.px
+                    maxWidth = 190.px
+                    marginTop = 15.px
+                }
+                enterActivatedButton {
+                    label = "Go"
+                    onSelected = handleEnter
                 }
             }
         }
+    }
+
+    private val handleEnter : () ->  Unit = {
+        props.onLoginButtonPressed(personalAccessTokenInputRef.current!!.value)
     }
 }
 fun RBuilder.loginComponent(handler: LoginComponentProps.() -> Unit): ReactElement {

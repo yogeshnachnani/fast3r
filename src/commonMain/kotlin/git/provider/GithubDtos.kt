@@ -43,7 +43,7 @@ data class PullRequestSummary(
     val updated_at: String,
     val closed_at: String?,
     val merged_at: String?,
-    val merge_commit_sha: String,
+    val merge_commit_sha: String? = null,
     val assignee: User?,
     val assignees: List<User>,
     val requested_reviewers: List<User>,
@@ -339,11 +339,20 @@ data class Repo(
     val archived: Boolean,
     val disabled: Boolean,
     val open_issues_count: Long,
-    val license: String? = null,
+    val license: GithubLicenseInfo? = null,
     val forks: Long? = 0,
     val open_issues: Long? = 0,
     val watchers: Long? = 0,
     val default_branch: String
+)
+
+@Serializable
+data class GithubLicenseInfo(
+    val key: String,
+    val name: String,
+    val spdx_id: String,
+    val url: String,
+    val node_id: String
 )
 
 @Serializable
@@ -366,6 +375,22 @@ data class User(
     val received_events_url: String,
     val type: String, //TODO: Convert to enum after reading docs
     val site_admin: Boolean
+)
+
+@Serializable
+data class OrgSummary(
+    val login: String,
+    val id: Long,
+    val node_id: String,
+    val url: String,
+    val repos_url: String,
+    val events_url: String,
+    val hooks_url: String,
+    val issues_url: String,
+    val members_url: String,
+    val public_members_url: String,
+    val avatar_url: String,
+    val description: String
 )
 
 @Serializable

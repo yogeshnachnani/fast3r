@@ -1,7 +1,10 @@
 package supercr.workflows.overview.screens
 
 import Grid
+import codereview.FileDiffListV2
 import codereview.Project
+import codereview.ReviewInfo
+import codereview.SuperCrClient
 import git.provider.GithubClient
 import git.provider.PullRequestSummary
 import kotlinx.coroutines.Dispatchers
@@ -17,21 +20,50 @@ import react.ReactElement
 import react.setState
 import styled.css
 import styled.styledDiv
+import supercr.css.ComponentStyles
+import supercr.css.styles
+import supercr.workflows.codereview.screens.changeSetScreen
 import supercr.workflows.overview.components.projectList
 import supercr.workflows.overview.components.pullRequestList
 import supercr.workflows.overview.components.userStats
+import kotlin.browser.document
 
 external interface OverviewScreenProps: RProps {
     var projects : List<Project>
     var getGithubClient: () -> GithubClient
+    var superCrClient: SuperCrClient
 }
 
 external interface OverviewScreenState: RState {
     var pullRequests: List<Pair<Project, PullRequestSummary>>
+    var selectedPullRequestIndex: Int
 }
 
 class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
+
     override fun RBuilder.render() {
+        if (state.selectedPullRequestIndex == -1) {
+            renderOverview()
+        } else {
+            renderChangeSetOverview()
+        }
+    }
+
+    override fun OverviewScreenState.init() {
+        pullRequests = emptyList()
+        selectedPullRequestIndex = -1
+    }
+
+    private fun RBuilder.renderChangeSetOverview() {
+        changeSetScreen {
+            pullRequestSummary = state.pullRequests[state.selectedPullRequestIndex].second
+            project = state.pullRequests[state.selectedPullRequestIndex].first
+            superCrClient = props.superCrClient
+            onReviewDone = handlePostReview
+        }
+    }
+
+    private fun RBuilder.renderOverview() {
         Grid {
             attrs {
                 container = true
@@ -61,6 +93,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 }
                 pullRequestList {
                     pullRequests = state.pullRequests
+                    onPullRequestSelect = handlePullRequestSelect
                 }
             }
             Grid {
@@ -74,9 +107,21 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
         }
     }
 
-    override fun OverviewScreenState.init() {
-        pullRequests = emptyList()
+    private val handlePostReview: (ReviewInfo, FileDiffListV2) -> Unit = { reviewInfo,  updatedFileList ->
+        GlobalScope.async(context = Dispatchers.Main) {
+            props.superCrClient.postReview(reviewInfo, updatedFileList)
+            setState {
+                selectedPullRequestIndex = -1
+            }
+        }
     }
+
+    private val handlePullRequestSelect: (Int) -> Unit = { selectedIndex ->
+        setState {
+            selectedPullRequestIndex = selectedIndex
+        }
+    }
+
 
     override fun componentDidMount() {
         // TODO: Instead of iterating over projects, see if you can retrieve the pull requests where a given user is the asignee

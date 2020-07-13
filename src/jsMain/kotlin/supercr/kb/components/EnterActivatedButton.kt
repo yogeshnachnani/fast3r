@@ -3,6 +3,9 @@ package supercr.kb.components
 import Button
 import Grid
 import kotlinx.css.color
+import kotlinx.css.marginTop
+import kotlinx.css.paddingTop
+import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -55,6 +58,7 @@ class EnterActivatedButton : RComponent<EnterActivatedButtonProps, EnterActivate
                 styledDiv {
                     css {
                         color = Colors.baseText
+                        paddingTop = 10.px
                     }
                     + "press "
                     strong {

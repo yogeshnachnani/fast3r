@@ -28,16 +28,41 @@ class GithubClient(
         private const val ACCEPT_HEADER_VALUE = "application/vnd.github.v3+json"
         private const val GITHUB_API_BASE_URL = "https://api.github.com/"
         private const val AUTH_HEADER_PREFIX = "token "
-        private const val ORGS_PATH = "orgs/"
+        private const val ORGS_PATH = "orgs"
+        private const val USER_PATH = "user"
         private const val REPOS_PATH = "repos"
         private const val PULLS_PATH = "pulls"
         private const val REVIEWS_PATH = "reviews"
         val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     }
 
+    suspend fun getAuthenticatedUser(): User {
+        return httpClient.request<User>(buildRequest().apply {
+            url("$GITHUB_API_BASE_URL$USER_PATH")
+            method = HttpMethod.Get
+        })
+    }
+
+    suspend fun getAuthenticatedUserRepos(): List<RepoSummary> {
+        return getAuthenticatedUser()
+            .let {
+                httpClient.request<List<RepoSummary>>(buildRequest().apply {
+                    url(it.repos_url)
+                    method = HttpMethod.Get
+                })
+            }
+    }
+
+    suspend fun getAuthenticatedUserOrgs(): List<OrgSummary> {
+        return httpClient.request<List<OrgSummary>>(buildRequest().apply {
+            url("$GITHUB_API_BASE_URL$USER_PATH/$ORGS_PATH")
+            method = HttpMethod.Get
+        })
+    }
+
     suspend fun getReposSummary(orgName: String): List<RepoSummary> {
         return httpClient.request<List<RepoSummary>>(buildRequest().apply {
-            url("$GITHUB_API_BASE_URL$ORGS_PATH$orgName/${ REPOS_PATH }")
+            url("$GITHUB_API_BASE_URL$ORGS_PATH/$orgName/${ REPOS_PATH }")
             method = HttpMethod.Get
         })
     }

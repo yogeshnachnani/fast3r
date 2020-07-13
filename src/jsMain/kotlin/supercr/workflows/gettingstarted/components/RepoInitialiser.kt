@@ -1,6 +1,5 @@
 package supercr.workflows.gettingstarted.components
 
-import Button
 import MaterialUIList
 import codereview.Project
 import codereview.SuperCrClient
@@ -8,12 +7,22 @@ import git.provider.GithubClient
 import git.provider.RepoSummary
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.css.color
+import kotlinx.css.margin
+import kotlinx.css.maxWidth
+import kotlinx.css.px
+import kotlinx.css.width
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.css
+import styled.styledDiv
+import styled.styledP
+import supercr.css.Colors
+import supercr.kb.components.enterActivatedButton
 
 interface RepoInitProps: RProps {
     var githubClient: GithubClient
@@ -22,36 +31,29 @@ interface RepoInitProps: RProps {
 }
 
 interface RepoInitState: RState {
-    var repoList: List<RepoSummary>
-    var showNextButton: Boolean
-    var selectedProjects: List<Project>
+    var repoToDetectedProject: Map<RepoSummary, Project>
+    var userFinalisedProjects: List<Project>
 }
 
 class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
     override fun RepoInitState.init() {
-        repoList = emptyList()
-        showNextButton = false
-        selectedProjects = emptyList()
+        repoToDetectedProject = emptyMap()
+        userFinalisedProjects = emptyList()
     }
 
     override fun RBuilder.render() {
-        MaterialUIList {
-            state.repoList.map {
-                repoComponent {
-                    repoSummary = it
-                    onSetupComplete = handleProjectSetup
-                    superCrClient = props.superCrClient
+        if (state.repoToDetectedProject.isNotEmpty()) {
+            renderRepoList()
+            styledDiv {
+                css {
+                    width = 190.px
+                    maxWidth = 190.px
+                    margin(18.px)
                 }
-            }
-        }
-        if (state.showNextButton) {
-            Button {
-                attrs {
-                    variant = "contained"
-                    color = "primary"
-                    onClick= handleDone
+                enterActivatedButton {
+                    label = "Done"
+                    onSelected = handleDone
                 }
-                + "Done"
             }
         }
     }
@@ -60,8 +62,28 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
         fetchRepos()
     }
 
+    private fun RBuilder.renderRepoList() {
+        if (state.repoToDetectedProject.isNotEmpty()) {
+            styledP {
+                css {
+                    color = Colors.baseText
+                }
+                + "We automatically mapped your github repos to existing code on your computer"
+            }
+        }
+        MaterialUIList {
+            state.repoToDetectedProject.map { (fetchedRepoSummary, detectedProject) ->
+                repoComponent {
+                    repoSummary = fetchedRepoSummary
+                    onLocalPathChange = handleUpdatePathForProject
+                    guessedProject = detectedProject
+                }
+            }
+        }
+    }
+
     private val handleDone: () -> Unit = {
-        props.passProjectInfo(state.selectedProjects)
+        props.passProjectInfo(state.userFinalisedProjects)
     }
 
     /**
@@ -69,22 +91,36 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
      *  ** Selected Path should be a git repo
      *  ** Selected Path must point to the same origin (getOriginURL().contains(repoName))
      */
-    private val handleProjectSetup: (Project) -> Boolean = { givenProject ->
-        setState {
-            showNextButton = true
-            selectedProjects += givenProject
+    private val handleUpdatePathForProject: (Project, String) -> Unit = { givenProject, newLocalPath ->
+        val newProjectList = state.userFinalisedProjects.map {
+            if (it.providerPath == givenProject.providerPath) {
+                it.copy(localPath =  newLocalPath)
+            } else {
+                it
+            }
         }
-        true
+        setState {
+            userFinalisedProjects = newProjectList
+        }
     }
 
     private fun fetchRepos() {
         GlobalScope.async {
-            props.githubClient.getReposSummary("theboringtech")
-                .let {
+            val user = props.githubClient.getAuthenticatedUser()
+            val userOrgs = props.githubClient.getAuthenticatedUserOrgs()
+            userOrgs.map { orgSummary ->
+                props.githubClient.getReposSummary(orgSummary.login)
+            }
+                .flatten()
+                .plus(props.githubClient.getAuthenticatedUserRepos())
+                .let { fetchedRepoSummaries ->
+                    val detectedProjects = props.superCrClient.fetchDetectedProjectsFor(fetchedRepoSummaries)
                     setState {
-                        repoList = it
+                        repoToDetectedProject = detectedProjects
+                        userFinalisedProjects = detectedProjects.values.toList()
                     }
                 }
+
         }.invokeOnCompletion { throwable ->
             if (throwable != null) {
                 console.error("Something bad happened")
