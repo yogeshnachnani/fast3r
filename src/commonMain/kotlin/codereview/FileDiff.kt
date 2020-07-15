@@ -144,3 +144,10 @@ enum class DiffChangeType {
     /** Copy an existing file to a new location, keeping the original */
     COPY;
 }
+
+@Serializable
+data class SimpleFileDiff(
+    val oldFileText: String?,
+    val newFileText: String?,
+    val editList: List<Edit>
+)

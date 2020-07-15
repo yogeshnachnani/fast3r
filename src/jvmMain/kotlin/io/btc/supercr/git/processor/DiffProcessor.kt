@@ -7,6 +7,10 @@ import codereview.FileData
 import codereview.FileDiffV2
 import codereview.FileLine
 import codereview.FileTShirtSize
+import codereview.SimpleFileDiff
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 
@@ -107,12 +111,25 @@ private fun Edit.processEdit(offset: Long, oldFileLineData: MutableList<FileLine
             }
         }
         DiffEditType.REPLACE -> {
-            /** If there is new text on the right hand side, that means we have to fill empty lines */
-            if (lengthB > lengthA) {
-                val numLines = lengthB - lengthA
-                oldFileLineData.insertEmptyLinesAt(rowNumber = beginB + offset + lengthA, numLines = numLines)
+            when {
+                lengthB > lengthA -> {
+                    /** If there is new text on the right hand side, that means we have to fill empty lines */
+                    /** If there is new text on the right hand side, that means we have to fill empty lines */
+                    val numLines = lengthB - lengthA
+                    oldFileLineData.insertEmptyLinesAt(rowNumber = beginB + offset + lengthA, numLines = numLines)
+                    0L
+                }
+                lengthA > lengthB -> {
+                    /** This is basically equivalent to a DELETE since there are more lines in oldText than in newText */
+                    /** This is basically equivalent to a DELETE since there are more lines in oldText than in newText */
+                    val numLines = lengthA - lengthB
+                    newFileLineData.insertEmptyLinesAt(rowNumber = endB + offset, numLines = numLines)
+                    numLines
+                }
+                else -> {
+                    0L
+                }
             }
-            0L
         }
         DiffEditType.EMPTY -> TODO()
     }
@@ -126,3 +143,12 @@ private fun MutableList<FileLine>.insertEmptyLinesAt(rowNumber: Long, numLines: 
             this.addAll(rowNumber.toInt(), it)
         }
 }
+
+/**
+ * Hacky way of generating json for a given diff so that we can write tests for it easily
+ */
+private fun writeTestJson(edits: List<Edit>, oldFileText: String?, newFileText: String?): String {
+    val json = Json(configuration = JsonConfiguration.Stable)
+    return json.stringify(SimpleFileDiff.serializer(), SimpleFileDiff(oldFileText, newFileText, edits))
+}
+

@@ -1,7 +1,14 @@
 package io.btc.supercr.git.processor
 
 import codereview.Edit
+import codereview.SimpleFileDiff
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 import org.junit.Test
+import java.io.File
+import java.nio.charset.Charset
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -71,5 +78,19 @@ class DiffProcessorTest {
         assertTrue(oldFileLines.size == newFileLines.size)
         assertEquals(12, newFileLines.size)
         assertEquals(2 ,newFileLines.filter { it.filePosition == null }.size)
+    }
+
+    @Test
+    fun processEdits_ShouldAddLinesInNewTextWhenReplaceLengthBIsLessThanLengthA() {
+        val simpleFileDiff = DiffProcessorTest::class.java.classLoader
+            .getResource("textDiffWithEditList_ReplaceEditWithLengthBLesserThanA.json")!!
+            .file
+            .let {
+                val json = Json(configuration = JsonConfiguration.Stable)
+                json.parse(SimpleFileDiff.serializer(), FileUtils.readFileToString(File(it), Charset.defaultCharset()))
+            }
+        val (oldFileLines, newFileLines) = simpleFileDiff.editList.processWith(simpleFileDiff.oldFileText, simpleFileDiff.newFileText)
+        assertEquals(254, oldFileLines.size)
+        assertEquals(oldFileLines.size, newFileLines.size)
     }
 }
