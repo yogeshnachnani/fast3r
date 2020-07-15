@@ -3,13 +3,10 @@ package io.btc.supercr.api
 import codereview.FileDiffListV2
 import codereview.Project
 import git.provider.PullRequestSummary
-import codereview.ReviewInfo
-import codereview.ReviewStorageProvider
 import io.btc.supercr.db.toReviewInfo
 import io.btc.supercr.git.GitProject
 import io.btc.supercr.git.checkOrFetchRef
 import io.btc.supercr.git.fetchRef
-import io.btc.supercr.git.formatDiff
 import io.btc.supercr.git.formatDiffV2
 import io.btc.supercr.review.ReviewController
 import io.ktor.application.call
@@ -72,7 +69,7 @@ class ProjectApi constructor(
                             if(!fetchedOldRef || !fetchedNewRef) {
                                 call.respond(HttpStatusCode.NotFound)
                             } else {
-                                call.respond(git.formatDiff(oldRef, newRef))
+                                call.respond(git.formatDiffV2(oldRef, newRef))
                             }
                         }
                     }

@@ -1,7 +1,6 @@
 package io.btc.supercr.api
 
 import codereview.DiffChangeType
-import codereview.FileDiffList
 import codereview.FileDiffListV2
 import codereview.FileLineItem
 import codereview.Project
@@ -93,19 +92,6 @@ class ProjectApiTest {
         }
     }
 
-    @Test
-    fun `testDiff - should return diff `()  = withTestApplication({superCrServer(jdbi)}) {
-        addProjectEntry()
-        val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
-        val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
-        with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/diff?oldRef=$oldRef&newRef=$newRef")) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            val returnedPayload = json.parse(FileDiffList.serializer(), response.content!!)
-            assertEquals(2, returnedPayload.fileDiffs.size )
-            assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.MODIFY }.size )
-            assertEquals(1, returnedPayload.fileDiffs.filter { it.diffChangeType == DiffChangeType.ADD }.size )
-        }
-    }
 
     @Test
     fun `testReview - should throw not found if review requested for non existent project`() = withTestApplication({superCrServer(jdbi)}) {
