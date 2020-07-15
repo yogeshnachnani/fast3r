@@ -2,11 +2,8 @@ package io.btc.supercr.git
 
 import codereview.DiffChangeType
 import codereview.Edit
-import codereview.FileDiff
-import codereview.FileDiffList
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
-import codereview.FileHeader
 import io.btc.supercr.git.GitUtils.Companion.gitUtilsLogger
 import io.btc.supercr.git.processor.process
 import org.apache.commons.io.FileUtils
@@ -92,61 +89,6 @@ fun Git.formatDiffV2(oldRef: String, newRef: String): FileDiffListV2 {
         }
         .let {
             FileDiffListV2(it)
-        }
-}
-
-fun Git.formatDiff(oldRef: String, newRef: String): FileDiffList {
-    val diffFormatter = DiffFormatter(System.out)
-        .also {
-            it.setRepository(this.repository)
-            it.isDetectRenames = true
-        }
-    return diffFormatter.scan(
-        ObjectId.fromString(oldRef),
-        ObjectId.fromString(newRef)
-    )
-        .map { diffEntry ->
-            val diffFileHeader = diffFormatter.toFileHeader(diffEntry)
-            gitUtilsLogger.debug("Processing file oldPath: {} and new path: {}", diffFileHeader.oldPath, diffFileHeader.newPath)
-            FileDiff(
-                rawTextOld = if (diffEntry.oldMode == FileMode.MISSING) {
-                    null
-                } else {
-                    repository.fetchContents(  diffEntry.oldId.toObjectId())
-                },
-                rawTextNew = if (diffEntry.newMode == FileMode.MISSING) {
-                    null
-                } else {
-                   repository.fetchContents(diffEntry.newId.toObjectId())
-                },
-                diffChangeType = when(diffEntry.changeType) {
-                    DiffEntry.ChangeType.ADD -> DiffChangeType.ADD
-                    DiffEntry.ChangeType.MODIFY -> DiffChangeType.MODIFY
-                    DiffEntry.ChangeType.DELETE -> DiffChangeType.DELETE
-                    DiffEntry.ChangeType.RENAME -> DiffChangeType.RENAME
-                    DiffEntry.ChangeType.COPY -> DiffChangeType.COPY
-                    else -> throw RuntimeException("Not possible to have a null change type for file ${diffEntry.newPath}")
-                },
-                fileHeader = FileHeader(
-                    /** TODO : Confirm if [AbbreviatedObjectId.name] can be used*/
-                    identifier = diffFileHeader.newId.name(),
-                    fileNewPath = diffFileHeader.newPath,
-                    fileOldPath = diffFileHeader.oldPath,
-                    description = String(diffFileHeader.buffer),
-                    editList = diffFileHeader.toEditList()
-                        .map { edit ->
-                            Edit(
-                                beginA = edit.beginA.toLong(),
-                                beginB = edit.beginB.toLong(),
-                                endA = edit.endA.toLong(),
-                                endB = edit.endB.toLong()
-                            )
-                        }
-                )
-            )
-        }
-        .let {
-            FileDiffList(it)
         }
 }
 

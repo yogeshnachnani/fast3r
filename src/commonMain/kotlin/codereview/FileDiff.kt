@@ -12,11 +12,6 @@ enum class FileTShirtSize {
 }
 
 @Serializable
-data class FileDiffList(
-    val fileDiffs: List<FileDiff>
-)
-
-@Serializable
 sealed class FileLineItem() {
     @Serializable
     data class Comment(
@@ -85,35 +80,6 @@ fun FileDiffV2.hasNewFile(): Boolean {
 data class FileDiffListV2(
     val fileDiffs: List<FileDiffV2>
 )
-
-@Serializable
-data class FileDiff(
-    val rawTextOld: String?,
-    val rawTextNew: String?,
-    val diffChangeType: DiffChangeType,
-    val fileHeader: FileHeader
-)
-@Serializable
-data class FileHeader(
-    val identifier: String,
-    val fileNewPath: String,
-    val fileOldPath: String,
-    val description: String,
-    val editList: List<Edit>
-) {
-    val tShirtSize: FileTShirtSize
-        get() = editList.fold(0L) {acc, edit ->
-            acc + edit.lengthB
-        }.let { totalEditLength ->
-            when {
-                totalEditLength < 2L -> FileTShirtSize.XS
-                totalEditLength < 60L -> FileTShirtSize.S
-                totalEditLength < 100L -> FileTShirtSize.M
-                totalEditLength < 160L -> FileTShirtSize.L
-                else -> FileTShirtSize.XL
-            }
-        }
-}
 
 @Serializable
 enum class DiffEditType {
