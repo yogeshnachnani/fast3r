@@ -184,7 +184,8 @@ class ChangeSetReviewScreen(
             }
             if (isReviewDone) {
                 props.onReviewDone(
-                    props.reviewInfo ,newFileSet.map { Pair(it.fileDiff, it.commentHandler) }.retrieveChangedFileDiffList()
+                    props.reviewInfo ,
+                    newFileSet.map { Pair(it.fileDiff, it.commentHandler) }.retrieveChangedFileDiffList()
                 )
             }
         } else {

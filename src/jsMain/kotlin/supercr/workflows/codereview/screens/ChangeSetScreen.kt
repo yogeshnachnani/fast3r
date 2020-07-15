@@ -29,6 +29,7 @@ external interface ChangeSetScreenProps : RProps {
 external interface ChangeSetScreenState : RState {
     var inReview: Boolean
     var fileDiffList: FileDiffListV2?
+    var reviewInfo: ReviewInfo?
 }
 
 /**
@@ -51,10 +52,11 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
 
     override fun componentDidMount() {
         GlobalScope.async(context = Dispatchers.Main) {
-            val (reviewInfo, errString) = props.superCrClient.startReview(props.project, props.pullRequestSummary)
-            val diff = props.superCrClient.getReviewDiff(reviewInfo!!, props.pullRequestSummary)
+            val (createdReview, errString) = props.superCrClient.startReview(props.project, props.pullRequestSummary)
+            val diff = props.superCrClient.getReviewDiff(createdReview!!, props.pullRequestSummary)
             setState {
                 fileDiffList = diff
+                reviewInfo = createdReview
             }
         }.invokeOnCompletion { throwable ->
         if (throwable != null) {
@@ -83,6 +85,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
             pullRequestSummary = props.pullRequestSummary
             fileDiffList = state.fileDiffList!!
             onReviewDone = props.onReviewDone
+            reviewInfo = state.reviewInfo!!
         }
     }
 

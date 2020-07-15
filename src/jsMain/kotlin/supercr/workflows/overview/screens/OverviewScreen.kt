@@ -113,6 +113,11 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
             setState {
                 selectedPullRequestIndex = -1
             }
+        }.invokeOnCompletion { throwable ->
+            if (throwable != null) {
+                console.error("Something bad happened While posting review to backend")
+                console.error(throwable)
+            }
         }
     }
 
