@@ -4,7 +4,10 @@ val ktorVersion = "1.3.2"
 val jgitVersion = "5.7.0.202003110725-r"
 val logbackVersion = "1.2.3"
 val jdbiVersion = "3.12.2"
-
+val kotlinVersion = "1.3.72"
+val reactVersion = "16.13.1"
+val reactKotlinVersion = "$reactVersion-pre.110-kotlin-$kotlinVersion"
+val reactRouterDomVersion = "5.1.2"
 
 
 plugins {
@@ -119,11 +122,13 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-html-js:0.7.1")
 
                 //React, React DOM + Wrappers
-                implementation("org.jetbrains:kotlin-react:16.13.0-pre.94-kotlin-1.3.70")
-                implementation("org.jetbrains:kotlin-react-dom:16.13.0-pre.94-kotlin-1.3.70")
-                implementation(npm("react", "16.13.1"))
-                implementation(npm("react-dom", "16.13.1"))
-                implementation("org.jetbrains:kotlin-styled:1.0.0-pre.94-kotlin-1.3.70")
+                implementation("org.jetbrains:kotlin-react:$reactKotlinVersion")
+                implementation("org.jetbrains:kotlin-react-dom:$reactKotlinVersion")
+                implementation("org.jetbrains:kotlin-react-router-dom:$reactRouterDomVersion-pre.110-kotlin-$kotlinVersion")
+                implementation(npm("react", reactVersion))
+                implementation(npm("react-dom", reactVersion))
+                implementation(npm("react-router-dom", reactRouterDomVersion))
+                implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-$kotlinVersion")
                 implementation(npm("styled-components"))
                 implementation(npm("inline-style-prefixer"))
                 // Components used only within React rendering (substituted out when using Atom)
