@@ -14,15 +14,19 @@ import react.dom.render
 import react.dom.span
 import supercr.css.styles
 import supercr.kb.UniversalKeyboardShortcutHandler
-import supercr.workflows.gettingstarted.screens.getStartedScreen
 import supercr.workflows.mainScreen
 import kotlin.browser.document
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import react.router.dom.browserRouter
+import react.router.dom.route
+import react.router.dom.switch
+import styled.styledDiv
 import supercr.css.ComponentStyles
 import supercr.workflows.codereview.components.commentThread
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetScreen
+import kotlin.browser.window
 import kotlin.js.Date
 
 @JsModule("../../../../processedResources/js/main/pull_request_big_one.json")
@@ -45,12 +49,27 @@ fun main ()  {
      */
     document.body!!.insertAdjacentHTML("beforeend", "<div id='root' style='height:100vh; width:100vw;'></div>" )
     UniversalKeyboardShortcutHandler.init()
+    console.log("We are at ${window.location.href} and ${window.location.search}")
+    render(document.getElementById("root"))  {
+        browserRouter {
+            switch {
+                route(path = "/", exact = true) {
+                    renderMainScreen()
+                }
+                route(path = "/testSomethingElse", exact = true) {
+                    styledDiv {
+                        + "Here we can test something else"
+                    }
+                }
+            }
+        }
+    }
 //    renderDiffView()
 //    renderGettingStarted()
-    renderMainScreen()
 //    tryOutKeyboardEnabledList()
 //    renderFileView()
 //    renderComments()
+//    tryoutGithubLogin()
 }
 
 private fun renderComments() {
@@ -96,8 +115,8 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
     }
 }
 
-private fun renderMainScreen() {
-    render(document.getElementById("root")) {
+private fun renderMainScreen(): ReactElement {
+    return buildElement {
         StylesProvider {
             attrs {
                 injectFirst = true
@@ -105,14 +124,6 @@ private fun renderMainScreen() {
             mainScreen {
 
             }
-        }
-    }
-}
-
-private fun renderGettingStarted() {
-    render(document.getElementById("root")) {
-        getStartedScreen {
-
         }
     }
 }
