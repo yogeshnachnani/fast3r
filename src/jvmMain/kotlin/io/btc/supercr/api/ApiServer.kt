@@ -4,6 +4,7 @@ import APP_NAME
 import DEFAULT_PORT
 import HOME
 import io.btc.supercr.db.FileLineItemsRepository
+import io.btc.supercr.db.OauthTokensRepository
 import io.btc.supercr.db.ProjectRepository
 import io.btc.supercr.git.GitProject
 import io.btc.supercr.git.GitProjectCache
@@ -64,6 +65,7 @@ fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = false) {
         }
         ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)), ReviewController(FileLineItemsRepository(jdbi)))
         RepoApi(this, gitProjectCache)
+        OauthApi(this, OauthTokensRepository(jdbi))
     }
     install(CORS) {
         host("localhost:8080")
@@ -123,6 +125,17 @@ internal fun Jdbi.runMigrations() {
             .execute()
         handle.createUpdate("""
             CREATE UNIQUE INDEX IF NOT EXISTS uk_review_info_all on review_info(projectIdentifier, provider, providerId)
+        """.trimIndent())
+            .execute()
+        handle.createUpdate("""
+            CREATE TABLE IF NOT EXISTS auth_tokens(
+                login TEXT NOT NULL, 
+                state TEXT NOT NULL, 
+                authToken TEXT, 
+                scope TEXT, 
+                tokenType TEXT, 
+                createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+                updatedAt TEXT DEFAULT CURRENT_TIMESTAMP)
         """.trimIndent())
             .execute()
     }

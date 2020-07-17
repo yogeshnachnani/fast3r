@@ -1,4 +1,8 @@
 package git.provider
+import DEFAULT_PORT
+import DEFAULT_UI_PORT
+import GITHUB_OATH_APP_SECRET
+import GITHUB_OAUTH_APP_CLIENT_ID
 import kotlinx.serialization.Serializable
 
 //TODO: Figure out kotlinx.serialisation to convert from snake case to camel case automatically
@@ -518,4 +522,43 @@ data class PullRequestReviewComment(
     val line: Long? = null,
     val original_line: Long? = null,
     val side: ReviewCommentSide? = null
+)
+
+@Serializable
+data class AuthorizeRequest(
+    val client_id: String = GITHUB_OAUTH_APP_CLIENT_ID,
+    val redirect_uri: String = "http://localhost:$DEFAULT_UI_PORT",
+    val login: String,
+    val scope: String = "repo",
+    val state: String
+)
+
+@Serializable
+data class AccessTokenRequest(
+    val client_id: String = GITHUB_OAUTH_APP_CLIENT_ID,
+    val redirect_uri: String = "http://localhost:$DEFAULT_UI_PORT",
+    val client_secret: String = GITHUB_OATH_APP_SECRET,
+    val code: String,
+    val state: String
+)
+
+@Serializable
+data class AccessTokenParams(
+    val code: String,
+    val state: String
+)
+
+/**
+ * Eg: {"access_token":"e72e16c7e42f292c6912e7710c838347ae178b4a", "scope":"repo,gist", "token_type":"bearer"}
+ */
+@Serializable
+data class AccessTokenResponse(
+    val access_token: String,
+    val scope: String,
+    val token_type: String
+)
+
+@Serializable
+data class InitiateLoginPacket(
+    val login: String
 )

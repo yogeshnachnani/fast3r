@@ -1,4 +1,7 @@
+const val GITHUB_OAUTH_APP_CLIENT_ID = "e079a025fe7d0ecea523"
+const val GITHUB_OATH_APP_SECRET = "3eafea45925b1960bc90cf49945a682da0b49082"
 const val DEFAULT_PORT = 8081
+const val DEFAULT_UI_PORT = 8080
 const val APP_NAME = "super-cr"
 const val CODE_REVIEW_TOOL_CACHE_DIRECTORY = ".$APP_NAME"
 const val HOME = "HOME"

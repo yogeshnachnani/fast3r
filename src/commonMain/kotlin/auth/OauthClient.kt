@@ -1,8 +1,8 @@
 package auth
 
 interface OauthClient {
-    fun getToken(options: Map<String, String>): String
-    fun getUser(): String
+    suspend fun getToken(options: Map<String, Any>): String
+    suspend fun getUser(): String
     fun logout()
 }
 
@@ -11,11 +11,11 @@ class DumbOauthClient(
     private val fixedAccessToken: String,
     private val fixedUser: String = "yogeshnachnani"
 ) : OauthClient {
-    override fun getToken(options: Map<String, String>): String {
+    override suspend fun getToken(options: Map<String, Any>): String {
         return fixedAccessToken
     }
 
-    override fun getUser(): String {
+    override suspend fun getUser(): String {
         return fixedUser
     }
 

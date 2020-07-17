@@ -1,6 +1,5 @@
 package supercr.workflows
 
-import auth.DumbOauthClient
 import codereview.Project
 import codereview.SuperCrClient
 import git.provider.GithubClient
@@ -18,31 +17,50 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
-import supercr.workflows.gettingstarted.screens.getStartedScreen
+import styled.styledDiv
+import supercr.workflows.gettingstarted.components.loginComponent
+import supercr.workflows.gettingstarted.components.repoInit
+import supercr.workflows.login.github.GithubOauthClient
 import supercr.workflows.overview.screens.overviewScreen
 
 external interface MainScreenState: RState{
     var projects: List<Project>
-    var accessToken: String
+    var isLoggedIn: Boolean
+    var initialisedOnce: Boolean
 }
 
 external interface MainScreenProps: RProps {
-
 }
 
 class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
+
     override fun RBuilder.render() {
-        if(state.projects.isEmpty()) {
-            getStartedScreen { 
-                passAccessToken = receiveGithubAccessToken
-                passProjects = receiveProjects
-                superCrClient = this@MainScreen.superCrClient
+        when {
+            !state.isLoggedIn -> {
+                loginComponent {
+                    onLoginDone = receiveLoginDone
+                    githubOauthClient = this@MainScreen.githubOauthClient
+                }
             }
-        } else {
-            overviewScreen {
-                projects = state.projects
-                getGithubClient = this@MainScreen.getGithubClient
-                superCrClient = this@MainScreen.superCrClient
+            state.projects.isEmpty() -> {
+                if (state.initialisedOnce) {
+                    repoInit {
+                        githubClient = this@MainScreen.getGithubClient()
+                        passProjectInfo = receiveProjects
+                        superCrClient = this@MainScreen.superCrClient
+                    }
+                } else {
+                    styledDiv {
+                        + "Loading Projects.."
+                    }
+                }
+            }
+            else -> {
+                overviewScreen {
+                    projects = state.projects
+                    getGithubClient = this@MainScreen.getGithubClient
+                    superCrClient = this@MainScreen.superCrClient
+                }
             }
         }
     }
@@ -53,6 +71,7 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
                 .let {
                     setState {
                         projects = it
+                        initialisedOnce = true
                     }
                 }
         }.invokeOnCompletion { throwable ->
@@ -65,19 +84,19 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
 
     override fun MainScreenState.init() {
         projects = emptyList()
-        /** TODO: fix this. Get from backend or something */
-        accessToken = "417a060c57755029fba76f508f87deaec5442470"
+        isLoggedIn = false
+        initialisedOnce = false
     }
 
-    private val receiveGithubAccessToken: (String) -> Unit = { receivedAccessToken ->
+    private val receiveLoginDone: () -> Unit = {
         setState {
-            accessToken = receivedAccessToken
+            isLoggedIn = true
         }
     }
 
     private val getGithubClient: () -> GithubClient = {
         GithubClient(
-            oauthClient = DumbOauthClient(state.accessToken),
+            oauthClient = this.githubOauthClient,
             httpClient = HttpClient() {
                 install(JsonFeature) {
                     serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
@@ -108,6 +127,10 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
                 serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
             }
         }
+    )
+
+    private val githubOauthClient = GithubOauthClient(
+        superCrClient = this.superCrClient
     )
 
 }

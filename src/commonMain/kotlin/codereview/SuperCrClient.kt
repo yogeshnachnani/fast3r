@@ -1,10 +1,16 @@
 package codereview
 
 import DEFAULT_PORT
+import git.provider.AccessTokenParams
+import git.provider.AccessTokenRequest
+import git.provider.AccessTokenResponse
+import git.provider.AuthorizeRequest
+import git.provider.InitiateLoginPacket
 import git.provider.PullRequestSummary
 import git.provider.RepoSummary
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -17,6 +23,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
@@ -95,6 +104,36 @@ class SuperCrClient(
                 Pair(false, "Unhandled status code ${response.status}")
             }
         }
+    }
+
+    suspend fun initiateLoginToGithub(initiateLoginPacket: InitiateLoginPacket): AuthorizeRequest {
+        return httpClient.post<AuthorizeRequest> {
+            body = initiateLoginPacket
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            url("$baseUrl/providers/github/initiate_login")
+        }
+    }
+
+    suspend fun retrieveCurrentUser(): InitiateLoginPacket {
+        return httpClient.request<InitiateLoginPacket>(buildRequest().apply {
+            url("$baseUrl/providers/github/username")
+            method = HttpMethod.Get
+        })
+    }
+
+    suspend fun loginToGithub(accessTokenParams: AccessTokenParams): AccessTokenResponse {
+        return httpClient.post<AccessTokenResponse> {
+            body = accessTokenParams
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            url("$baseUrl/providers/github/login")
+        }
+    }
+
+    suspend fun githubAccessToken(): AccessTokenResponse {
+        return httpClient.request<AccessTokenResponse>(buildRequest().apply {
+            url("$baseUrl/providers/github/access_token")
+            method = HttpMethod.Get
+        })
     }
 
     private suspend fun buildRequest(): HttpRequestBuilder {

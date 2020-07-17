@@ -1,8 +1,9 @@
 package supercr.workflows.gettingstarted.components
 
-import Button
-import Grid
 import Paper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.css.Display
 import kotlinx.css.display
 import kotlinx.css.marginTop
@@ -18,8 +19,7 @@ import react.RState
 import react.ReactElement
 import react.createRef
 import react.dom.defaultValue
-import react.dom.input
-import react.dom.p
+import react.setState
 import styled.css
 import styled.getClassName
 import styled.styledDiv
@@ -27,15 +27,54 @@ import styled.styledInput
 import styled.styledP
 import supercr.css.ComponentStyles
 import supercr.kb.components.enterActivatedButton
+import supercr.workflows.login.github.GithubOauthClient
 
 interface LoginComponentProps: RProps {
-    var onLoginButtonPressed: (String) -> Unit
+    var onLoginDone: () -> Unit
+    var githubOauthClient: GithubOauthClient
 }
 
-class LoginComponent: RComponent<LoginComponentProps, RState>() {
-    private val personalAccessTokenInputRef = createRef<HTMLInputElement>()
+interface LoginComponentState: RState {
+    var isLoggedIn: Boolean
+}
+
+class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
+    private val githubUsernameInputRef = createRef<HTMLInputElement>()
+
+    override fun LoginComponentState.init() {
+        isLoggedIn = false
+    }
 
     override fun RBuilder.render() {
+        if (state.isLoggedIn) {
+            styledDiv {
+                styledP {
+                    +"Logged in.. Redirecting"
+                }
+            }
+        } else {
+            renderLoginButton()
+        }
+    }
+
+    override fun componentDidMount() {
+        GlobalScope.async(context = Dispatchers.Main) {
+            val loggedIn = props.githubOauthClient.completeLoginIfApplicable()
+            setState {
+                isLoggedIn = loggedIn
+            }
+            if (loggedIn) {
+                props.onLoginDone()
+            }
+        }.invokeOnCompletion { throwable ->
+            if (throwable != null) {
+                console.error("Something bad happened while checking if user is logged in within LoginComponent")
+                console.error(throwable)
+            }
+        }
+    }
+
+    private fun RBuilder.renderLoginButton() {
         Paper {
             attrs {
                 square = true
@@ -46,15 +85,15 @@ class LoginComponent: RComponent<LoginComponentProps, RState>() {
                 css {
                     marginTop = 15.px
                 }
-                + "Welcome to the Fast3r. Please enter your github personal access token"
+                + "Welcome to the Fast3r. Please enter your github username"
             }
-            styledInput(type = InputType.password) {
+            styledInput(type = InputType.text) {
                 css {
                     display = Display.block
                     marginTop = 15.px
                 }
-                ref = personalAccessTokenInputRef
-                attrs.defaultValue = "417a060c57755029fba76f508f87deaec5442470"
+                ref = githubUsernameInputRef
+                attrs.defaultValue = "yogeshnachnani"
             }
             styledDiv {
                 css {
@@ -68,10 +107,11 @@ class LoginComponent: RComponent<LoginComponentProps, RState>() {
                 }
             }
         }
+
     }
 
     private val handleEnter : () ->  Unit = {
-        props.onLoginButtonPressed(personalAccessTokenInputRef.current!!.value)
+        props.githubOauthClient.webLogin(githubUsernameInputRef.current!!.value)
     }
 }
 fun RBuilder.loginComponent(handler: LoginComponentProps.() -> Unit): ReactElement {
