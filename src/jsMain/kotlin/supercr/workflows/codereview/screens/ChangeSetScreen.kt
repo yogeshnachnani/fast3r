@@ -15,9 +15,6 @@ import react.RState
 import react.ReactElement
 import react.setState
 import styled.styledP
-import supercr.css.ComponentStyles
-import supercr.css.styles
-import kotlin.browser.document
 
 external interface ChangeSetScreenProps : RProps {
     var pullRequestSummary: PullRequestSummary
