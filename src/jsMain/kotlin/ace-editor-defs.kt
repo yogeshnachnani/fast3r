@@ -20,7 +20,14 @@ external class Editor {
 
     fun scrollToLine(lineNumber: Number, center: Boolean, animate: Boolean)
 
+    /**
+     * Moves the cursor to the specified line number, and also into the indicated column.
+     */
+    fun gotoLine(lineNumber: Number, column: Number, animate: Boolean)
+
     fun on(eventName: String, callback: Any)
+
+    fun resize(force: Boolean)
 }
 @JsName("EditSession")
 external class EditSession(

@@ -80,6 +80,10 @@ class CodeView(
         ) as Editor
         val editSession = EditSession(props.fileText, "ace/mode/java")
         internalEditor.setSession(editSession)
+        /** This is needed during the first mount for the [Editor.gotoLine] method to work (presently called from [DiffView]
+         *  See https://stackoverflow.com/questions/23748743/ace-editor-go-to-line
+         */
+        internalEditor.resize(true)
         /** Hide Scrollbars. TODO: Find a less hacky way to do this */
         internalEditor.renderer.scrollBarV.element.style.overflowY = "hidden"
     }

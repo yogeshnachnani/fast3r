@@ -48,7 +48,7 @@ external interface DiffViewState: RState {
 }
 
 class AceCommentsWrapper(
-    var editor: Editor,
+    private var editor: Editor,
     var oldComments: Map<Int, List<FileLineItem.Comment>>,
     val commentBoxXPosition: (RowColObject) -> LinearDimension,
     val getNewComments: (Int) -> List<FileLineItem.Comment>,
@@ -63,6 +63,13 @@ class AceCommentsWrapper(
         return true
     }
 
+    fun convertToScreenCoordinates(rowColObject: RowColObject): Pair<Number, Number> {
+        return with(rowColObject) {
+            val screenPosition = editor.renderer.textToScreenCoordinates(row, column)
+            Pair(screenPosition.pageX, screenPosition.pageY)
+        }
+    }
+
     private fun Set<Int>.highlightCommentLines(forEditor: Editor) {
         this
             .map { viewPosition ->
@@ -70,9 +77,6 @@ class AceCommentsWrapper(
             }
     }
 
-    fun scrollToLine(lineNumber: Int, center: Boolean, animate: Boolean) {
-        editor.scrollToLine(lineNumber.toDouble(), center, animate)
-    }
 }
 
 const val LEFT_EDITOR_DIV_ID = "fast3r-left-view"
@@ -82,6 +86,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     val ace = js("require('ace-builds/src-noconflict/ace')")
     private var leftEditorCommentsWrapper: AceCommentsWrapper? = null
     private var rightEditorCommentsWrapper: AceCommentsWrapper? = null
+    private var leftEditor: Editor? = null
+    private var rightEditor: Editor? = null
     private lateinit var editorForCurrentComment: AceCommentsWrapper
 
     override fun DiffViewState.init() {
@@ -148,12 +154,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     override fun componentDidUpdate(prevProps: DiffViewProps, prevState: DiffViewState, snapshot: Any) {
         val updatedDueToDataChange = (snapshot as Boolean)
         if (updatedDueToDataChange) {
-            if (props.fileDiff.hasBothFiles()) {
-                decorateDiffView()
-            } else {
-                decorateSingleFileView()
-            }
-            manageCommentFunctionality()
+            updateOrFirstMountCommon()
             if (state.currentCommentBoxPosition != null) {
                 hideCommentBox()
             }
@@ -161,13 +162,31 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     override fun componentDidMount() {
+        updateOrFirstMountCommon()
+        addGutterListeners()
+    }
+
+    private fun updateOrFirstMountCommon() {
+        assignEditorVars()
         if (props.fileDiff.hasBothFiles()) {
             decorateDiffView()
         } else {
             decorateSingleFileView()
         }
         manageCommentFunctionality()
-        addGutterListeners()
+    }
+
+    private fun assignEditorVars() {
+        leftEditor = if (props.fileDiff.hasOldFile()) {
+            ace.edit(LEFT_EDITOR_DIV_ID) as Editor
+        } else {
+            null
+        }
+        rightEditor = if (props.fileDiff.hasNewFile()) {
+            ace.edit(RIGHT_EDITOR_DIV_ID) as Editor
+        } else {
+            null
+        }
     }
 
     private fun decorateSingleFileView() {
@@ -196,7 +215,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
      * editor).
      */
     private fun RBuilder.renderCommentBox() {
-        val screenPosition = state.currentCommentBoxPosition!!.convertToScreenCoordinates(editorForCurrentComment.editor)
+        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
         styledDiv {
             css {
                 position = Position.absolute
@@ -218,7 +237,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     private fun manageCommentFunctionality() {
         leftEditorCommentsWrapper = if (props.fileDiff.hasOldFile()) {
             AceCommentsWrapper(
-                editor = ace.edit(LEFT_EDITOR_DIV_ID) as Editor,
+                editor = leftEditor!!,
                 oldComments = props.fileDiff.oldFile?.retrieveMapOfViewPositionToComments() ?: emptyMap(),
                 commentBoxXPosition = if (props.fileDiff.hasBothFiles()) {
                     determineCommentBoxXPositionForLeftEditor
@@ -235,7 +254,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         }
         rightEditorCommentsWrapper= if (props.fileDiff.hasNewFile()) {
             AceCommentsWrapper(
-                editor = ace.edit(RIGHT_EDITOR_DIV_ID) as Editor,
+                editor = rightEditor!!,
                 oldComments = props.fileDiff.newFile?.retrieveMapOfViewPositionToComments() ?: emptyMap(),
                 commentBoxXPosition = if (props.fileDiff.hasBothFiles()) {
                     determineCommentBoxXPositionForRightEditor
@@ -256,28 +275,28 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         rightEditorCommentsWrapper?.highlightCommentLines()
 
         /** Setup Right and left editor vertical scroll listeners that manage pane sync as well as hide comment on scroll */
-        rightEditorCommentsWrapper?.editor?.getSession()?.on("changeScrollTop", syncLeftEditorTopScroll )
-        leftEditorCommentsWrapper?.editor?.getSession()?.on("changeScrollTop", syncRightEditorTopScroll)
+        rightEditor?.getSession()?.on("changeScrollTop", syncLeftEditorTopScroll )
+        leftEditor?.getSession()?.on("changeScrollTop", syncRightEditorTopScroll)
 
     }
 
     private val determineCommentBoxXPositionForLeftEditor: (RowColObject) -> LinearDimension = { rowColObject ->
-        state.currentCommentBoxPosition!!.convertToScreenCoordinates(forEditor = rightEditorCommentsWrapper!!.editor).first.px
+        rightEditorCommentsWrapper!!.convertToScreenCoordinates(state.currentCommentBoxPosition!!).first.px
     }
 
     private val determineCommentBoxXPositionForRightEditor: (RowColObject) -> LinearDimension = {
-        val screenPosition = state.currentCommentBoxPosition!!.convertToScreenCoordinates(editorForCurrentComment.editor)
+        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
         screenPosition.first.px - commentBoxWidth - 45.px
     }
 
     private val determineCommentBoxXPositionForSingleEditor: (RowColObject) -> LinearDimension = {
-        val screenPosition = state.currentCommentBoxPosition!!.convertToScreenCoordinates(editorForCurrentComment.editor)
+        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
         screenPosition.first.px
     }
 
     private fun addGutterListeners() {
-        leftEditorCommentsWrapper?.editor?.applyGutterListener()
-        rightEditorCommentsWrapper?.editor?.applyGutterListener()
+        leftEditor?.applyGutterListener()
+        rightEditor?.applyGutterListener()
     }
 
 
@@ -288,17 +307,21 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         TextDiffProcessor(leftEditor, rightEditor)
             .apply {
                 processEditList(props.fileDiff.editList)
-                highlightLinesAddedForBalance(props.fileDiff.oldFile?.fileLines ?: listOf(), props.fileDiff.newFile?.fileLines ?: listOf())
+                highlightLinesAddedForBalance(
+                    oldFileLines = props.fileDiff.oldFile?.fileLines ?: listOf(),
+                    newFileLines = props.fileDiff.newFile?.fileLines ?: listOf()
+                )
             }
 
         addDiffViewActionCommands()
+        jumpToFirstHunk()
     }
 
     private fun addDiffViewActionCommands() {
         if (props.fileDiff.hasBothFiles()) {
             props.addMoreActionsToActionBar(
                 listOf(
-                    ActionBarShortcut("Next Hunk", "sl", jumpToNextHunk),
+                    ActionBarShortcut("Next Hunk", "sl", jumpToNextHunkFromCurrentState),
                     ActionBarShortcut("Prev Hunk", "sh", {console.log("Will move hunk backword")})
                 )
             )
@@ -311,12 +334,12 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private val syncRightEditorTopScroll: (Number) -> Unit = { scrollTopFromLeftEditor ->
-        rightEditorCommentsWrapper?.editor?.getSession()?.setScrollTop(scrollTopFromLeftEditor)
+        rightEditor?.getSession()?.setScrollTop(scrollTopFromLeftEditor)
         hideCommentBox()
     }
 
     private val syncLeftEditorTopScroll: (Number) -> Unit = { scrollTopFromRightEditor ->
-        leftEditorCommentsWrapper?.editor?.getSession()?.setScrollTop(scrollTopFromRightEditor)
+        leftEditor?.getSession()?.setScrollTop(scrollTopFromRightEditor)
         hideCommentBox()
     }
 
@@ -347,11 +370,6 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 //                }
 //            }
 //            .associate { it }
-    }
-
-    private fun RowColObject.convertToScreenCoordinates(forEditor: Editor): Pair<Number, Number> {
-        val screenPosition = forEditor.renderer.textToScreenCoordinates(row, column)
-        return Pair(screenPosition.pageX, screenPosition.pageY)
     }
 
     private fun Editor.applyGutterListener() {
@@ -388,14 +406,29 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         }
     }
 
-    private val jumpToNextHunk: () -> Unit = {
-        val (nextEditIndex, positionToJumpTo) = props.fileDiff.nextEditPosition(state.currentHunkIndex)
+    private val jumpToNextHunkFromCurrentState: () -> Unit = {
+        jumpToNextHunk(state.currentHunkIndex)
+    }
+
+    /**
+     * This exists separately specifically to be called  whenever we have new text in _both_ the editors
+     * The reason for that is that we cannot use [state.currentHunkIndex] whenever we get _new text_ in the editors
+     * Since whenever we get new text, the value stored in the state still corresponds to the value we had reached to in previous diff
+     * The call to this method (which calls [jumpToNextHunk] with a value of -1 actually brings the cursor to the first hunk && sets the state
+     * variable value to 0
+     */
+    private val jumpToFirstHunk: () -> Unit = {
+        jumpToNextHunk(-1)
+    }
+
+    private val jumpToNextHunk: (Int) -> Unit = { givenHunkIndex ->
+        val (nextEditIndex, positionToJumpTo) = props.fileDiff.nextEditPosition(givenHunkIndex)
         console.log("Seems like we'll be jumping to $positionToJumpTo . and next edit index is $nextEditIndex")
         if (nextEditIndex == null) {
             console.log("Seems we have reached the end")
         } else {
-            leftEditorCommentsWrapper!!.scrollToLine(lineNumber = positionToJumpTo!! + 1, center = true, animate = true)
-            rightEditorCommentsWrapper!!.scrollToLine(lineNumber = positionToJumpTo + 1, center = true, animate = true)
+            leftEditor!!.gotoLine(lineNumber = positionToJumpTo!! + 1, column = 0, animate = true)
+            rightEditor!!.gotoLine(lineNumber = positionToJumpTo + 1, column = 0, animate = true)
             setState {
                 currentHunkIndex = nextEditIndex
             }
