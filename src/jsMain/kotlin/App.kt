@@ -1,5 +1,7 @@
 import codereview.FileDiffListV2
 import codereview.FileLineItem
+import codereview.ReviewInfo
+import codereview.ReviewStorageProvider
 import codereview.SuperCrClient
 import git.provider.PullRequestSummary
 import io.ktor.client.HttpClient
@@ -18,6 +20,7 @@ import supercr.workflows.mainScreen
 import kotlin.browser.document
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import react.RBuilder
 import react.router.dom.browserRouter
 import react.router.dom.route
 import react.router.dom.switch
@@ -25,6 +28,8 @@ import styled.styledDiv
 import supercr.css.ComponentStyles
 import supercr.workflows.codereview.components.commentThread
 import supercr.workflows.codereview.components.fileView
+import supercr.workflows.codereview.screens.changeSetOverviewScreen
+import supercr.workflows.codereview.screens.changeSetReview
 import supercr.workflows.codereview.screens.changeSetScreen
 import kotlin.browser.window
 import kotlin.js.Date
@@ -51,18 +56,7 @@ fun main ()  {
     UniversalKeyboardShortcutHandler.init()
     console.log("We are at ${window.location.href} and ${window.location.search}")
     render(document.getElementById("root"))  {
-        browserRouter {
-            switch {
-                route(path = "/", exact = true) {
-                    renderMainScreen()
-                }
-                route(path = "/testSomethingElse", exact = true) {
-                    styledDiv {
-                        + "Here we can test something else"
-                    }
-                }
-            }
-        }
+        renderDiffView()
     }
 //    renderDiffView()
 //    renderGettingStarted()
@@ -128,7 +122,7 @@ private fun renderMainScreen(): ReactElement {
     }
 }
 
-private fun renderDiffView() {
+private fun RBuilder.renderDiffView() {
     val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
     val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
@@ -139,13 +133,18 @@ private fun renderDiffView() {
             }
         }
     )
-    render(document.getElementById("root")) {
-        changeSetScreen {
+
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        changeSetReview {
             pullRequestSummary = samplePullRequestSummary
-            superCrClient = client
+            reviewInfo = ReviewInfo(rowId = 1, projectIdentifier = "someproject", provider = ReviewStorageProvider.GITHUB, providerId = 123L)
             onReviewDone = { foo, bar ->
 
             }
+            fileDiffList = sampleFileDiff
         }
     }
 }
