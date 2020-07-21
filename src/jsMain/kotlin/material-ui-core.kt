@@ -5,6 +5,7 @@ import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.events.Event
 import react.RClass
+import react.RProps
 import react.RReadableRef
 import react.ReactElement
 import react.dom.WithClassName
@@ -118,6 +119,22 @@ external interface ListItemProps: WithClassName {
 
 @JsName("ListItem")
 external val ListItem: RClass<ListItemProps>
+
+external interface ListItemTextProps: WithClassName {
+    var disableTypography: Boolean
+    var inset: Boolean
+    var primary: String
+    var secondary: String
+}
+
+@JsName("ListItemText")
+external val ListItemText: RClass<ListItemTextProps>
+
+external interface ListItemIconProps: WithClassName {
+}
+
+@JsName("ListItemIcon")
+external val ListItemIcon: RClass<ListItemIconProps>
 
 external interface AvatarProps: WithClassName {
     var alt: String
