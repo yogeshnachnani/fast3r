@@ -15,12 +15,15 @@ import kotlinx.css.Display
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
 import kotlinx.css.alignContent
+import kotlinx.css.backgroundColor
+import kotlinx.css.borderRadius
 import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
 import kotlinx.css.fontStyle
 import kotlinx.css.fontWeight
+import kotlinx.css.height
 import kotlinx.css.lineHeight
 import kotlinx.css.margin
 import kotlinx.css.marginBottom
@@ -33,6 +36,8 @@ import kotlinx.css.paddingBottom
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.px
+import kotlinx.css.vh
+import kotlinx.css.width
 import org.w3c.files.File
 import react.RBuilder
 import react.RComponent
@@ -94,19 +99,23 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         if (props.fileList.isNotEmpty()) {
             styledDiv {
                 css {
-                    minHeight = 20.px
+                    marginTop = 20.px
+                    height = 100.vh
                 }
-            }
-            MaterialUIList {
                 listOf(FileReviewStatus.TO_BE_REVIEWED, FileReviewStatus.SAVED_FOR_LATER, FileReviewStatus.REVIEWED)
                     .map { reviewStatus ->
                         renderListSeparator(reviewStatus)
                         if (reviewStatus.shouldShow()) {
-                            props.fileList
-                                .filter { it.currentStatus == reviewStatus}
-                                .map { (currentFileDiff, assignedShortcut, _, handler) ->
-                                    renderFileItem(currentFileDiff, assignedShortcut, handler)
+                            MaterialUIList {
+                                attrs {
+                                    className = ComponentStyles.getClassName { ComponentStyles::fileList }
                                 }
+                                props.fileList
+                                    .filter { it.currentStatus == reviewStatus}
+                                    .map { (currentFileDiff, assignedShortcut, _, handler) ->
+                                        renderFileItem(currentFileDiff, assignedShortcut, handler)
+                                    }
+                            }
                         }
                     }
             }

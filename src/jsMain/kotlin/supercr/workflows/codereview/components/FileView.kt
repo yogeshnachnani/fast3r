@@ -5,6 +5,7 @@ import Paper
 import codereview.DiffChangeType
 import codereview.FileDiffV2
 import codereview.getUniqueIdentifier
+import kotlinx.css.height
 import kotlinx.css.minHeight
 import kotlinx.css.px
 import react.RBuilder
@@ -16,6 +17,7 @@ import react.dom.p
 import styled.css
 import styled.getClassName
 import styled.styledDiv
+import styled.styledP
 import supercr.css.ComponentStyles
 import supercr.workflows.codereview.processor.FileDiffCommentHandler
 
@@ -44,19 +46,31 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                 justify = "center"
                 spacing = 0
             }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
-                    md = 12
+            renderFileHeader()
+            renderDiffPane()
+        }
+    }
+
+    private fun RBuilder.renderFileHeader() {
+        Grid {
+            attrs {
+                item = true
+                container = false
+                md = 12
+                className = ComponentStyles.getClassName { ComponentStyles::fileViewFileInfo }
+            }
+            styledP {
+                css {
+                    + ComponentStyles.fileViewFileInfoText
                 }
-                styledDiv {
-                    css {
-                        minHeight = 20.px
-                    }
+                + when(props.fileDiff.diffChangeType) {
+                    DiffChangeType.MODIFY -> ( props.fileDiff.newFile?.path ?: ( props.fileDiff.oldFile!!.path )  )
+                    DiffChangeType.RENAME -> "${ props.fileDiff.oldFile!!.path } -> props.fileDiff.newFile!!.path"
+                    DiffChangeType.DELETE -> props.fileDiff.oldFile!!.path
+                    DiffChangeType.ADD ->  props.fileDiff.newFile!!.path
+                    DiffChangeType.COPY -> TODO()
                 }
             }
-            renderDiffView()
         }
     }
 

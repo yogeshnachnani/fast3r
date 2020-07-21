@@ -24,6 +24,7 @@ import kotlinx.css.borderStyle
 import kotlinx.css.borderWidth
 import kotlinx.css.boxShadow
 import kotlinx.css.boxSizing
+import kotlinx.css.col
 import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.float
@@ -163,6 +164,7 @@ object FontSizes {
     val huge = 30.px
 }
 object LineHeights {
+    val normal = 22.px.lh
     val extraLarge = 32.px.lh
     val large = 28.px.lh
     val huge = 40.px.lh
@@ -181,11 +183,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
     val maxWidthFitContent by css {
         maxWidth = LinearDimension.fitContent
-    }
-    val codeViewEditor by css {
-        minHeight = 600.px
-        maxHeight = 900.px
-        fontSize = FontSizes.small
     }
     val fileItemText by css {
         fontFamily = FontFamilies.nonCode
@@ -242,6 +239,13 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         lineHeight = LineHeights.large
     }
 
+    val fileList by css {
+        maxWidth = 480.px
+        maxHeight = 900.px
+        width = 100.pct
+        overflow = Overflow.auto
+    }
+
     val fileListTshirtSizePosition by css {
         float = Float.left
         minWidth = 10.pct
@@ -294,18 +298,20 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 //        put("resize", "none")
     }
 
-    val reopLocalPathInputBox by css {
-        fontSize = FontSizes.small
+    val fileViewFileInfo by css {
+        height = 80.px
+        backgroundColor = Colors.backgroundDarkestGrey
         fontFamily = FontFamilies.nonCode
-        color = Colors.baseText4
-        marginLeft = 5.px
-        marginRight = 5.px
-        marginBottom = 8.px
-        maxWidth = 150.px
-        width = 150.px
-//        height = 32.px
-        padding(vertical = 4.px, horizontal = 8.px)
-//        put("resize", "none")
+        fontStyle = FontStyle.normal
+        fontWeight = FontWeight.normal
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+    }
+    val fileViewFileInfoText by css {
+        marginTop = 24.px
+        marginBottom = 24.px
+        marginLeft = 36.px
+        color = Colors.textDarkGrey
     }
 
     val infoPaper by css {
@@ -394,4 +400,14 @@ var styles = CSSBuilder().apply {
         backgroundImage = Image("url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${Colors.accentHighlight2}' %3E%3Cpath d='M20,2H4C2.897,2,2,2.897,2,4v18l5.333-4H20c1.103,0,2-0.897,2-2V4C22,2.897,21.103,2,20,2z M20,16H6.667L4,18V4h16V16z'/%3E%3C/svg%3E%0A\");")
         backgroundSize = "contain"
     }
+    "::-webkit-scrollbar-thumb" {
+        borderRadius = 6.px
+        backgroundColor = Colors.primaryBlack
+    }
+    "::-webkit-scrollbar" {
+        width = 10.px
+        backgroundColor = Colors.backgroundMediumGrey
+    }
+//    "::-webkit-scrollbar-track" {
+//    }
 }

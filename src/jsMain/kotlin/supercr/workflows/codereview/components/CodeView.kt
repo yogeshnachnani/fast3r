@@ -3,8 +3,11 @@ package supercr.workflows.codereview.components
 import EditSession
 import Editor
 import kotlinx.css.LinearDimension
+import kotlinx.css.fontSize
 import kotlinx.css.height
+import kotlinx.css.lineHeight
 import kotlinx.css.px
+import kotlinx.css.vh
 import kotlinx.css.width
 import kotlinx.html.id
 import org.w3c.dom.HTMLDivElement
@@ -19,6 +22,8 @@ import styled.css
 import styled.getClassName
 import styled.styledDiv
 import supercr.css.ComponentStyles
+import supercr.css.FontSizes
+import supercr.css.LineHeights
 import kotlin.js.json
 
 external interface CodeViewProps: RProps {
@@ -49,8 +54,9 @@ class CodeView(
         styledDiv {
             css {
                 width = LinearDimension.inherit
-                height = 800.px
-                classes.add(ComponentStyles.getClassName { ComponentStyles::codeViewEditor })
+                height = 70.vh
+                fontSize = FontSizes.normal
+                lineHeight = LineHeights.normal
             }
             attrs {
                 ref = internalDivRef
@@ -69,7 +75,7 @@ class CodeView(
             "theme" to "ace/theme/clouds_midnight",
             "readOnly" to true,
             "highlightActiveLine" to true,
-            "fontSize" to 12,
+            "fontSize" to FontSizes.normal,
             "showGutter" to true,
             "tabSize" to 4,
             "mode" to "ace/mode/java"
