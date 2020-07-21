@@ -1,11 +1,13 @@
 package supercr.css
 
 import kotlinx.css.BorderStyle
+import kotlinx.css.Float
 import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
 import kotlinx.css.Contain
 import kotlinx.css.Display
+import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
 import kotlinx.css.Image
 import kotlinx.css.LinearDimension
@@ -24,12 +26,14 @@ import kotlinx.css.boxShadow
 import kotlinx.css.boxSizing
 import kotlinx.css.color
 import kotlinx.css.display
+import kotlinx.css.float
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
 import kotlinx.css.fontStyle
 import kotlinx.css.fontWeight
 import kotlinx.css.height
 import kotlinx.css.hsl
+import kotlinx.css.hsla
 import kotlinx.css.letterSpacing
 import kotlinx.css.lineHeight
 import kotlinx.css.margin
@@ -40,21 +44,30 @@ import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minHeight
+import kotlinx.css.minWidth
+import kotlinx.css.opacity
 import kotlinx.css.overflow
 import kotlinx.css.padding
 import kotlinx.css.paddingBottom
 import kotlinx.css.paddingLeft
 import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
+import kotlinx.css.pct
 import kotlinx.css.position
 import kotlinx.css.properties.BoxShadows
 import kotlinx.css.properties.LineHeight
+import kotlinx.css.properties.lh
 import kotlinx.css.px
+import kotlinx.css.rgb
+import kotlinx.css.right
+import kotlinx.css.top
 import kotlinx.css.vh
 import kotlinx.css.width
 import kotlinx.css.zIndex
 import kotlinx.html.TEXTAREA
 import styled.StyleSheet
+import styled.getClassName
+import styled.getClassSelector
 
 private fun String.cssClassName(): String {
     return "." + this
@@ -115,6 +128,29 @@ object Colors {
     val warmGreyBase = hsl(39, 12, 58)
     val warmGrey2 = hsl(39, 16, 76)
     val warmGrey1 = hsl(39, 21, 88)
+
+    val primaryBlack = hsl(224, 22, 10)
+    val primaryBlue = hsl(234, 81, 57)
+    val primaryTeal = hsl(169, 92, 71)
+
+    val backgroundDarkestGrey = hsl(222, 20, 17)
+    val backgroundDarkGrey = hsl(224, 19, 23)
+    val backgroundMediumGrey = hsl(220, 22, 24)
+    val backgroundGrey = hsl(220, 21, 27)
+
+    val highlightsGrey = hsla(0, 2, 77, 0.22)
+    val highlightsGreyAlphaPoint1 = hsla(0, 2, 77, 0.1)
+    val highlightsLightGreen = hsla(159, 42, 42, 0.3)
+    val highlightsGreen = hsla(159, 76, 43, 0.7)
+    val highlightsLightRead = hsla(0, 48, 45, 0.2)
+    val highlightsRed = hsla(0, 61, 55, 0.7)
+
+    val iconGrey = hsl(205, 15, 55)
+
+    val textDarkGrey = hsl(204, 16, 50)
+    val textMediumGrey = hsl(204, 26, 77)
+    val textLightGrey = hsl(0, 0, 93)
+
 }
 
 object FontSizes {
@@ -126,9 +162,14 @@ object FontSizes {
     val extraLarge = 24.px
     val huge = 30.px
 }
+object LineHeights {
+    val extraLarge = 32.px.lh
+    val large = 28.px.lh
+    val huge = 40.px.lh
+}
+
 object FontFamilies {
     const val code = "Menlo, Consolas, 'DejaVu Sans Mono', monospace"
-    const val default = "roboto,sans-serif"
     const val nonCode = "Inter, Roboto, Sans-serif"
 }
 
@@ -163,6 +204,19 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontFamily = FontFamilies.nonCode
     }
 
+    val keyboardShortcutSingleCharBox by css {
+        width = 44.px
+        height = 42.px
+        backgroundColor = Colors.backgroundDarkestGrey
+        borderRadius = 4.px
+        fontFamily = FontFamilies.nonCode
+        fontStyle = FontStyle.normal
+        fontWeight = FontWeight.normal
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        display = Display.flex
+    }
+
     val backgroundAccentPrimary4 by css {
         backgroundColor = Colors.accentPrimary4
     }
@@ -177,14 +231,45 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.baseText1
         fontWeight = FontWeight.w700
     }
-    val compactFileListItem by css {
+    val fileListItem by css {
         paddingLeft = 0.px
         paddingRight = 0.px
         paddingBottom = 0.px
         paddingTop = 0.px
-        maxWidth = 190.px
-        fontSize = FontSizes.small
+        maxWidth = 480.px
+        maxHeight = 60.px
+        fontSize = FontSizes.large
+        lineHeight = LineHeights.large
     }
+
+    val fileListTshirtSizePosition by css {
+        float = Float.left
+        minWidth = 10.pct
+        marginRight = 4.px
+        marginLeft = 40.px
+    }
+
+    val fileListHeaderIcon by css {
+        float = Float.left
+        minWidth = 10.pct
+        marginRight = 4.px
+        marginLeft = 32.px
+        color = Colors.iconGrey
+    }
+
+    val fileListExpandIcon by css {
+        display = Display.inlineFlex
+        position = Position.absolute
+        right = 4.px
+        top = 16.px
+//        marginLeft = 32.px
+        color = Colors.iconGrey
+    }
+
+    val selectedFileListItem by css {
+        backgroundColor = Colors.highlightsGreyAlphaPoint1
+    }
+
 
     val compactCommentListItem by css {
         paddingLeft = 0.px
@@ -221,10 +306,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 //        height = 32.px
         padding(vertical = 4.px, horizontal = 8.px)
 //        put("resize", "none")
-    }
-
-    val fileListSectionSeparator by css {
-        color = Colors.warmGrey2
     }
 
     val infoPaper by css {
@@ -289,18 +370,18 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
 var styles = CSSBuilder().apply {
     "html" {
-        fontFamily = FontFamilies.default
+        fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.normal
         color = Colors.baseText1
         overflow = Overflow.hidden
-        backgroundColor = Colors.background9
+        backgroundColor = Colors.backgroundMediumGrey
     }
     "body" {
-        fontFamily = FontFamilies.default
+        fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.normal
         color = Colors.baseText1
         overflow = Overflow.hidden
-        backgroundColor = Colors.background9
+        backgroundColor = Colors.backgroundMediumGrey
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
         background = Colors.warmGrey1.value

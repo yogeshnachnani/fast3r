@@ -1,47 +1,56 @@
 package supercr.workflows.codereview.components
 
-import Grid
+import BookmarkBorder
+import CheckBoxOutlined
+import ExpandLess
+import ExpandMore
 import ListItem
-import ListSubHeader
+import ListItemIcon
 import MaterialUIList
+import NotificationsNone
 import codereview.FileDiffV2
+import codereview.getUniqueIdentifier
 import kotlinx.css.Align
 import kotlinx.css.Display
-import kotlinx.css.Float
-import kotlinx.css.LinearDimension
+import kotlinx.css.FontStyle
+import kotlinx.css.FontWeight
 import kotlinx.css.alignContent
 import kotlinx.css.color
 import kotlinx.css.display
-import kotlinx.css.em
-import kotlinx.css.float
+import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
+import kotlinx.css.fontStyle
+import kotlinx.css.fontWeight
+import kotlinx.css.lineHeight
 import kotlinx.css.margin
 import kotlinx.css.marginBottom
 import kotlinx.css.marginLeft
 import kotlinx.css.marginRight
 import kotlinx.css.marginTop
-import kotlinx.css.maxWidth
 import kotlinx.css.minHeight
 import kotlinx.css.minWidth
-import kotlinx.css.pc
+import kotlinx.css.paddingBottom
+import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.px
+import org.w3c.files.File
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.buildElement
+import react.setState
 import styled.css
 import styled.getClassName
 import styled.styledDiv
 import styled.styledP
 import styled.styledSpan
-import supercr.components.fileSizeChip
-import supercr.css.AvatarSize
 import supercr.css.Colors
 import supercr.css.ComponentStyles
+import supercr.css.FontFamilies
 import supercr.css.FontSizes
+import supercr.css.LineHeights
 import supercr.kb.components.keyboardChip
 import supercr.workflows.codereview.screens.FileDiffStateAndMetaData
 
@@ -68,9 +77,18 @@ enum class FileReviewStatus {
 }
 
 external interface FileListViewState: RState {
+    var showToBeReviewedList: Boolean
+    var showSavedForLaterList: Boolean
+    var showReviewedList: Boolean
 }
 
 class FileListView: RComponent<FileListViewProps, FileListViewState>() {
+
+    override fun FileListViewState.init() {
+        showReviewedList = false
+        showToBeReviewedList = true
+        showSavedForLaterList = false
+    }
 
     override fun RBuilder.render() {
         if (props.fileList.isNotEmpty()) {
@@ -83,11 +101,13 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
                 listOf(FileReviewStatus.TO_BE_REVIEWED, FileReviewStatus.SAVED_FOR_LATER, FileReviewStatus.REVIEWED)
                     .map { reviewStatus ->
                         renderListSeparator(reviewStatus)
-                        props.fileList
-                            .filter { it.currentStatus == reviewStatus}
-                            .map { (currentFileDiff, assignedShortcut, _, handler) ->
-                                renderFileItem(currentFileDiff, assignedShortcut, handler)
-                            }
+                        if (reviewStatus.shouldShow()) {
+                            props.fileList
+                                .filter { it.currentStatus == reviewStatus}
+                                .map { (currentFileDiff, assignedShortcut, _, handler) ->
+                                    renderFileItem(currentFileDiff, assignedShortcut, handler)
+                                }
+                        }
                     }
             }
         }
@@ -97,15 +117,38 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         ListItem {
             attrs {
                 divider = true
-                className = ComponentStyles.getClassName { ComponentStyles::compactFileListItem }
+                className = ComponentStyles.getClassName { ComponentStyles::fileListItem }
+                button = true
+                onClick = fileReviewStatus.getClickHandler()
+            }
+            ListItemIcon {
+                attrs {
+                    className = ComponentStyles.getClassName { ComponentStyles::fileListHeaderIcon  }
+                }
+                getIcon(fileReviewStatus)
             }
             styledP {
                 css {
+                    fontFamily = FontFamilies.nonCode
+                    fontStyle = FontStyle.normal
+                    fontWeight = FontWeight.w600
+                    fontSize = FontSizes.extraLarge
+                    lineHeight = LineHeights.extraLarge
                     marginTop = 8.px
                     marginBottom = 8.px
-                    color = Colors.warmGreyBase
+                    color = Colors.textMediumGrey
                 }
                 + fileReviewStatus.displayText()
+            }
+            styledDiv {
+                css {
+                    + ComponentStyles.fileListExpandIcon
+                }
+                if (fileReviewStatus.shouldShow()) {
+                    ExpandLess {}
+                } else {
+                    ExpandMore {}
+                }
             }
         }
     }
@@ -115,21 +158,26 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
             attrs {
                 divider = false
                 onClick = handlerForFile
-                className = ComponentStyles.getClassName { ComponentStyles::compactFileListItem }
+                className = if (currentFileDiff.isGivenFilePresentlySelected()) {
+                    "${ComponentStyles.getClassName { ComponentStyles::fileListItem }} ${ComponentStyles.getClassName { ComponentStyles::selectedFileListItem }}"
+                } else {
+                    ComponentStyles.getClassName { ComponentStyles::fileListItem }
+                }
                 key = assignedShortcut
             }
             styledDiv {
                 css {
                     display = Display.block
-                    minWidth = 90.pct
+                    minWidth = 75.pct
                 }
                 fileItem {
                     fileDiff = currentFileDiff
+                    isSelected = currentFileDiff.isGivenFilePresentlySelected()
                 }
             }
             styledDiv {
                 css {
-                    maxWidth = 10.pct
+                    marginRight = 36.px
                 }
                 keyboardChip {
                     this.attrs {
@@ -141,6 +189,9 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
             }
         }
     }
+
+    private fun FileDiffV2.isGivenFilePresentlySelected() =
+        props.selectedFile?.getUniqueIdentifier() == this.getUniqueIdentifier()
 
     private val removePrefixOnUnmount : (String) -> Unit = { _ ->
         // No-op
@@ -154,6 +205,48 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         }
     }
 
+    private fun FileReviewStatus.shouldShow(): Boolean {
+        return when(this) {
+            FileReviewStatus.TO_BE_REVIEWED -> state.showToBeReviewedList
+            FileReviewStatus.REVIEWED -> state.showReviewedList
+            FileReviewStatus.SAVED_FOR_LATER -> state.showSavedForLaterList
+        }
+    }
+
+    private fun FileReviewStatus.getClickHandler(): () -> Unit {
+        return when(this) {
+            FileReviewStatus.TO_BE_REVIEWED -> {
+                {
+                    setState {
+                        showToBeReviewedList = state.showToBeReviewedList.not()
+                    }
+                }
+            }
+            FileReviewStatus.REVIEWED -> {
+                {
+                    setState {
+                        showReviewedList = state.showReviewedList.not()
+                    }
+                }
+            }
+            FileReviewStatus.SAVED_FOR_LATER -> {
+                {
+                    setState {
+                        showSavedForLaterList = state.showSavedForLaterList.not()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun RBuilder.getIcon(fileReviewStatus: FileReviewStatus) {
+        when(fileReviewStatus) {
+            FileReviewStatus.TO_BE_REVIEWED -> NotificationsNone {}
+            FileReviewStatus.REVIEWED -> CheckBoxOutlined {}
+            FileReviewStatus.SAVED_FOR_LATER -> BookmarkBorder {}
+        }
+    }
+
 }
 fun RBuilder.fileList(handler: FileListViewProps.() -> Unit): ReactElement {
     return child(FileListView::class) {
@@ -164,51 +257,46 @@ fun RBuilder.fileList(handler: FileListViewProps.() -> Unit): ReactElement {
 
 external interface FileItemProps: RProps {
     var fileDiff: FileDiffV2
+    var isSelected: Boolean
 }
 
 private class FileItem: RComponent<FileItemProps, RState>() {
     override fun RBuilder.render() {
         styledDiv {
             css {
-                marginTop = 8.px
-                marginBottom = 0.px
+                margin(all = 0.px)
             }
             styledP {
                 css {
                     margin(all = 0.px)
-                    color = Colors.baseText1
+                    paddingTop = 16.px
+                    paddingBottom = 16.px
                     alignContent = Align.baseline
+                    fontSize = FontSizes.large
+                    lineHeight = LineHeights.large
+                    fontWeight = FontWeight.normal
                 }
                 styledSpan {
                     css {
-                        float = Float.left
-                        color = Colors.warmGrey5
-                        minWidth = 10.pct
-                        fontSize = FontSizes.tiny
-                        marginRight = 4.px
+                        color = if (props.isSelected) {
+                            Colors.primaryTeal
+                        } else {
+                            Colors.textDarkGrey
+                        }
+                        classes.add(ComponentStyles.getClassName { ComponentStyles::fileListTshirtSizePosition })
                     }
                     + props.fileDiff.tShirtSize.name
                 }
                 styledSpan {
                     css {
                         minWidth = 70.pct
-                        fontSize = FontSizes.small
+                        color = Colors.textMediumGrey
+                        marginLeft = 40.px
                     }
                     + (props.fileDiff.newFile?.path ?: (props.fileDiff.oldFile!!.path)).split("/").last()
                 }
             }
         }
-//        styledDiv {
-//            css {
-//                marginTop = 0.px
-//                marginLeft = 8.px
-//                color = Colors.baseText
-//            }
-//            fileSizeChip {
-//                fileSize = props.fileDiff.fileHeader.tShirtSize
-//                avatarSize = AvatarSize.tiny
-//            }
-//        }
     }
 
 }

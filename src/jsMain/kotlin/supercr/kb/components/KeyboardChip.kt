@@ -3,7 +3,14 @@ package supercr.kb.components
 import Avatar
 import Grid
 import kotlinx.css.Color
+import kotlinx.css.Display
 import kotlinx.css.backgroundColor
+import kotlinx.css.display
+import kotlinx.css.height
+import kotlinx.css.marginLeft
+import kotlinx.css.marginRight
+import kotlinx.css.px
+import kotlinx.css.width
 import react.RBuilder
 import react.RComponent
 import react.RElementBuilder
@@ -11,8 +18,11 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.css
 import styled.getClassName
+import styled.styledDiv
 import styled.styledSpan
+import supercr.css.Colors
 import supercr.css.ComponentStyles
 import supercr.kb.UniversalKeyboardShortcutHandler
 
@@ -44,20 +54,35 @@ class KeyboardChip(
 
 
     override fun RBuilder.render() {
-        /** TODO: Fix styling */
-        Avatar {
-            attrs {
-                variant = "rounded"
-                className = "${ ComponentStyles.getClassName { ComponentStyles::smallTextAvatar } } ${ComponentStyles.getClassName { ComponentStyles::backgroundAccentPrimary4 }}"
+        styledDiv {
+            css {
+                display = Display.flex
             }
-            if (state.selectedPortion.isNotEmpty()) {
-                styledSpan {
-                    css.backgroundColor = Color.lightGreen
-                    + state.selectedPortion
+            styledDiv {
+                css {
+                    classes.add(ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
+                    marginRight = 12.px
+                    if (state.selectedPortion.isNotEmpty()) {
+                        backgroundColor = Colors.primaryBlue
+                    }
                 }
-                + state.unselectedPortion
-            } else {
-                + props.assignedShortcut
+                styledSpan {
+                    css {
+                        marginLeft = 13.px
+                    }
+                    + "${props.assignedShortcut[0]}"
+                }
+            }
+            styledDiv {
+                css {
+                    classes.add(ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
+                }
+                styledSpan {
+                    css {
+                        marginLeft = 13.px
+                    }
+                    +"${props.assignedShortcut[1]}"
+                }
             }
         }
     }
