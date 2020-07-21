@@ -78,7 +78,7 @@ class CodeView(
             "fontSize" to FontSizes.normal,
             "showGutter" to true,
             "tabSize" to 4,
-            "mode" to "ace/mode/java"
+            "mode" to "ace/mode/kotlin"
         )
         internalEditor = ace.edit(
             props.divId,
