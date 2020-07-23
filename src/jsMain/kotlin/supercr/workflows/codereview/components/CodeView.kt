@@ -30,6 +30,7 @@ external interface CodeViewProps: RProps {
     var fileText: String
     var id: String
     var divId: String
+    var actionBarActions: List<ActionBarShortcut>
 }
 
 external interface CodeViewState: RState {
@@ -61,6 +62,11 @@ class CodeView(
             attrs {
                 ref = internalDivRef
                 id = props.divId
+            }
+        }
+        if (props.actionBarActions.isNotEmpty()) {
+            reviewScreenActionBar {
+                actions = props.actionBarActions
             }
         }
     }

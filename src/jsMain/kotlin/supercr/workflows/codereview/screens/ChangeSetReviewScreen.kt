@@ -32,7 +32,6 @@ external interface ChangeSetReviewScreenState : RState {
     var selectedFile: FileDiffV2?
     var fileDiffShortutAndStatusList: List<FileDiffStateAndMetaData>
     var reviewDone: Boolean
-    var additionalActions: Set<ActionBarShortcut>
 }
 data class FileDiffStateAndMetaData(
     val fileDiff: FileDiffV2,
@@ -49,7 +48,6 @@ class ChangeSetReviewScreen(
         fileDiffShortutAndStatusList = generateFileDiffAndMetaData()
         selectedFile = props.fileDiffList.fileDiffs.first()
         reviewDone = false
-        additionalActions = emptySet()
     }
 
     override fun RBuilder.render() {
@@ -80,10 +78,7 @@ class ChangeSetReviewScreen(
                     fileView {
                         fileDiff = props.fileDiffList.fileDiffs.find { it == state.selectedFile }!!
                         fileDiffCommentHandler = state.fileDiffShortutAndStatusList.first { it.fileDiff == state.selectedFile!! }.commentHandler
-                        addMoreActionsToActionBar = handleActionAddition
-                    }
-                    reviewScreenActionBar {
-                        actions = defaultActions.plus(state.additionalActions)
+                        defaultActionBarActions = defaultActions
                     }
                 }
             }
@@ -137,7 +132,6 @@ class ChangeSetReviewScreen(
             }
             setState {
                 selectedFile = currentFileDiff
-                additionalActions = emptySet()
             }
         }
     }
@@ -149,16 +143,9 @@ class ChangeSetReviewScreen(
         changeCurrentFileStateTo(FileReviewStatus.SAVED_FOR_LATER)
     }
 
-    private val handleActionAddition: (List<ActionBarShortcut>) -> Unit = { newAction ->
-        val existingActions = state.additionalActions
-        setState {
-            additionalActions = existingActions.plus(newAction)
-        }
-    }
-
     private val defaultActions = listOf(
         ActionBarShortcut("Next File", "fj", handleNextFileCommand),
-        ActionBarShortcut("Save for Later", "fl", handleSaveForLater)
+        ActionBarShortcut("Review Later", "fl", handleSaveForLater)
     )
 
     private fun changeCurrentFileStateTo(statusToChangeTo: FileReviewStatus) {
@@ -180,7 +167,6 @@ class ChangeSetReviewScreen(
                 selectedFile = firstSavedForLaterFile
                 fileDiffShortutAndStatusList = newFileSet
                 reviewDone = isReviewDone
-                additionalActions = emptySet()
             }
             if (isReviewDone) {
                 props.onReviewDone(
@@ -194,7 +180,6 @@ class ChangeSetReviewScreen(
             setState {
                 selectedFile = nextFile
                 fileDiffShortutAndStatusList = newFileSet
-                additionalActions = emptySet()
             }
         }
     }

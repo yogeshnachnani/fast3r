@@ -39,7 +39,7 @@ external interface DiffViewProps: RProps {
     var identifier: String
     var oldFileNewCommentHandler: FileCommentHandler
     var newFileNewCommentHandler: FileCommentHandler
-    var addMoreActionsToActionBar: (List<ActionBarShortcut>) -> Unit
+    var defaultActionBarActions: List<ActionBarShortcut>
 }
 external interface DiffViewState: RState {
     var currentCommentBoxPosition: RowColObject?
@@ -117,6 +117,11 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                             id = leftSideTextId()
                             fileText = props.fileDiff.oldFile?.getText() ?: ""
                             divId = LEFT_EDITOR_DIV_ID
+                            actionBarActions = if (!props.fileDiff.hasNewFile()) {
+                                props.defaultActionBarActions
+                            } else {
+                                emptyList()
+                            }
                         }
                     }
                 }
@@ -133,6 +138,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                             id = rightSideTextId()
                             fileText = props.fileDiff.newFile?.getText() ?: ""
                             divId = RIGHT_EDITOR_DIV_ID
+                            actionBarActions = props.defaultActionBarActions.plus(additionalShortcutsForTwoPaneView)
                         }
                     }
                 }
@@ -313,19 +319,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                 )
             }
 
-        addDiffViewActionCommands()
         jumpToFirstHunk()
-    }
-
-    private fun addDiffViewActionCommands() {
-        if (props.fileDiff.hasBothFiles()) {
-            props.addMoreActionsToActionBar(
-                listOf(
-                    ActionBarShortcut("Next Hunk", "sl", jumpToNextHunkFromCurrentState),
-                    ActionBarShortcut("Prev Hunk", "sh", {console.log("Will move hunk backword")})
-                )
-            )
-        }
     }
 
     private val handleNewComments: (String) -> Unit = { commentBody ->
@@ -379,7 +373,6 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     private val gutterListenerForComments: (MouseEvent) -> Unit = { event ->
         val documentPosition = event.getDocumentPosition()
         val isLeftEditor = LEFT_EDITOR_DIV_ID == ( event.editor.container.id as String )
-        console.log("Received doc position at ${documentPosition.row} . Is it from left editor? $isLeftEditor")
         editorForCurrentComment = if (isLeftEditor) {
             leftEditorCommentsWrapper!!
         } else {
@@ -434,6 +427,11 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             }
         }
     }
+    private val additionalShortcutsForTwoPaneView = listOf(
+        ActionBarShortcut("Next Hunk", "sl", jumpToNextHunkFromCurrentState),
+        ActionBarShortcut("Prev Hunk", "sh", {console.log("Will move hunk backword")})
+    )
+
 }
 
 fun RBuilder.diffView(handler: DiffViewProps.() -> Unit): ReactElement {

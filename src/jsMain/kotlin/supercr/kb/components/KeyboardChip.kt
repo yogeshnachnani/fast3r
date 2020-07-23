@@ -35,6 +35,7 @@ external interface KeyboardChipProps: RProps {
     var onSelected: () -> Unit
     var assignedShortcut: String
     var uponUnmount: (String) -> Unit
+    var className: String?
 }
 
 external interface KeyboardChipState: RState {
@@ -62,7 +63,7 @@ class KeyboardChip(
             }
             styledDiv {
                 css {
-                    classes.add(ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
+                    classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
                     marginRight = 12.px
                     if (state.selectedPortion.isNotEmpty()) {
                         backgroundColor = Colors.primaryBlue
@@ -72,7 +73,7 @@ class KeyboardChip(
             }
             styledDiv {
                 css {
-                    classes.add(ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
+                    classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
                 }
                     +"${props.assignedShortcut[1]}"
             }

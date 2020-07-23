@@ -32,6 +32,7 @@ import kotlinx.css.borderRightStyle
 import kotlinx.css.borderRightWidth
 import kotlinx.css.borderStyle
 import kotlinx.css.borderWidth
+import kotlinx.css.bottom
 import kotlinx.css.boxShadow
 import kotlinx.css.boxSizing
 import kotlinx.css.col
@@ -389,12 +390,39 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val actionBar by css {
-        backgroundColor = Colors.background8
-        fontSize = FontSizes.small
+        position = Position.absolute
+        right = 2.px
+        bottom = 30.vh
+        backgroundColor = Colors.backgroundDarkestGrey
+        borderRadius = 14.px
+        fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
-        color = Colors.baseText1
-        width = LinearDimension.fillAvailable
-        marginTop = 25.px
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
+        width = 1080.px
+        height = 80.px
+        display = Display.flex
+        justifyContent = JustifyContent.flexEnd
+        alignContent = Align.flexEnd
+    }
+    val actionBarKeyboardLetterBox by css {
+        width = 44.px
+        height = 42.px
+        backgroundColor = Colors.backgroundGrey
+        borderRadius = 4.px
+        fontFamily = FontFamilies.nonCode
+        fontStyle = FontStyle.normal
+        fontWeight = FontWeight.normal
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        display = Display.flex
+        textAlign = TextAlign.center
+        justifyContent = JustifyContent.center
+        alignItems = Align.center
+        alignContent = Align.center
+        marginTop = 20.px
+        marginBottom = 20.px
+        color = Colors.textMediumGrey
     }
     val actionBarItem by css {
         width = LinearDimension.fitContent

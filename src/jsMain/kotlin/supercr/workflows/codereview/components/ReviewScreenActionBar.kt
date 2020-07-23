@@ -2,7 +2,17 @@ package supercr.workflows.codereview.components
 
 import Grid
 import Paper
+import kotlinx.css.Display
 import kotlinx.css.color
+import kotlinx.css.display
+import kotlinx.css.marginBottom
+import kotlinx.css.marginRight
+import kotlinx.css.marginTop
+import kotlinx.css.maxWidth
+import kotlinx.css.pct
+import kotlinx.css.px
+import kotlinx.css.width
+import kotlinx.html.id
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -11,7 +21,9 @@ import react.ReactElement
 import react.buildElement
 import styled.css
 import styled.getClassName
+import styled.styledDiv
 import styled.styledP
+import styled.styledSpan
 import supercr.css.Colors
 import supercr.css.ComponentStyles
 import supercr.kb.components.keyboardChip
@@ -32,59 +44,41 @@ external interface ReviewScreenActionBarState : RState {
 
 class ReviewScreenActionBar : RComponent<ReviewScreenActionBarProps, ReviewScreenActionBarState>() {
     override fun RBuilder.render() {
-        Paper {
+        styledDiv {
             attrs {
-                className = ComponentStyles.getClassName { ComponentStyles::actionBar }
-                elevation = 3
+                id = "action-bar"
             }
-            Grid {
-                attrs {
-                    container = true
-                    item = false
-                    justify = "space-evenly"
-                    alignItems = "baseline"
-                    spacing = 4
-                }
-                props.actions.map {
-                    renderAction(it)
-                }
+            css {
+                + ComponentStyles.actionBar
+            }
+            props.actions.map {
+                renderAction(it)
             }
         }
     }
 
     private fun RBuilder.renderAction(actionBarShortcut: ActionBarShortcut) {
-        Grid {
-            attrs {
-                container = true
-                item = false
-                justify = "space-around"
-                alignItems = "baseline"
-                spacing = 1
-                className = ComponentStyles.getClassName { ComponentStyles::actionBarItem }
+        styledDiv {
+            css {
+                display = Display.flex
+                maxWidth = 25.pct
+                marginRight = 50.px
             }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
+            styledSpan {
+                css {
+                    display = Display.inlineBlock
+                    marginTop = 28.px
+                    marginBottom = 28.px
+                    marginRight = 16.px
                 }
-                styledP {
-                    css {
-                        color = Colors.warmGreyBase
-                    }
-                    + actionBarShortcut.textToDisplay
-                }
+                + actionBarShortcut.textToDisplay
             }
-            Grid {
+            keyboardChip {
                 attrs {
-                    item = true
-                    container = false
-                }
-                keyboardChip {
-                    attrs {
-                        onSelected = actionBarShortcut.handler
-                        assignedShortcut = actionBarShortcut.assignedShortcut
-                        uponUnmount = handleShortcutUnmount
-                    }
+                    onSelected = actionBarShortcut.handler
+                    assignedShortcut = actionBarShortcut.assignedShortcut
+                    uponUnmount = handleShortcutUnmount
+                    className = ComponentStyles.getClassName { ComponentStyles::actionBarKeyboardLetterBox }
                 }
             }
         }
