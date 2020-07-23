@@ -99,7 +99,7 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         if (props.fileList.isNotEmpty()) {
             styledDiv {
                 css {
-                    marginTop = 20.px
+                    marginTop = 70.px
                     height = 100.vh
                 }
                 listOf(FileReviewStatus.TO_BE_REVIEWED, FileReviewStatus.SAVED_FOR_LATER, FileReviewStatus.REVIEWED)
@@ -125,8 +125,7 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
     private fun RBuilder.renderListSeparator(fileReviewStatus: FileReviewStatus) {
         ListItem {
             attrs {
-                divider = true
-                className = ComponentStyles.getClassName { ComponentStyles::fileListItem }
+                className = ComponentStyles.getClassName { ComponentStyles::fileListHeaderItem }
                 button = true
                 onClick = fileReviewStatus.getClickHandler()
             }
@@ -145,7 +144,6 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
                     lineHeight = LineHeights.extraLarge
                     marginTop = 8.px
                     marginBottom = 8.px
-                    color = Colors.textMediumGrey
                 }
                 + fileReviewStatus.displayText()
             }
@@ -278,8 +276,8 @@ private class FileItem: RComponent<FileItemProps, RState>() {
             styledP {
                 css {
                     margin(all = 0.px)
-                    paddingTop = 16.px
-                    paddingBottom = 16.px
+                    paddingTop = 18.px
+                    paddingBottom = 18.px
                     alignContent = Align.baseline
                     fontSize = FontSizes.large
                     lineHeight = LineHeights.large
@@ -300,7 +298,7 @@ private class FileItem: RComponent<FileItemProps, RState>() {
                     css {
                         minWidth = 70.pct
                         color = Colors.textMediumGrey
-                        marginLeft = 40.px
+//                        marginLeft = 40.px
                     }
                     + (props.fileDiff.newFile?.path ?: (props.fileDiff.oldFile!!.path)).split("/").last()
                 }
