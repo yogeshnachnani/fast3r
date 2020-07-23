@@ -72,9 +72,9 @@ class CodeView(
 
     override fun componentDidMount() {
         val aceOpts = json(
-            "theme" to "ace/theme/clouds_midnight",
+            "theme" to "ace/theme/fast3r_dark",
             "readOnly" to true,
-            "highlightActiveLine" to true,
+            "highlightActiveLine" to false,
             "fontSize" to FontSizes.normal,
             "showGutter" to true,
             "tabSize" to 4,

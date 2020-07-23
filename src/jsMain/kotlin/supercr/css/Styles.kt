@@ -1,5 +1,7 @@
 package supercr.css
 
+import codereview.Edit
+import kotlinx.css.Align
 import kotlinx.css.BorderStyle
 import kotlinx.css.Float
 import kotlinx.css.BoxSizing
@@ -10,16 +12,24 @@ import kotlinx.css.Display
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
 import kotlinx.css.Image
+import kotlinx.css.JustifyContent
 import kotlinx.css.LinearDimension
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.StyledElement
+import kotlinx.css.TextAlign
+import kotlinx.css.alignContent
+import kotlinx.css.alignItems
 import kotlinx.css.background
 import kotlinx.css.backgroundColor
 import kotlinx.css.backgroundImage
 import kotlinx.css.backgroundSize
 import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
+import kotlinx.css.borderRight
+import kotlinx.css.borderRightColor
+import kotlinx.css.borderRightStyle
+import kotlinx.css.borderRightWidth
 import kotlinx.css.borderStyle
 import kotlinx.css.borderWidth
 import kotlinx.css.boxShadow
@@ -35,6 +45,7 @@ import kotlinx.css.fontWeight
 import kotlinx.css.height
 import kotlinx.css.hsl
 import kotlinx.css.hsla
+import kotlinx.css.justifyContent
 import kotlinx.css.letterSpacing
 import kotlinx.css.lineHeight
 import kotlinx.css.margin
@@ -61,6 +72,7 @@ import kotlinx.css.properties.lh
 import kotlinx.css.px
 import kotlinx.css.rgb
 import kotlinx.css.right
+import kotlinx.css.textAlign
 import kotlinx.css.top
 import kotlinx.css.vh
 import kotlinx.css.width
@@ -139,12 +151,7 @@ object Colors {
     val backgroundMediumGrey = hsl(220, 22, 24)
     val backgroundGrey = hsl(220, 21, 27)
 
-    val highlightsGrey = hsla(0, 2, 77, 0.22)
     val highlightsGreyAlphaPoint1 = hsla(0, 2, 77, 0.1)
-    val highlightsLightGreen = hsla(159, 42, 42, 0.3)
-    val highlightsGreen = hsla(159, 76, 43, 0.7)
-    val highlightsLightRead = hsla(0, 48, 45, 0.2)
-    val highlightsRed = hsla(0, 61, 55, 0.7)
 
     val iconGrey = hsl(205, 15, 55)
 
@@ -152,6 +159,25 @@ object Colors {
     val textMediumGrey = hsl(204, 26, 77)
     val textLightGrey = hsl(0, 0, 93)
 
+}
+
+object EditorThemeColors {
+//    val tokenComment = Colors.textDarkGrey
+    val gutterBackground = Colors.backgroundGrey
+    val gutterColor = hsla(0, 0, 93, 0.5)
+    val editorBackground = Colors.backgroundMediumGrey
+    val editorColor = Colors.textMediumGrey
+    val gutterActiveLineBorderColor = Colors.primaryTeal
+    val orange = hsl(29, 100, 58)
+    val lightBlue = hsl(198, 100, 70)
+    val blue = hsl(234, 100, 69)
+    val pink = hsl(0, 100, 74)
+    val lightGreen = hsl(165, 100, 69)
+    val highlightsLightGreen = hsla(159, 42, 42, 0.3)
+    val highlightsGreen = hsla(159, 76, 43, 0.7)
+    val highlightsLightRead = hsla(0, 48, 45, 0.2)
+    val highlightsRed = hsla(0, 61, 55, 0.7)
+    val highlightsGrey = hsla(0, 2, 77, 0.22)
 }
 
 object FontSizes {
@@ -212,6 +238,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.huge
         lineHeight = LineHeights.huge
         display = Display.flex
+        textAlign = TextAlign.center
+        justifyContent = JustifyContent.center
+        alignItems = Align.center
+        alignContent = Align.center
     }
 
     val backgroundAccentPrimary4 by css {
@@ -227,6 +257,19 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
         fontWeight = FontWeight.w700
+    }
+    val fileListHeaderItem by css {
+        marginTop = 40.px
+        marginBottom = 40.px
+        color = Colors.textDarkGrey
+        paddingLeft = 0.px
+        paddingRight = 0.px
+        paddingBottom = 0.px
+        paddingTop = 0.px
+        maxWidth = 480.px
+        maxHeight = 60.px
+        fontSize = FontSizes.large
+        lineHeight = LineHeights.large
     }
     val fileListItem by css {
         paddingLeft = 0.px
@@ -358,19 +401,26 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val diffViewNewText by css {
-        backgroundColor = Colors.accentPrimary3
+        backgroundColor = EditorThemeColors.highlightsGreen
         position = Position.absolute
         zIndex = 20
     }
-    val diffViewTextAddedForBalance by css {
-        backgroundColor = Colors.accentPrimary1
+    val diffViewNewTextBackground by css {
+        backgroundColor = EditorThemeColors.highlightsLightGreen
         position = Position.absolute
-        zIndex = 20
+    }
+    val diffViewTextAddedForBalanceBackground by css {
+        backgroundColor = EditorThemeColors.highlightsGrey
+        position = Position.absolute
     }
     val diffViewDeletedText by css {
-        background = "#ffeef0"
+        backgroundColor = EditorThemeColors.highlightsRed
         position = Position.absolute
         zIndex = 20
+    }
+    val diffViewDeletedTextBackground by css {
+        backgroundColor = EditorThemeColors.highlightsLightRead
+        position = Position.absolute
     }
 }
 
@@ -387,7 +437,8 @@ var styles = CSSBuilder().apply {
         fontSize = FontSizes.normal
         color = Colors.baseText1
         overflow = Overflow.hidden
-        backgroundColor = Colors.backgroundMediumGrey
+        backgroundColor = Colors.backgroundDarkGrey
+        margin(0.px)
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
         background = Colors.warmGrey1.value
@@ -410,4 +461,49 @@ var styles = CSSBuilder().apply {
     }
 //    "::-webkit-scrollbar-track" {
 //    }
+    /** Fast3r Theme */
+    ".ace-fast3r-dark .ace_comment" {
+        color = EditorThemeColors.lightGreen
+    }
+    ".ace-fast3r-dark .ace_gutter" {
+        backgroundColor = EditorThemeColors.gutterBackground
+        color = EditorThemeColors.gutterColor
+    }
+    ".ace-fast3r-dark" {
+        backgroundColor = EditorThemeColors.editorBackground
+        color = EditorThemeColors.editorColor
+    }
+    ".ace-fast3r-dark .ace_gutter-active-line" {
+        borderRightWidth = 4.px
+        borderRightStyle = BorderStyle.solid
+        borderRightColor = EditorThemeColors.gutterActiveLineBorderColor
+    }
+    ".ace-fast3r-dark .ace_keyword" {
+        color = EditorThemeColors.orange
+    }
+    ".ace-fast3r-dark .ace_meta" {
+        color = EditorThemeColors.orange
+    }
+    ".ace-fast3r-dark .ace_support.ace_constant.ace_property-value" {
+        color = EditorThemeColors.orange
+    }
+    ".ace-fast3r-dark .ace_string" {
+        color = EditorThemeColors.lightBlue
+    }
+    ".ace-fast3r-dark .ace_storage" {
+
+    }
+    ".ace-fast3r-dark .ace_support.ace_class" {
+        color = EditorThemeColors.pink
+    }
+    ".ace-fast3r-dark .ace_support.ace_function" {
+        color = EditorThemeColors.pink
+    }
+    ".ace-fast3r-dark .ace_support.ace_other" {
+        color = EditorThemeColors.pink
+    }
+    ".ace-fast3r-dark .ace_support.ace_type" {
+        color = EditorThemeColors.pink
+    }
+
 }

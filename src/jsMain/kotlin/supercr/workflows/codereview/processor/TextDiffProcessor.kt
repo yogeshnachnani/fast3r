@@ -31,15 +31,15 @@ class TextDiffProcessor constructor(
             .mapIndexed { index, fileLine -> Pair(index.toLong(), fileLine) }
             .filter { it.second.filePosition == null }
             .forEach { (rowIndex, rowAddedInOldText) ->
-                highlighLinesWithGutter(editor = editorWithOldText, fromRow = rowIndex, numLines = 1, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalance })
-                highlighLinesWithGutter(editor = editorWithNewText, fromRow = rowIndex, numLines = 1, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewText })
+                highlighLinesWithGutter(editor = editorWithOldText, fromRow = rowIndex, numLines = 1, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalanceBackground })
+                highlighLinesWithGutter(editor = editorWithNewText, fromRow = rowIndex, numLines = 1, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewTextBackground })
             }
         newFileLines
             .mapIndexed { index, fileLine -> Pair(index.toLong(), fileLine) }
             .filter { it.second.filePosition == null }
             .forEach { (rowIndex, rowAddedInNewText) ->
-                highlighLinesWithGutter(editorWithNewText, rowIndex, 1, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalance })
-                highlighLinesWithGutter(editorWithOldText, rowIndex, 1, ComponentStyles.getClassName { ComponentStyles::diffViewDeletedText } )
+                highlighLinesWithGutter(editorWithNewText, rowIndex, 1, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalanceBackground })
+                highlighLinesWithGutter(editorWithOldText, rowIndex, 1, ComponentStyles.getClassName { ComponentStyles::diffViewDeletedTextBackground } )
             }
     }
 
@@ -48,7 +48,7 @@ class TextDiffProcessor constructor(
         /** If there is new text on the right hand side, that means we have to highlight the empty lines we inserted in oldText for balance */
         if (lengthB > lengthA) {
             val numLines = lengthB - lengthA
-            highlighLinesWithGutter(editorWithOldText, beginB + lengthA, numLines, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalance })
+            highlighLinesWithGutter(editorWithOldText, beginB + lengthA, numLines, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalanceBackground })
         }
         /** We have the same number or rows to process in both [editorWithOldText] and [editorWithNewText] */
         val fromRow = beginB
@@ -87,8 +87,8 @@ class TextDiffProcessor constructor(
 
         }
         /** Finally, highlight the gutters */
-        highlightGutter(editor = editorWithNewText, fromRow = beginB , numLines = lengthB, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewText })
-        highlightGutter(editor = editorWithOldText, fromRow = beginB , numLines = lengthA, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewDeletedText })
+        highlightGutter(editor = editorWithNewText, fromRow = beginB , numLines = lengthB, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewTextBackground })
+        highlightGutter(editor = editorWithOldText, fromRow = beginB , numLines = lengthA, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewDeletedTextBackground })
     }
 
     private fun getLineAt(rowIndex: Long, editor: Editor): String {
