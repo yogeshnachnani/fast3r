@@ -168,7 +168,7 @@ object EditorThemeColors {
 //    val tokenComment = Colors.textDarkGrey
     val gutterBackground = Colors.backgroundGrey
     val gutterColor = hsla(0, 0, 93, 0.5)
-    val editorBackground = Colors.backgroundMediumGrey
+    val editorBackground = Colors.primaryBlack
     val editorColor = Colors.textMediumGrey
     val gutterActiveLineBorderColor = Colors.primaryTeal
     val orange = hsl(29, 100, 58)
