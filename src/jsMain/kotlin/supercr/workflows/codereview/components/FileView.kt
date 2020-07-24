@@ -54,6 +54,13 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             }
             renderFileHeader()
             renderDiffPane()
+            renderExtraInfoWindow()
+        }
+    }
+
+    private fun RBuilder.renderExtraInfoWindow() {
+        extraInfoWindow {
+
         }
     }
 

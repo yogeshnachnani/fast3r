@@ -412,6 +412,19 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         maxWidth = commentBoxWidth
     }
 
+    val extraInfoWindowContainer by css {
+        backgroundColor = Colors.backgroundDarkestGrey
+        width = 100.pct
+        height = 100.pct
+        marginTop = 4.px
+    }
+
+    val extraInfoWindowHeader by css {
+        height = 80.px
+        backgroundColor = Colors.primaryBlack
+        width = 100.pct
+    }
+
     val actionBar by css {
         position = Position.absolute
         right = 2.px
