@@ -66,6 +66,7 @@ fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = false) {
         ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)), ReviewController(FileLineItemsRepository(jdbi)))
         RepoApi(this, gitProjectCache)
         OauthApi(this, OauthTokensRepository(jdbi))
+        StaticApi(this)
     }
     install(CORS) {
         host("localhost:8080")
