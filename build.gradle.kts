@@ -52,33 +52,28 @@ kotlin {
             }
         }
         tasks {
-            register<Jar>("buildFatJar") {
-                group = "application"
-                manifest {
-                    attributes["Main-Class"] = "io.btc.ApiServerBackend"
-//                    attributes["Class-Path"] = main.compileDependencyFiles.map { it.name }.joinToString(separator =  " ")
+            register<Copy>("copyBuiltArtifacts") {
+                dependsOn("build")
+                /** Copy electron files */
+                from("$projectDir/electron_packaging")
+                into("$buildDir/electron")
+
+                /** Copy main jar file */
+                getByName("jvmJar").outputs.files.map {
+                    from(it.absolutePath) {
+                        into("java")
+                    }
                 }
-                archiveBaseName.set("${project.name}-fat")
-                from(main.output.classesDirs, main.compileDependencyFiles)
-//              from(main.compileDependencyFiles.asFileTree.map { if (it.isDirectory) it else zipTree(it) })
-//                from (
-//                    main.configuration
-//                    main.compileDependencyFiles.map {
-//                        if(it.isDirectory) {
-//                            it
-//                        } else {
-//                            zipTree(it)
-//                        }
-//                    }
-//                )
-//                from(main.output.classesDirs, main.compileDependencyFiles)
-                with(jar.get() as CopySpec)
-            }
-            register<JavaExec>("runLocally") {
-                group = "application"
-                setMain("AppKt")
-                classpath = main.output.classesDirs
-                classpath += main.compileDependencyFiles
+                /** Copy java dependencies */
+                main.runtimeDependencyFiles.asFileTree.map {
+                    from(it.absolutePath) {
+                        into("java")
+                    }
+                }
+                /** Copy javascript */
+                from("$buildDir/distributions") {
+                    into("js")
+                }
             }
         }
         val test by compilations.getting {
