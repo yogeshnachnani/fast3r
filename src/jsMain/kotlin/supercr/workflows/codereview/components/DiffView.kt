@@ -100,9 +100,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             attrs {
                 item = false
                 container = true
-                alignItems = "center"
                 direction = "row"
-                justify = "center"
                 spacing = 0
             }
             if (props.fileDiff.hasOldFile()) {

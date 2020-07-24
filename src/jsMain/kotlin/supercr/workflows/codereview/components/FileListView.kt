@@ -32,6 +32,7 @@ import kotlinx.css.marginRight
 import kotlinx.css.marginTop
 import kotlinx.css.minHeight
 import kotlinx.css.minWidth
+import kotlinx.css.padding
 import kotlinx.css.paddingBottom
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
@@ -99,8 +100,7 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         if (props.fileList.isNotEmpty()) {
             styledDiv {
                 css {
-                    marginTop = 70.px
-                    height = 100.vh
+                    + ComponentStyles.fileListPane
                 }
                 listOf(FileReviewStatus.TO_BE_REVIEWED, FileReviewStatus.SAVED_FOR_LATER, FileReviewStatus.REVIEWED)
                     .map { reviewStatus ->

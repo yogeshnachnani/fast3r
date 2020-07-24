@@ -6,12 +6,18 @@ import codereview.FileDiffV2
 import codereview.ReviewInfo
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
+import kotlinx.css.Display
+import kotlinx.css.display
+import kotlinx.css.margin
+import kotlinx.css.px
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.css
+import styled.styledDiv
 import supercr.workflows.codereview.components.ActionBarShortcut
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
@@ -51,35 +57,20 @@ class ChangeSetReviewScreen(
     }
 
     override fun RBuilder.render() {
-        Grid {
-            attrs {
-                container = true
-                item = false
-                justify = "flex-start"
-                spacing = 2
+        styledDiv {
+            css {
+                display = Display.flex
+                margin((-8).px)
             }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
-                }
-                fileList {
-                    fileList = state.fileDiffShortutAndStatusList
-                    selectedFile = state.selectedFile
-                }
+            fileList {
+                fileList = state.fileDiffShortutAndStatusList
+                selectedFile = state.selectedFile
             }
-            Grid {
-                attrs {
-                    md = 10
-                    item = true
-                    container = false
-                }
-                if (state.selectedFile != null) {
-                    fileView {
-                        fileDiff = props.fileDiffList.fileDiffs.find { it == state.selectedFile }!!
-                        fileDiffCommentHandler = state.fileDiffShortutAndStatusList.first { it.fileDiff == state.selectedFile!! }.commentHandler
-                        defaultActionBarActions = defaultActions
-                    }
+            if (state.selectedFile != null) {
+                fileView {
+                    fileDiff = props.fileDiffList.fileDiffs.find { it == state.selectedFile }!!
+                    fileDiffCommentHandler = state.fileDiffShortutAndStatusList.first { it.fileDiff == state.selectedFile!! }.commentHandler
+                    defaultActionBarActions = defaultActions
                 }
             }
         }

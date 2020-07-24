@@ -5,9 +5,20 @@ import Paper
 import codereview.DiffChangeType
 import codereview.FileDiffV2
 import codereview.getUniqueIdentifier
+import kotlinx.css.Align
+import kotlinx.css.BoxSizing
+import kotlinx.css.Display
+import kotlinx.css.FlexWrap
+import kotlinx.css.alignContent
+import kotlinx.css.alignItems
+import kotlinx.css.boxSizing
+import kotlinx.css.display
+import kotlinx.css.flexWrap
 import kotlinx.css.height
 import kotlinx.css.minHeight
+import kotlinx.css.pct
 import kotlinx.css.px
+import kotlinx.css.width
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -37,14 +48,9 @@ external interface FileViewState: RState {
 
 class FileView : RComponent<FileViewProps, FileViewState>() {
     override fun RBuilder.render() {
-        Grid {
-            attrs {
-                item = false
-                container = true
-                alignItems = "center"
-                direction = "row"
-                justify = "center"
-                spacing = 0
+        styledDiv {
+            css {
+                + ComponentStyles.fileViewPane
             }
             renderFileHeader()
             renderDiffPane()
@@ -52,12 +58,9 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
     }
 
     private fun RBuilder.renderFileHeader() {
-        Grid {
-            attrs {
-                item = true
-                container = false
-                md = 12
-                className = ComponentStyles.getClassName { ComponentStyles::fileViewFileInfo }
+        styledDiv {
+            css {
+                + ComponentStyles.fileViewFileInfo
             }
             styledP {
                 css {
@@ -74,155 +77,16 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
         }
     }
 
-    private fun RBuilder.renderDiffView() : ReactElement {
-        return when(props.fileDiff.diffChangeType) {
-            DiffChangeType.MODIFY -> renderDiffViewForModifiedFile()
-            DiffChangeType.COPY -> TODO()
-            DiffChangeType.RENAME -> renderDiffViewForRenamedFile()
-            DiffChangeType.DELETE -> renderViewForRemovedFile()
-            DiffChangeType.ADD -> renderViewForNewFile()
-        }
-    }
-
-    private fun RBuilder.renderViewForNewFile(): ReactElement {
-        return Grid {
-            attrs {
-                item = true
-                container = false
-                md = 12
-            }
-            Paper {
-                attrs {
-                    square = true
-                    variant = "outlined"
-                    className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
-                }
-                p {
-                    +props.fileDiff.newFile!!.path
-                }
-            }
-            Grid {
-                attrs {
-                    container = true
-                    item = false
-                    justify = "space-evenly"
-                    spacing = 2
-                }
-                renderDiffPane()
-            }
-        }
-    }
-
-    private fun RBuilder.renderViewForRemovedFile(): ReactElement {
-        return Grid {
-            attrs {
-                item = true
-                container = false
-                md = 12
-            }
-            Paper {
-                attrs {
-                    square = true
-                    variant = "outlined"
-                    className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
-                }
-                p {
-                    +props.fileDiff.oldFile!!.path
-                }
-            }
-            Grid {
-                attrs {
-                    container = true
-                    item = false
-                    justify = "space-evenly"
-                    spacing = 2
-                }
-                renderDiffPane()
-            }
-        }
-    }
-
-    private fun RBuilder.renderDiffViewForRenamedFile(): ReactElement {
-        return Grid {
-            attrs {
-                container = true
-                md = 12
-                spacing = 0
-                direction = "row"
-                alignItems = "center"
-                justify = "space-evenly"
-            }
-            Grid {
-                attrs {
-                    md = 6
-                }
-                Paper {
-                    attrs {
-                        square = true
-                        variant = "outlined"
-                        className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
-                    }
-                    p {
-                        + "${ props.fileDiff.oldFile!!.path } -> "
-                    }
-                }
-            }
-            Grid {
-                attrs {
-                    md = 6
-                }
-                Paper {
-                    attrs {
-                        square = true
-                        variant = "outlined"
-                    }
-                    p {
-                        + props.fileDiff.newFile!!.path
-                    }
-                }
-            }
-            renderDiffPane()
-        }
-    }
-
-    private fun RBuilder.renderDiffViewForModifiedFile(): ReactElement {
-        return Grid {
-            attrs {
-                item = true
-                container = false
-                md = 12
-            }
-            Paper {
-                attrs {
-                    square = true
-                    variant = "outlined"
-                    className = ComponentStyles.getClassName { ComponentStyles::infoPaper }
-                }
-                p {
-                    + ( props.fileDiff.newFile?.path ?: ( props.fileDiff.oldFile!!.path )  )
-                }
-            }
-            renderDiffPane()
-        }
-    }
-
     /**
      * Renders a [DiffView] in a [Grid] item with the given xs value
       */
     private fun RBuilder.renderDiffPane() : ReactElement {
-        return Grid {
-            attrs {
-                item = true
-                container = false
-                md = 12
-            }
-            diffView {
-                fileDiff = props.fileDiff
-                identifier = props.fileDiff.getUniqueIdentifier()
-                oldFileNewCommentHandler = props.fileDiffCommentHandler.oldFileCommentHandler!!
-                newFileNewCommentHandler = props.fileDiffCommentHandler.newFileCommentHandler!!
-                defaultActionBarActions = props.defaultActionBarActions
-            }
+        return  diffView {
+            fileDiff = props.fileDiff
+            identifier = props.fileDiff.getUniqueIdentifier()
+            oldFileNewCommentHandler = props.fileDiffCommentHandler.oldFileCommentHandler!!
+            newFileNewCommentHandler = props.fileDiffCommentHandler.newFileCommentHandler!!
+            defaultActionBarActions = props.defaultActionBarActions
         }
     }
 }

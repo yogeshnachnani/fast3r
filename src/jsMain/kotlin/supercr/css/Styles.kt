@@ -9,6 +9,7 @@ import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
 import kotlinx.css.Contain
 import kotlinx.css.Display
+import kotlinx.css.FlexWrap
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
 import kotlinx.css.Image
@@ -38,6 +39,7 @@ import kotlinx.css.boxSizing
 import kotlinx.css.col
 import kotlinx.css.color
 import kotlinx.css.display
+import kotlinx.css.flexWrap
 import kotlinx.css.float
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
@@ -259,6 +261,16 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.baseText1
         fontWeight = FontWeight.w700
     }
+    val fileListPane by css {
+        marginTop = 30.px
+        height = 100.vh
+        minWidth = 400.px
+        paddingRight = 8.px
+        marginLeft = 0.px
+        marginRight = 0.px
+        marginBottom = 0.px
+        minWidth = 450.px
+    }
     val fileListHeaderItem by css {
         marginTop = 40.px
         marginBottom = 40.px
@@ -342,6 +354,15 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 //        put("resize", "none")
     }
 
+    val fileViewPane by css {
+        display = Display.flex
+        flexWrap = FlexWrap.wrap
+        boxSizing = BoxSizing.borderBox
+        width = 100.pct
+        alignContent = Align.flexStart
+        alignItems = Align.flexStart
+    }
+
     val fileViewFileInfo by css {
         height = 80.px
         backgroundColor = Colors.backgroundDarkestGrey
@@ -350,6 +371,8 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontWeight = FontWeight.normal
         fontSize = FontSizes.extraLarge
         lineHeight = LineHeights.extraLarge
+        width = 100.pct
+        display = Display.block
     }
     val fileViewFileInfoText by css {
         marginTop = 24.px
