@@ -166,7 +166,6 @@ kotlin {
                 implementation(npm("styled-components"))
                 implementation(npm("inline-style-prefixer"))
                 // Components used only within React rendering (substituted out when using Atom)
-                implementation(npm("react-ace", "8.1.0"))
                 implementation(npm("ace-builds", "~1.4.10"))
                 // Material UI
                 implementation(npm("@material-ui/core", "4.11.0"))
