@@ -53,7 +53,48 @@ kotlin {
         }
         tasks {
             register<Copy>("copyBuiltArtifacts") {
-                dependsOn("build")
+                dependsOn(
+                    "clean",
+                    "compileJava",
+                    "processResources",
+                    "classes",
+                    "jar",
+                    "jsPackageJson",
+                    "jsTestPackageJson",
+                    "kotlinNodeJsSetup",
+                    "kotlinNpmInstall",
+                    "compileKotlinJs",
+                    "jsProcessResources",
+                    "jsBrowserDistributeResources",
+                    "processDceJsKotlinJs",
+                    "jsBrowserDevelopmentWebpack",
+                    "jsMainClasses",
+                    "jsJar",
+                    "compileKotlinJvm",
+                    "jvmProcessResources",
+                    "jvmMainClasses",
+                    "jvmJar",
+                    "compileKotlinMetadata",
+                    "metadataMainClasses",
+                    "metadataJar",
+                    "assemble",
+                    "compileTestKotlinJs",
+                    "jsTestProcessResources",
+                    "jsTestClasses",
+                    "jsBrowserTest",
+                    "jsNodeTest",
+                    "jsTest",
+                    "compileTestKotlinJvm",
+                    "jvmTestProcessResources",
+                    "jvmTestClasses",
+                    "jvmTest",
+                    "allTests",
+                    "compileTestJava",
+                    "processTestResources",
+                    "testClasses",
+                    "test",
+                    "check"
+                )
                 /** Copy electron files */
                 from("$projectDir/electron_packaging")
                 into("$buildDir/electron")
