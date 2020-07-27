@@ -160,10 +160,8 @@ kotlin {
                 //React, React DOM + Wrappers
                 implementation("org.jetbrains:kotlin-react:$reactKotlinVersion")
                 implementation("org.jetbrains:kotlin-react-dom:$reactKotlinVersion")
-                implementation("org.jetbrains:kotlin-react-router-dom:$reactRouterDomVersion-pre.110-kotlin-$kotlinVersion")
                 implementation(npm("react", reactVersion))
                 implementation(npm("react-dom", reactVersion))
-                implementation(npm("react-router-dom", reactRouterDomVersion))
                 implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-$kotlinVersion")
                 implementation(npm("styled-components"))
                 implementation(npm("inline-style-prefixer"))
