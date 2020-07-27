@@ -1,13 +1,10 @@
 package supercr.css
 
-import codereview.Edit
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
 import kotlinx.css.Float
 import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
-import kotlinx.css.Color
-import kotlinx.css.Contain
 import kotlinx.css.Display
 import kotlinx.css.FlexWrap
 import kotlinx.css.FontStyle
@@ -17,7 +14,6 @@ import kotlinx.css.JustifyContent
 import kotlinx.css.LinearDimension
 import kotlinx.css.Overflow
 import kotlinx.css.Position
-import kotlinx.css.StyledElement
 import kotlinx.css.TextAlign
 import kotlinx.css.alignContent
 import kotlinx.css.alignItems
@@ -25,18 +21,12 @@ import kotlinx.css.background
 import kotlinx.css.backgroundColor
 import kotlinx.css.backgroundImage
 import kotlinx.css.backgroundSize
-import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
-import kotlinx.css.borderRight
 import kotlinx.css.borderRightColor
 import kotlinx.css.borderRightStyle
 import kotlinx.css.borderRightWidth
-import kotlinx.css.borderStyle
-import kotlinx.css.borderWidth
 import kotlinx.css.bottom
-import kotlinx.css.boxShadow
 import kotlinx.css.boxSizing
-import kotlinx.css.col
 import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.flexWrap
@@ -49,7 +39,6 @@ import kotlinx.css.height
 import kotlinx.css.hsl
 import kotlinx.css.hsla
 import kotlinx.css.justifyContent
-import kotlinx.css.letterSpacing
 import kotlinx.css.lineHeight
 import kotlinx.css.margin
 import kotlinx.css.marginBottom
@@ -58,9 +47,7 @@ import kotlinx.css.marginRight
 import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
-import kotlinx.css.minHeight
 import kotlinx.css.minWidth
-import kotlinx.css.opacity
 import kotlinx.css.overflow
 import kotlinx.css.padding
 import kotlinx.css.paddingBottom
@@ -69,21 +56,15 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
-import kotlinx.css.properties.BoxShadows
-import kotlinx.css.properties.LineHeight
 import kotlinx.css.properties.lh
 import kotlinx.css.px
-import kotlinx.css.rgb
 import kotlinx.css.right
 import kotlinx.css.textAlign
 import kotlinx.css.top
 import kotlinx.css.vh
 import kotlinx.css.width
 import kotlinx.css.zIndex
-import kotlinx.html.TEXTAREA
 import styled.StyleSheet
-import styled.getClassName
-import styled.getClassSelector
 
 private fun String.cssClassName(): String {
     return "." + this
@@ -179,6 +160,7 @@ object EditorThemeColors {
     val highlightsLightGreen = hsla(159, 42, 42, 0.3)
     val highlightsGreen = hsla(159, 76, 43, 0.7)
     val highlightsLightRead = hsla(0, 48, 45, 0.2)
+    val gutterHighlightsLightRed = hsla(0, 48, 45, 0.3)
     val highlightsRed = hsla(0, 61, 55, 0.7)
     val highlightsGrey = hsla(0, 2, 77, 0.22)
 }
@@ -484,6 +466,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
     val diffViewDeletedTextBackground by css {
         backgroundColor = EditorThemeColors.highlightsLightRead
+        position = Position.absolute
+    }
+    val diffViewDeletedTextGutter by css {
+        backgroundColor = EditorThemeColors.gutterHighlightsLightRed
         position = Position.absolute
     }
 }

@@ -197,7 +197,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         val (editor, lines, className) = if (props.fileDiff.hasNewFile()) {
             Triple(ace.edit(RIGHT_EDITOR_DIV_ID) as Editor, props.fileDiff.newFile!!.fileLines, ComponentStyles.getClassName { ComponentStyles::diffViewNewTextBackground })
         } else {
-            Triple(ace.edit(LEFT_EDITOR_DIV_ID) as Editor, props.fileDiff.oldFile!!.fileLines, ComponentStyles.getClassName { ComponentStyles::diffViewDeletedTextBackground })
+            Triple(ace.edit(LEFT_EDITOR_DIV_ID) as Editor, props.fileDiff.oldFile!!.fileLines, ComponentStyles.getClassName { ComponentStyles::diffViewDeletedTextGutter })
         }
         lines.forEachIndexed { index, _ ->
             editor.getSession().addGutterDecoration(index.toDouble(),  className)
