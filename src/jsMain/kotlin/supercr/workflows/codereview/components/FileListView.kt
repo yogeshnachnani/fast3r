@@ -10,54 +10,30 @@ import MaterialUIList
 import NotificationsNone
 import codereview.FileDiffV2
 import codereview.getUniqueIdentifier
-import kotlinx.css.Align
-import kotlinx.css.Display
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
-import kotlinx.css.alignContent
-import kotlinx.css.backgroundColor
-import kotlinx.css.borderRadius
-import kotlinx.css.color
-import kotlinx.css.display
 import kotlinx.css.fontFamily
 import kotlinx.css.fontSize
 import kotlinx.css.fontStyle
 import kotlinx.css.fontWeight
-import kotlinx.css.height
 import kotlinx.css.lineHeight
-import kotlinx.css.margin
 import kotlinx.css.marginBottom
-import kotlinx.css.marginLeft
-import kotlinx.css.marginRight
 import kotlinx.css.marginTop
-import kotlinx.css.minHeight
-import kotlinx.css.minWidth
-import kotlinx.css.padding
-import kotlinx.css.paddingBottom
-import kotlinx.css.paddingTop
-import kotlinx.css.pct
 import kotlinx.css.px
-import kotlinx.css.vh
-import kotlinx.css.width
-import org.w3c.files.File
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
-import react.buildElement
 import react.setState
 import styled.css
 import styled.getClassName
 import styled.styledDiv
 import styled.styledP
-import styled.styledSpan
-import supercr.css.Colors
 import supercr.css.ComponentStyles
 import supercr.css.FontFamilies
 import supercr.css.FontSizes
 import supercr.css.LineHeights
-import supercr.kb.components.keyboardChip
 import supercr.workflows.codereview.screens.FileDiffStateAndMetaData
 
 enum class FileDiffListMode {
@@ -160,49 +136,18 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
         }
     }
 
-    private fun RBuilder.renderFileItem(currentFileDiff: FileDiffV2, assignedShortcut: String, handlerForFile: () -> Unit) {
-        ListItem {
-            attrs {
-                divider = false
-                onClick = handlerForFile
-                className = if (currentFileDiff.isGivenFilePresentlySelected()) {
-                    "${ComponentStyles.getClassName { ComponentStyles::fileListItem }} ${ComponentStyles.getClassName { ComponentStyles::selectedFileListItem }}"
-                } else {
-                    ComponentStyles.getClassName { ComponentStyles::fileListItem }
-                }
-                key = assignedShortcut
-            }
-            styledDiv {
-                css {
-                    display = Display.block
-                    minWidth = 75.pct
-                }
-                fileItem {
-                    fileDiff = currentFileDiff
-                    isSelected = currentFileDiff.isGivenFilePresentlySelected()
-                }
-            }
-            styledDiv {
-                css {
-                    marginRight = 36.px
-                }
-                keyboardChip {
-                    this.attrs {
-                        onSelected = handlerForFile
-                        this.assignedShortcut = assignedShortcut
-                        uponUnmount = removePrefixOnUnmount
-                    }
-                }
-            }
+    private fun RBuilder.renderFileItem(currentFileDiff: FileDiffV2, assignedShortcutString: String, assignedHandler: () -> Unit) {
+        fileItem {
+            fileDiff = currentFileDiff
+            isSelected = currentFileDiff.isGivenFilePresentlySelected()
+            handlerForFile = assignedHandler
+            assignedShortcut = assignedShortcutString
         }
     }
 
     private fun FileDiffV2.isGivenFilePresentlySelected() =
         props.selectedFile?.getUniqueIdentifier() == this.getUniqueIdentifier()
 
-    private val removePrefixOnUnmount : (String) -> Unit = { _ ->
-        // No-op
-    }
 
     private fun FileReviewStatus.displayText(): String {
         return when(this) {
@@ -262,54 +207,3 @@ fun RBuilder.fileList(handler: FileListViewProps.() -> Unit): ReactElement {
 }
 
 
-external interface FileItemProps: RProps {
-    var fileDiff: FileDiffV2
-    var isSelected: Boolean
-}
-
-private class FileItem: RComponent<FileItemProps, RState>() {
-    override fun RBuilder.render() {
-        styledDiv {
-            css {
-                margin(all = 0.px)
-            }
-            styledP {
-                css {
-                    margin(all = 0.px)
-                    paddingTop = 18.px
-                    paddingBottom = 18.px
-                    alignContent = Align.baseline
-                    fontSize = FontSizes.large
-                    lineHeight = LineHeights.large
-                    fontWeight = FontWeight.normal
-                }
-                styledSpan {
-                    css {
-                        color = if (props.isSelected) {
-                            Colors.primaryTeal
-                        } else {
-                            Colors.textDarkGrey
-                        }
-                        classes.add(ComponentStyles.getClassName { ComponentStyles::fileListTshirtSizePosition })
-                    }
-                    + props.fileDiff.tShirtSize.name
-                }
-                styledSpan {
-                    css {
-                        minWidth = 70.pct
-                        color = Colors.textMediumGrey
-//                        marginLeft = 40.px
-                    }
-                    + (props.fileDiff.newFile?.path ?: (props.fileDiff.oldFile!!.path)).split("/").last()
-                }
-            }
-        }
-    }
-
-}
-
-private fun RBuilder.fileItem(handler: FileItemProps.() -> Unit): ReactElement {
-    return child(FileItem::class) {
-        this.attrs(handler)
-    }
-}

@@ -177,6 +177,9 @@ kotlin {
 
                 /** Diff */
                 implementation(npm("diff", "~4.0.2"))
+
+                /** Library for drag-and-drop support. NOTE: Also imports redux! */
+                implementation(npm("react-beautiful-dnd", "~13.0.0"))
             }
         }
 

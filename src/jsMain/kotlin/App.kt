@@ -3,6 +3,8 @@ import codereview.FileLineItem
 import codereview.ReviewInfo
 import codereview.ReviewStorageProvider
 import codereview.SuperCrClient
+import codereview.getUniqueIdentifier
+import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
@@ -17,7 +19,9 @@ import react.dom.span
 import supercr.css.ComponentStyles
 import supercr.css.styles
 import supercr.kb.UniversalKeyboardShortcutHandler
+import supercr.workflows.codereview.components.FileDiffAndShortcut
 import supercr.workflows.codereview.components.commentThread
+import supercr.workflows.codereview.components.dndFileList
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetReview
 import supercr.workflows.mainScreen
@@ -47,7 +51,8 @@ fun main ()  {
     UniversalKeyboardShortcutHandler.init()
     console.log("We are at ${window.location.href} and ${window.location.search}")
     render(document.getElementById("root"))  {
-        renderDiffView()
+        renderDraggableFileList()
+//        renderDiffView()
     }
 //    renderDiffView()
 //    renderGettingStarted()
@@ -109,6 +114,34 @@ private fun renderMainScreen(): ReactElement {
             mainScreen {
 
             }
+        }
+    }
+}
+
+private fun RBuilder.renderDraggableFileList() {
+    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
+    console.log("File diff is : ", sampleFileDiff)
+    val kbShortcuts = KeyboardShortcutTrie.generatePossiblePrefixCombos(
+            prefixString = "d",
+            numberOfComponents = sampleFileDiff.fileDiffs.size
+        )
+    val fileDiffAndShortcuts = sampleFileDiff.fileDiffs.mapIndexed { index, fileDiffV2 ->
+        FileDiffAndShortcut(
+            fileDiffV2 = fileDiffV2,
+            kbShortcut = kbShortcuts[index],
+            handlerForFile = {
+                console.log(" handler clicked for ${fileDiffV2.getUniqueIdentifier()}")
+            }
+        )
+    }
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        dndFileList {
+            fileList = fileDiffAndShortcuts
         }
     }
 }
