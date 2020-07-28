@@ -51,8 +51,7 @@ fun main ()  {
     UniversalKeyboardShortcutHandler.init()
     console.log("We are at ${window.location.href} and ${window.location.search}")
     render(document.getElementById("root"))  {
-        renderDraggableFileList()
-//        renderDiffView()
+        renderMainScreen()
     }
 //    renderDiffView()
 //    renderGettingStarted()
@@ -105,15 +104,13 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
     }
 }
 
-private fun renderMainScreen(): ReactElement {
-    return buildElement {
-        StylesProvider {
-            attrs {
-                injectFirst = true
-            }
-            mainScreen {
+private fun RBuilder.renderMainScreen() {
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        mainScreen {
 
-            }
         }
     }
 }

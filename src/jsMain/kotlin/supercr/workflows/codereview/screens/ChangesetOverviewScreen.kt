@@ -2,25 +2,30 @@ package supercr.workflows.codereview.screens
 
 import Grid
 import codereview.FileDiffListV2
+import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.setState
 import styled.getClassName
 import supercr.css.ComponentStyles
 import supercr.kb.components.enterActivatedButton
+import supercr.workflows.codereview.components.FileDiffAndShortcut
 import supercr.workflows.codereview.components.changeSummary
+import supercr.workflows.codereview.components.dndFileList
 import supercr.workflows.codereview.components.titleAndDescription
 
 external interface ChangesetOverviewScreenProps: RProps {
     var fileDiffList: FileDiffListV2
     var pullRequestSummary: PullRequestSummary
-    var handleStartReview: () -> Unit
+    var handleStartReview: (FileDiffListV2) -> Unit
 }
 
 external interface ChangeSetOverviewScreenState: RState {
+    var fileDiffListAndShortcuts: List<FileDiffAndShortcut>
 }
 
 /**
@@ -31,7 +36,23 @@ external interface ChangeSetOverviewScreenState: RState {
  * (c) Stats
  * (d) Comments
  */
-class ChangesetOverviewScreen : RComponent<ChangesetOverviewScreenProps, ChangeSetOverviewScreenState>() {
+class ChangesetOverviewScreen constructor(
+    constructorProps: ChangesetOverviewScreenProps
+) : RComponent<ChangesetOverviewScreenProps, ChangeSetOverviewScreenState>(constructorProps) {
+
+    override fun ChangeSetOverviewScreenState.init(props: ChangesetOverviewScreenProps) {
+        val kbShortcuts = KeyboardShortcutTrie.generatePossiblePrefixCombos(
+            prefixString = "d",
+            numberOfComponents = props.fileDiffList.fileDiffs.size
+        )
+        fileDiffListAndShortcuts = props.fileDiffList.fileDiffs.mapIndexed { index, fileDiffV2 ->
+            FileDiffAndShortcut(
+                fileDiffV2 = fileDiffV2,
+                kbShortcut = kbShortcuts[index],
+                handlerForFile = noOpFileHandler
+            )
+        }
+    }
 
     override fun RBuilder.render() {
         Grid {
@@ -104,7 +125,7 @@ class ChangesetOverviewScreen : RComponent<ChangesetOverviewScreenProps, ChangeS
                             }
                             enterActivatedButton {
                                 label = "Start Review"
-                                onSelected = props.handleStartReview
+                                onSelected = startReviewCallback
                             }
                         }
                     }
@@ -120,7 +141,16 @@ class ChangesetOverviewScreen : RComponent<ChangesetOverviewScreenProps, ChangeS
                 item = true
                 md = 4
             }
+            dndFileList {
+                fileList = state.fileDiffListAndShortcuts
+                handleReordering = handleReorderingOfFiles
+            }
         }
+    }
+
+    private val startReviewCallback : () -> Unit = {
+        val reorderedFileList = state.fileDiffListAndShortcuts.map { it.fileDiffV2 }
+        props.handleStartReview(FileDiffListV2(fileDiffs = reorderedFileList))
     }
 
     private fun RBuilder.renderRightSideContent() {
@@ -130,6 +160,18 @@ class ChangesetOverviewScreen : RComponent<ChangesetOverviewScreenProps, ChangeS
                 item = true
                 md = 4
             }
+        }
+    }
+
+    private val noOpFileHandler: () -> Unit = {
+
+    }
+    private val handleReorderingOfFiles: (Int, Int) -> Unit = { fromIndex, toIndex ->
+        val newList = state.fileDiffListAndShortcuts.map { it.copy() }.toMutableList()
+        val movedFile = newList.removeAt(fromIndex)
+        newList.add(toIndex, movedFile)
+        setState {
+            fileDiffListAndShortcuts = newList
         }
     }
 

@@ -87,8 +87,9 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
     }
 
 
-    private val startReview: () -> Unit = {
+    private val startReview: (FileDiffListV2) -> Unit = { orderedFileList ->
         setState {
+            fileDiffList = orderedFileList
             inReview = true
         }
     }

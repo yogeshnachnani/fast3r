@@ -25,10 +25,10 @@ import supercr.css.ComponentStyles
 
 external interface DragNDropEnabledFileListProps : RProps {
     var fileList: List<FileDiffAndShortcut>
+    var handleReordering: (Int, Int) -> Unit
 }
 
 external interface DragNDropEnabledFileListState : RState {
-    var currentFileList : List<FileDiffAndShortcut>
 }
 
 data class FileDiffAndShortcut(
@@ -40,10 +40,6 @@ data class FileDiffAndShortcut(
 class DragNDropEnabledFileList constructor(
     constructorProps: DragNDropEnabledFileListProps
 ) : RComponent<DragNDropEnabledFileListProps, DragNDropEnabledFileListState>(constructorProps) {
-
-    override fun DragNDropEnabledFileListState.init(props: DragNDropEnabledFileListProps) {
-        currentFileList = props.fileList.map { it.copy() }
-    }
 
     override fun RBuilder.render() {
         DragDropContext {
@@ -61,7 +57,7 @@ class DragNDropEnabledFileList constructor(
 
     private val buildFileListElements: (provided: DroppableProvided, snapshot: DroppableStateSnapshot) -> ReactElement = { provided, snapshot ->
         buildElement {
-            if (state.currentFileList.isNotEmpty()) {
+            if (props.fileList.isNotEmpty()) {
                 styledDiv {
                     css {
                         +ComponentStyles.fileListPane
@@ -82,7 +78,7 @@ class DragNDropEnabledFileList constructor(
                         attrs {
                             className = ComponentStyles.getClassName { ComponentStyles::fileList }
                         }
-                        state.currentFileList
+                        props.fileList
                             .mapIndexed { fileIndex, fileDiffAndShortcut ->
                                 Draggable {
                                     attrs {
@@ -121,12 +117,7 @@ class DragNDropEnabledFileList constructor(
         if (result.destination == null || result.source.index === result.destination.index) {
             // Nothing to do
         } else {
-            val newList = state.currentFileList.map { it.copy() }.toMutableList()
-            val movedFile = newList.removeAt(result.source.index.toInt())
-            newList.add(result.destination.index.toInt(), movedFile)
-            setState {
-                currentFileList = newList
-            }
+            props.handleReordering(result.source.index.toInt(), result.destination.index.toInt())
         }
     }
 }
