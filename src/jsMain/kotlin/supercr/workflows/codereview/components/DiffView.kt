@@ -285,12 +285,12 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private val determineCommentBoxXPositionForLeftEditor: (RowColObject) -> LinearDimension = { rowColObject ->
-        rightEditorCommentsWrapper!!.convertToScreenCoordinates(state.currentCommentBoxPosition!!).first.px
+        rightEditorCommentsWrapper!!.convertToScreenCoordinates(state.currentCommentBoxPosition!!).first.px + 8.px
     }
 
     private val determineCommentBoxXPositionForRightEditor: (RowColObject) -> LinearDimension = {
         val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
-        screenPosition.first.px - commentBoxWidth - 45.px
+        screenPosition.first.px - commentBoxWidth - 65.px
     }
 
     private val determineCommentBoxXPositionForSingleEditor: (RowColObject) -> LinearDimension = {

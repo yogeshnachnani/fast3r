@@ -51,7 +51,7 @@ fun main ()  {
     UniversalKeyboardShortcutHandler.init()
     console.log("We are at ${window.location.href} and ${window.location.search}")
     render(document.getElementById("root"))  {
-        renderMainScreen()
+        renderDiffView()
     }
 //    renderDiffView()
 //    renderGettingStarted()

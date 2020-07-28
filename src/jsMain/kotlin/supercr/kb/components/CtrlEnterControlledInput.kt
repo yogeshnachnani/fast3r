@@ -1,6 +1,13 @@
 package supercr.kb.components
 
 import OutlinedInput
+import kotlinx.css.Display
+import kotlinx.css.display
+import kotlinx.css.margin
+import kotlinx.css.padding
+import kotlinx.css.pct
+import kotlinx.css.px
+import kotlinx.css.width
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.events.FocusEvent
@@ -11,6 +18,12 @@ import react.RState
 import react.ReactElement
 import react.createRef
 import react.dom.WithClassName
+import react.dom.span
+import styled.css
+import styled.styledDiv
+import styled.styledP
+import styled.styledSpan
+import supercr.css.ComponentStyles
 import supercr.kb.UniversalKeyboardShortcutHandler
 
 external interface CtrlEnterControlledInputProps : WithClassName {
@@ -33,17 +46,33 @@ class CtrlEnterControlledInput : RComponent<CtrlEnterControlledInputProps, CtrlE
     }
 
     override fun RBuilder.render() {
-        OutlinedInput {
-            attrs {
-                inputRef = textAreaRef
-                autoFocus = true
-                multiline = true
-                rows = props.rows
-                rowsMax = props.rowsMax
-                placeholder = props.placeholder
-                className = props.className
+//        styledDiv {
+//            css {
+//                display = Display.block
+//                margin(0.px)
+//                padding(0.px)
+//                width = 100.pct
+//            }
+            OutlinedInput {
+                attrs {
+                    inputRef = textAreaRef
+                    autoFocus = true
+                    multiline = true
+                    rows = props.rows
+                    rowsMax = props.rowsMax
+                    placeholder = props.placeholder
+                    className = props.className
+                }
             }
-        }
+            styledDiv {
+                css {
+                    + ComponentStyles.ctrlEnterSendHelpMessage
+                }
+                span {
+                    + "Send: ctrl+enter"
+                }
+            }
+//        }
     }
 
     override fun componentDidMount() {

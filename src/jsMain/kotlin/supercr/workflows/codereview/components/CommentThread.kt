@@ -7,6 +7,7 @@ import codereview.FileLineItem
 import kotlinx.css.FontWeight
 import kotlinx.css.fontSize
 import kotlinx.css.fontWeight
+import kotlinx.css.margin
 import kotlinx.css.marginBottom
 import kotlinx.css.marginLeft
 import kotlinx.css.marginRight
@@ -46,11 +47,9 @@ class CommentThread(
     constructorProps: CommentThreadProps
 ) : RComponent<CommentThreadProps, CommentThreadState>(constructorProps) {
     override fun RBuilder.render() {
-        Paper {
-            attrs {
-                className = ComponentStyles.getClassName { ComponentStyles::commentPaper }
-                elevation = 6
-                variant = "outlined"
+        styledDiv {
+            css {
+                + ComponentStyles.commentPaper
             }
             MaterialUIList {
                 attrs {
@@ -96,10 +95,14 @@ class CommentThread(
             attrs {
                 button = false
                 divider = false
-                className = ComponentStyles.getClassName { ComponentStyles::compactCommentListItem }
+                className = "${ ComponentStyles.getClassName { ComponentStyles::compactCommentListItem } } ${ComponentStyles.getClassName { ComponentStyles::compactCommentListItemInputBox }}"
             }
             ctrlEnterInput {
-                className = ComponentStyles.getClassName { ComponentStyles::commentInputBox }
+                className = if (props.comments.isEmpty()) {
+                    "${ComponentStyles.getClassName { ComponentStyles::commentInputBox }} ${ComponentStyles.getClassName { ComponentStyles::emptyThreadCommentInputBox }}"
+                } else {
+                    ComponentStyles.getClassName { ComponentStyles::commentInputBox }
+                }
                 rows = 1
                 rowsMax = 5
                 placeholder = "Comment.. "
@@ -113,50 +116,38 @@ class CommentThread(
         return ListItem {
             attrs {
                 button = true
-                divider = !isLastItem
+                divider = false
                 onClick = showCommentInputBox
                 className = ComponentStyles.getClassName { ComponentStyles::compactCommentListItem }
             }
             styledDiv {
                 css {
-                    width = 100.pct
-                    marginBottom = 6.px
+                    + ComponentStyles.commentThreadContainer
                 }
                 styledP {
                     css {
-                        fontSize = FontSizes.normal
-                        fontWeight = FontWeight.w700
-                        marginTop = 5.px
-                        marginLeft = 5.px
-                        marginRight = 0.px
-                        marginBottom = 0.px
+                        + ComponentStyles.commentThreadUserId
                     }
                     + comment.userId
                 }
                 styledP {
                     css {
-                        fontSize = FontSizes.tiny
-                        marginTop = 0.px
-                        marginLeft = 5.px
+                        + ComponentStyles.commentThreadDateTime
                     }
                     + comment.updatedAt.iso8601ToHuman()
                 }
-            }
-            styledDiv {
-                css {
-                    width = 100.pct
-                    marginTop = 6.px
-                    marginBottom = 5.px
-                }
                 styledP {
                     css {
-                        marginTop = 5.px
-                        fontSize = FontSizes.small
-                        marginLeft = 5.px
-                        marginRight = 0.px
-                        marginTop = 0.px
+                        + ComponentStyles.commentThreadCommentBody
                     }
                     + comment.body
+                }
+                if (!isLastItem) {
+                    styledDiv {
+                        css {
+                            + ComponentStyles.commentThreadSeparator
+                        }
+                    }
                 }
             }
         }

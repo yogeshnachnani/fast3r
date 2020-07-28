@@ -6,6 +6,7 @@ import kotlinx.css.Float
 import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Display
+import kotlinx.css.FlexBasis
 import kotlinx.css.FlexWrap
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
@@ -21,14 +22,26 @@ import kotlinx.css.background
 import kotlinx.css.backgroundColor
 import kotlinx.css.backgroundImage
 import kotlinx.css.backgroundSize
+import kotlinx.css.basis
+import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
 import kotlinx.css.borderRightColor
 import kotlinx.css.borderRightStyle
 import kotlinx.css.borderRightWidth
+import kotlinx.css.borderStyle
+import kotlinx.css.borderTop
+import kotlinx.css.borderTopColor
+import kotlinx.css.borderTopLeftRadius
+import kotlinx.css.borderTopRightRadius
+import kotlinx.css.borderTopStyle
+import kotlinx.css.borderTopWidth
+import kotlinx.css.borderWidth
 import kotlinx.css.bottom
+import kotlinx.css.boxShadow
 import kotlinx.css.boxSizing
 import kotlinx.css.color
 import kotlinx.css.display
+import kotlinx.css.flex
 import kotlinx.css.flexWrap
 import kotlinx.css.float
 import kotlinx.css.fontFamily
@@ -56,8 +69,13 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
+import kotlinx.css.properties.BoxShadow
+import kotlinx.css.properties.BoxShadows
+import kotlinx.css.properties.LineHeight
+import kotlinx.css.properties.boxShadow
 import kotlinx.css.properties.lh
 import kotlinx.css.px
+import kotlinx.css.rgba
 import kotlinx.css.right
 import kotlinx.css.textAlign
 import kotlinx.css.top
@@ -138,7 +156,7 @@ object Colors {
     val highlightsGreyAlphaPoint1 = hsla(0, 2, 77, 0.1)
 
     val iconGrey = hsl(205, 15, 55)
-
+    val lineSeparatorBackground = hsla(205, 15, 55, 0.2)
     val textDarkGrey = hsl(204, 16, 50)
     val textMediumGrey = hsl(204, 26, 77)
     val textLightGrey = hsl(0, 0, 93)
@@ -166,7 +184,7 @@ object EditorThemeColors {
 }
 
 object FontSizes {
-    val tiny = 11.px
+    val tiny = 12.px
     val small = 13.px
     val normal = 16.px
     val medium = 18.px
@@ -175,6 +193,7 @@ object FontSizes {
     val huge = 30.px
 }
 object LineHeights {
+    val tiny = 20.px.lh
     val normal = 22.px.lh
     val extraLarge = 32.px.lh
     val large = 28.px.lh
@@ -186,7 +205,7 @@ object FontFamilies {
     const val nonCode = "Inter, Roboto, Sans-serif"
 }
 
-val commentBoxWidth = 190.px
+val commentBoxWidth = 312.px
 
 object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val fullHeight by css {
@@ -312,28 +331,112 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = Colors.highlightsGreyAlphaPoint1
     }
 
+    val commentThreadContainer by css {
+        width = 100.pct
+        marginBottom = 0.px
+        marginTop = 20.px
+    }
 
+    val commentThreadDateTime by css {
+        fontSize = FontSizes.tiny
+        lineHeight = LineHeights.tiny
+        marginTop = 4.px
+        marginLeft = 25.px
+        marginBottom = 0.px
+        color = Colors.textDarkGrey
+    }
+
+    val commentThreadCommentBody by css {
+        marginTop = 16.px
+        fontSize = FontSizes.tiny
+        lineHeight = LineHeights.tiny
+        marginLeft = 24.px
+        marginRight = 24.px
+        marginBottom = 20.px
+        color = Colors.textMediumGrey
+    }
+
+    val commentThreadSeparator by css {
+        marginTop = 0.px
+        marginBottom = 0.px
+        marginLeft = 22.px
+        marginRight = 32.px
+        height = 1.px
+        backgroundColor = Colors.lineSeparatorBackground
+    }
+
+    val commentThreadUserId by css {
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        fontWeight = FontWeight.w600
+        color = Colors.textDarkGrey
+        marginTop = 0.px
+        marginLeft = 20.px
+        marginRight = 0.px
+        marginBottom = 0.px
+    }
     val compactCommentListItem by css {
         paddingLeft = 0.px
         paddingRight = 0.px
         paddingBottom = 0.px
         paddingTop = 0.px
-        maxWidth = 190.px
+        maxWidth = commentBoxWidth
         fontSize = FontSizes.small
-        display = Display.block
+        flexWrap = FlexWrap.wrap
     }
-    val commentInputBox by css {
-        fontSize = FontSizes.small
+    val compactCommentListItemInputBox by css {
+        paddingBottom = 14.px
+    }
+
+    val commentPaper by css {
+        backgroundColor = Colors.backgroundMediumGrey
+        borderTopStyle = BorderStyle.solid
+        borderTopWidth = 6.px
+        borderTopColor = Colors.primaryBlue
+        borderTopLeftRadius = 8.px
+        borderTopRightRadius = 8.px
+        borderRadius = 8.px
+        boxShadow(color = rgba(0, 0, 0, 0.25), offsetX = 0.px, offsetY = 4.px, blurRadius = 34.px)
+        fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
-        color = Colors.baseText4
-        marginLeft = 5.px
-        marginRight = 5.px
-        marginBottom = 8.px
-        maxWidth = 170.px
-        width = 170.px
+        color = Colors.baseText1
+        maxWidth = commentBoxWidth
+    }
+
+    val commentInputBox by css {
+        fontSize = FontSizes.tiny
+        lineHeight = LineHeights.tiny
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textMediumGrey
+        marginLeft = 20.px
+        marginRight = 20.px
+//        marginBottom = 14.px
+        width = 100.pct
+        borderRadius = 4.px
+        backgroundColor = Colors.backgroundDarkestGrey
+        borderStyle = BorderStyle.solid
+        borderWidth = 1.px
+        borderColor = Colors.backgroundGrey
 //        height = 32.px
-        padding(vertical = 4.px, horizontal = 8.px)
+        padding(vertical = 12.px, horizontal = 12.px)
 //        put("resize", "none")
+    }
+    val emptyThreadCommentInputBox by css {
+        marginTop = 20.px
+    }
+
+    val ctrlEnterSendHelpMessage by css {
+        marginTop = 8.px
+        marginBottom = 0.px
+        marginRight = 20.px
+        display = Display.flex
+        alignItems = Align.flexEnd
+        justifyContent = JustifyContent.flexEnd
+        color = Colors.textDarkGrey
+        lineHeight = LineHeights.tiny
+        fontSize = FontSizes.tiny
+        fontFamily = FontFamilies.nonCode
+        flex(flexBasis = 100.pct.basis)
     }
 
     val fileViewPane by css {
@@ -384,14 +487,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
             fontFamily = FontFamilies.code
             color = Colors.baseText1
         }
-    }
-
-    val commentPaper by css {
-        backgroundColor = Colors.background7
-        fontSize = FontSizes.normal
-        fontFamily = FontFamilies.nonCode
-        color = Colors.baseText1
-        maxWidth = commentBoxWidth
     }
 
     val extraInfoWindowContainer by css {
