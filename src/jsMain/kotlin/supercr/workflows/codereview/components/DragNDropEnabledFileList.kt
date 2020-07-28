@@ -4,21 +4,20 @@ import DragDropContext
 import Draggable
 import DraggableProvided
 import DraggableStateSnapshot
+import DropResult
 import Droppable
 import DroppableProvided
 import DroppableStateSnapshot
 import MaterialUIList
 import codereview.FileDiffV2
 import kotlinext.js.Object
-import org.w3c.dom.HTMLElement
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.buildElement
-import react.createRef
-import react.dom.object_
+import react.setState
 import styled.css
 import styled.getClassName
 import styled.styledDiv
@@ -29,7 +28,7 @@ external interface DragNDropEnabledFileListProps : RProps {
 }
 
 external interface DragNDropEnabledFileListState : RState {
-
+    var currentFileList : List<FileDiffAndShortcut>
 }
 
 data class FileDiffAndShortcut(
@@ -38,17 +37,22 @@ data class FileDiffAndShortcut(
     val handlerForFile: () -> Unit
 )
 
-class DragNDropEnabledFileList : RComponent<DragNDropEnabledFileListProps, DragNDropEnabledFileListState>() {
+class DragNDropEnabledFileList constructor(
+    constructorProps: DragNDropEnabledFileListProps
+) : RComponent<DragNDropEnabledFileListProps, DragNDropEnabledFileListState>(constructorProps) {
+
+    override fun DragNDropEnabledFileListState.init(props: DragNDropEnabledFileListProps) {
+        currentFileList = props.fileList.map { it.copy() }
+    }
+
     override fun RBuilder.render() {
         DragDropContext {
             attrs {
-                onDragEnd = {
-                    console.log("Drag ended")
-                }
+                onDragEnd = handleDragEnd
             }
             Droppable {
                 attrs {
-                    droppableId = "filelist-dnd"
+                    droppableId = "orderable-file-list"
                     children = buildFileListElements
                 }
             }
@@ -57,7 +61,7 @@ class DragNDropEnabledFileList : RComponent<DragNDropEnabledFileListProps, DragN
 
     private val buildFileListElements: (provided: DroppableProvided, snapshot: DroppableStateSnapshot) -> ReactElement = { provided, snapshot ->
         buildElement {
-            if (props.fileList.isNotEmpty()) {
+            if (state.currentFileList.isNotEmpty()) {
                 styledDiv {
                     css {
                         +ComponentStyles.fileListPane
@@ -78,10 +82,11 @@ class DragNDropEnabledFileList : RComponent<DragNDropEnabledFileListProps, DragN
                         attrs {
                             className = ComponentStyles.getClassName { ComponentStyles::fileList }
                         }
-                        props.fileList
+                        state.currentFileList
                             .mapIndexed { fileIndex, fileDiffAndShortcut ->
                                 Draggable {
                                     attrs {
+                                        key = fileDiffAndShortcut.kbShortcut
                                         draggableId = fileDiffAndShortcut.kbShortcut
                                         index = fileIndex.toDouble()
                                         children = fileDiffAndShortcut.makeFileListItemFn()
@@ -112,6 +117,18 @@ class DragNDropEnabledFileList : RComponent<DragNDropEnabledFileListProps, DragN
         }
     }
 
+    private val handleDragEnd : (DropResult) -> Unit = { result ->
+        if (result.destination == null || result.source.index === result.destination.index) {
+            // Nothing to do
+        } else {
+            val newList = state.currentFileList.map { it.copy() }.toMutableList()
+            val movedFile = newList.removeAt(result.source.index.toInt())
+            newList.add(result.destination.index.toInt(), movedFile)
+            setState {
+                currentFileList = newList
+            }
+        }
+    }
 }
 
 fun RBuilder.dndFileList(handler: DragNDropEnabledFileListProps.() -> Unit): ReactElement {

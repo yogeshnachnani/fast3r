@@ -21,7 +21,46 @@ external interface DragDropContextProps: RProps {
     var onBeforeDragStart: () -> Unit
     var onDragStart: () -> Unit
     var onDragUpdate: () -> Unit
-    var onDragEnd: () -> Unit
+    var onDragEnd: (DropResult) -> Unit
+}
+
+external class DragStart {
+    val draggableId: String
+    val typeId: String
+    val source: DraggableLocation
+    /** FLUID or SNAP */
+    val mode: String
+}
+
+external class DraggableLocation {
+    val droppableId: String
+    val index: Number
+}
+external class Combine {
+    val draggableId: String
+    val droppableId: String
+}
+
+external class DragUpdate {
+    val draggableId: String
+    val typeId: String
+    val source: DraggableLocation
+    /** FLUID or SNAP */
+    val mode: String
+    val destination: DraggableLocation?
+    val combine: Combine?
+}
+
+external class DropResult {
+    val draggableId: String
+    val typeId: String
+    val source: DraggableLocation
+    /** FLUID or SNAP */
+    val mode: String
+    val destination: DraggableLocation?
+    val combine: Combine?
+    /** DROP or CANCEL */
+    val reason: String
 }
 
 @JsName("Droppable")
@@ -116,6 +155,8 @@ external interface DraggableProps: RProps {
     var shouldRespectForcePress: Boolean
 
     var children: (DraggableProvided, DraggableStateSnapshot) -> ReactElement
+
+    var key: String
 }
 
 @JsName("DraggableProvided")
