@@ -24,6 +24,7 @@ import supercr.workflows.codereview.components.commentThread
 import supercr.workflows.codereview.components.dndFileList
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetReview
+import supercr.workflows.gettingstarted.components.loginComponent
 import supercr.workflows.mainScreen
 import kotlin.browser.document
 import kotlin.browser.window
@@ -51,7 +52,8 @@ fun main ()  {
     UniversalKeyboardShortcutHandler.init()
     console.log("We are at ${window.location.href} and ${window.location.search}")
     render(document.getElementById("root"))  {
-        renderDiffView()
+        renderLoginView()
+//        renderDiffView()
     }
 //    renderDiffView()
 //    renderGettingStarted()
@@ -59,6 +61,15 @@ fun main ()  {
 //    renderFileView()
 //    renderComments()
 //    tryoutGithubLogin()
+}
+private fun RBuilder.renderLoginView() {
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        loginComponent {
+        }
+    }
 }
 
 private fun renderComments() {

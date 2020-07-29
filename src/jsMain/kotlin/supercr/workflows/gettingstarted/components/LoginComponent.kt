@@ -1,6 +1,7 @@
 package supercr.workflows.gettingstarted.components
 
 import Paper
+import PermIdentity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -11,6 +12,8 @@ import kotlinx.css.maxWidth
 import kotlinx.css.px
 import kotlinx.css.width
 import kotlinx.html.InputType
+import kotlinx.html.js.onSubmitFunction
+import kotlinx.html.onSubmit
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -19,12 +22,14 @@ import react.RState
 import react.ReactElement
 import react.createRef
 import react.dom.defaultValue
+import react.dom.span
 import react.setState
 import styled.css
 import styled.getClassName
 import styled.styledDiv
 import styled.styledInput
 import styled.styledP
+import styled.styledSpan
 import supercr.css.ComponentStyles
 import supercr.kb.components.enterActivatedButton
 import supercr.workflows.login.github.GithubOauthClient
@@ -60,6 +65,7 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
     override fun componentDidMount() {
         GlobalScope.async(context = Dispatchers.Main) {
             val loggedIn = props.githubOauthClient.completeLoginIfApplicable()
+//            val loggedIn = false
             setState {
                 isLoggedIn = loggedIn
             }
@@ -75,35 +81,48 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
     }
 
     private fun RBuilder.renderLoginButton() {
-        Paper {
-            attrs {
-                square = true
-                elevation = 3
-                className = ComponentStyles.getClassName { ComponentStyles::loginComponentPaper }
-            }
-            styledP {
-                css {
-                    marginTop = 15.px
-                }
-                + "Welcome to the Fast3r. Please enter your github username"
-            }
-            styledInput(type = InputType.text) {
-                css {
-                    display = Display.block
-                    marginTop = 15.px
-                }
-                ref = githubUsernameInputRef
-                attrs.defaultValue = "yogeshnachnani"
+        styledDiv {
+            css {
+                +ComponentStyles.loginScreen
             }
             styledDiv {
                 css {
-                    width = 190.px
-                    maxWidth = 190.px
-                    marginTop = 15.px
+                    + ComponentStyles.loginScreenMessage
+                }
+                + "Enter your Github username"
+            }
+            styledDiv {
+                css {
+                    + ComponentStyles.loginScreenUsernameBoxContainer
+                }
+                styledDiv {
+                    css {
+                        + ComponentStyles.loginScreenUserIcon
+                    }
+                    PermIdentity {
+                        attrs {
+                            fontSize = "inherit"
+                        }
+                    }
+                }
+                styledInput {
+                    css {
+                        + ComponentStyles.loginGithubUsername
+                    }
+                    attrs {
+                        autoFocus = true
+                    }
+                }
+                styledSpan {
+                    css {
+                        + ComponentStyles.loginPressEnterLabel
+                    }
+                    + "Press Enter ↵"
                 }
                 enterActivatedButton {
                     label = "Go"
                     onSelected = handleEnter
+                    buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginGo }
                 }
             }
         }

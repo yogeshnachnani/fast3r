@@ -18,3 +18,10 @@ external val BookmarkBorder: RClass<RProps>
 
 @JsName("CheckBoxOutlined")
 external val CheckBoxOutlined: RClass<RProps>
+
+@JsName("PermIdentity")
+external val PermIdentity: RClass<SvgIconProps>
+
+external interface SvgIconProps: RProps {
+    var fontSize: String
+}

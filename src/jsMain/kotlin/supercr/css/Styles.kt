@@ -1,6 +1,7 @@
 package supercr.css
 
 import kotlinx.css.Align
+import kotlinx.css.BackgroundRepeat
 import kotlinx.css.BorderStyle
 import kotlinx.css.Float
 import kotlinx.css.BoxSizing
@@ -13,6 +14,7 @@ import kotlinx.css.FontWeight
 import kotlinx.css.Image
 import kotlinx.css.JustifyContent
 import kotlinx.css.LinearDimension
+import kotlinx.css.Outline
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.TextAlign
@@ -21,8 +23,11 @@ import kotlinx.css.alignItems
 import kotlinx.css.background
 import kotlinx.css.backgroundColor
 import kotlinx.css.backgroundImage
+import kotlinx.css.backgroundPosition
+import kotlinx.css.backgroundRepeat
 import kotlinx.css.backgroundSize
 import kotlinx.css.basis
+import kotlinx.css.border
 import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
 import kotlinx.css.borderRightColor
@@ -61,6 +66,8 @@ import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minWidth
+import kotlinx.css.opacity
+import kotlinx.css.outline
 import kotlinx.css.overflow
 import kotlinx.css.padding
 import kotlinx.css.paddingBottom
@@ -73,13 +80,18 @@ import kotlinx.css.properties.BoxShadow
 import kotlinx.css.properties.BoxShadows
 import kotlinx.css.properties.LineHeight
 import kotlinx.css.properties.boxShadow
+import kotlinx.css.properties.deg
 import kotlinx.css.properties.lh
+import kotlinx.css.properties.rotate
+import kotlinx.css.properties.transform
 import kotlinx.css.px
 import kotlinx.css.rgba
 import kotlinx.css.right
 import kotlinx.css.textAlign
 import kotlinx.css.top
+import kotlinx.css.transform
 import kotlinx.css.vh
+import kotlinx.css.vw
 import kotlinx.css.width
 import kotlinx.css.zIndex
 import styled.StyleSheet
@@ -191,6 +203,7 @@ object FontSizes {
     val large = 20.px
     val extraLarge = 24.px
     val huge = 30.px
+    val crayCray = 38.px
 }
 object LineHeights {
     val tiny = 20.px.lh
@@ -198,6 +211,7 @@ object LineHeights {
     val extraLarge = 32.px.lh
     val large = 28.px.lh
     val huge = 40.px.lh
+    val crayCray = 48.px.lh
 }
 
 object FontFamilies {
@@ -206,6 +220,7 @@ object FontFamilies {
 }
 
 val commentBoxWidth = 312.px
+val loginScreenItemsLeftMargin = 36.vw
 
 object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val fullHeight by css {
@@ -473,12 +488,99 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.baseText1
     }
 
+    val loginScreen by css {
+        width = 100.vw
+        height = 100.vh
+        backgroundImage = Image("url(\"login_screen_background.png\")")
+        backgroundPosition = "center"
+        backgroundRepeat = BackgroundRepeat.noRepeat
+        backgroundSize = "cover"
+//        display = Display.flex
+//        transform {
+//            rotate(( -10.81 ).deg)
+//        }
+//        opacity = 0.6
+        display = Display.inlineBlock
+    }
+    val loginScreenMessage by css {
+        marginLeft = loginScreenItemsLeftMargin
+        marginTop = 44.vh
+        fontFamily = FontFamilies.nonCode
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        color = Colors.textLightGrey
+//        flex(flexBasis = FlexBasis.maxContent)
+    }
+
+    val loginScreenUsernameBoxContainer by css {
+        marginLeft = loginScreenItemsLeftMargin
+        marginTop = 44.px
+        backgroundColor = Colors.backgroundDarkGrey
+        borderColor = Colors.backgroundGrey
+        borderStyle = BorderStyle.solid
+        borderWidth = 1.px
+        boxSizing = BoxSizing.borderBox
+        borderRadius = 11.px
+        width = 800.px
+        height = 100.px
+        display = Display.inlineFlex
+//        alignContent = Align.flexEnd
+    }
+
+    val loginScreenUserIcon by css {
+        float = Float.left
+        width = 44.px
+        height = 44.px
+        marginLeft = 30.px
+        marginTop = 28.px
+        marginBottom = 28.px
+        color = Colors.iconGrey
+        fontSize = 44.px
+    }
+
+    val loginGithubUsername by css {
+//        width = LinearDimension.fillAvailable
+        maxWidth = 445.px
+        height = 48.px
+        fontSize = FontSizes.crayCray
+        lineHeight = LineHeights.crayCray
+        color = Colors.textMediumGrey
+        backgroundColor = Colors.backgroundDarkGrey
+        marginTop = 28.px
+        marginLeft = 32.px
+        borderStyle = BorderStyle.none
+        padding(vertical = 0.px, horizontal = 2.px)
+        outline = Outline.none
+    }
+
+    val loginPressEnterLabel by css {
+        width = 100.px
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
+        marginTop = 38.px
+        marginBottom = 38.px
+        display = Display.inlineBlock
+    }
+    val loginGo by css {
+        backgroundColor = Colors.primaryBlue
+        borderRadius = 11.px
+        fontWeight = FontWeight.w600
+        fontFamily = FontFamilies.nonCode
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textLightGrey
+        padding(vertical = 34.px, horizontal = 38.px)
+        marginLeft = 24.px
+        width = 120.px
+    }
+
     val loginComponentPaper by css {
         backgroundColor = Colors.background7
         fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
         color = Colors.baseText1
-        marginTop = 150.px
+//        marginTop = 150.px
         padding(32.px)
     }
     val repoInitialiserRepoPathInput by css {

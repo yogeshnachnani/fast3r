@@ -22,6 +22,9 @@ import supercr.kb.UniversalKeyboardShortcutHandler
 external interface EnterActivatedButtonProps : RProps {
     var onSelected: () -> Unit
     var label: String
+    var buttonClazz: String?
+    var enterTextClazz: String?
+    var enterTextOnLeft: Boolean?
 }
 
 external interface EnterActivatedButtonState : RState {
@@ -30,6 +33,26 @@ external interface EnterActivatedButtonState : RState {
 
 class EnterActivatedButton : RComponent<EnterActivatedButtonProps, EnterActivatedButtonState>() {
     override fun RBuilder.render() {
+        if (props.buttonClazz != null) {
+            renderButtonUsingProps()
+        } else {
+            renderOldButton()
+        }
+    }
+
+    private fun RBuilder.renderButtonUsingProps() {
+        Button {
+            attrs {
+                variant = "contained"
+                onClick = props.onSelected
+                className = props.buttonClazz!!
+            }
+            + props.label
+        }
+    }
+
+    /** TODO: Remove this entirely */
+    private fun RBuilder.renderOldButton() {
         Grid {
             attrs {
                 container = true
