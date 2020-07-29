@@ -97,7 +97,7 @@ private fun Repository.fetchContents(objectId: ObjectId): String {
         .let {
             val newIdLoader = this.open(objectId)
             newIdLoader.copyTo(it)
-            val toReturn = it.toString(Charset.defaultCharset())
+            val toReturn = it.toString()
             it.close()
             toReturn
         }
