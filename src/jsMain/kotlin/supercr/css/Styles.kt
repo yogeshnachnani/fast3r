@@ -3,17 +3,15 @@ package supercr.css
 import kotlinx.css.Align
 import kotlinx.css.BackgroundRepeat
 import kotlinx.css.BorderStyle
-import kotlinx.css.Float
 import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Display
-import kotlinx.css.FlexBasis
 import kotlinx.css.FlexWrap
+import kotlinx.css.Float
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
 import kotlinx.css.Image
 import kotlinx.css.JustifyContent
-import kotlinx.css.LinearDimension
 import kotlinx.css.Outline
 import kotlinx.css.Overflow
 import kotlinx.css.Position
@@ -27,14 +25,12 @@ import kotlinx.css.backgroundPosition
 import kotlinx.css.backgroundRepeat
 import kotlinx.css.backgroundSize
 import kotlinx.css.basis
-import kotlinx.css.border
 import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
 import kotlinx.css.borderRightColor
 import kotlinx.css.borderRightStyle
 import kotlinx.css.borderRightWidth
 import kotlinx.css.borderStyle
-import kotlinx.css.borderTop
 import kotlinx.css.borderTopColor
 import kotlinx.css.borderTopLeftRadius
 import kotlinx.css.borderTopRightRadius
@@ -42,7 +38,6 @@ import kotlinx.css.borderTopStyle
 import kotlinx.css.borderTopWidth
 import kotlinx.css.borderWidth
 import kotlinx.css.bottom
-import kotlinx.css.boxShadow
 import kotlinx.css.boxSizing
 import kotlinx.css.color
 import kotlinx.css.display
@@ -66,7 +61,6 @@ import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minWidth
-import kotlinx.css.opacity
 import kotlinx.css.outline
 import kotlinx.css.overflow
 import kotlinx.css.padding
@@ -76,20 +70,13 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
-import kotlinx.css.properties.BoxShadow
-import kotlinx.css.properties.BoxShadows
-import kotlinx.css.properties.LineHeight
 import kotlinx.css.properties.boxShadow
-import kotlinx.css.properties.deg
 import kotlinx.css.properties.lh
-import kotlinx.css.properties.rotate
-import kotlinx.css.properties.transform
 import kotlinx.css.px
 import kotlinx.css.rgba
 import kotlinx.css.right
 import kotlinx.css.textAlign
 import kotlinx.css.top
-import kotlinx.css.transform
 import kotlinx.css.vh
 import kotlinx.css.vw
 import kotlinx.css.width
@@ -106,18 +93,9 @@ class GutterDecorationStyles {
     }
 }
 
-enum class AvatarSize {
-    tiny,
-    small
-}
-
 object Colors {
     /** Backgrounds */
-    val background9 = hsl(0, 0, 13)
-    val background8 = hsl(0, 0, 26)
     val background7 = hsl(0, 0, 38)
-    val background6 = hsl(0, 0, 46)
-    val background5 = hsl(0, 0, 74)
 
     /** Text */
     val baseText4 = hsl(0, 0, 88)
@@ -125,30 +103,8 @@ object Colors {
     val baseText = hsl(0, 0, 96)
     val baseText1 = hsl(0, 0, 98)
 
-    val primary9 = hsl(235, 66, 30)
-    val primary8 = hsl(233, 57, 37)
-    val primary7 = hsl(232, 54, 41)
-    val primary6 = hsl(232, 50, 45)
-    val primaryBase = hsl(231, 48, 48)
-    val primary4 = hsl(230, 44, 64)
-    val primary3 = hsl(231, 44, 74)
-    val primary2 = hsl(232, 45, 84)
-    val primary1 = hsl(231, 44, 94)
 
-    val accentPrimary9 =  hsl(173, 100, 21)
-    val accentPrimary8 =  hsl(173, 100, 24)
-    val accentPrimary7 =  hsl(174, 100, 27)
-    val accentPrimary6 =  hsl(174, 100, 29)
-    val accentPrimary5 =  hsl(174, 63, 40)
-    val accentPrimary4 =  hsl(174, 42, 51)
-    val accentPrimary3 =hsl(174, 42, 65)
-    val accentPrimary2 = hsl(175, 41, 79)
-    val accentPrimary1 = hsl(177, 41, 91)
-
-    val accentHighlight1 = hsl(46, 100, 94)
     val accentHighlight2 = hsl(45, 100, 85)
-    val accentHighlight3 = hsl(45, 100, 70)
-    val accentHighlight4 = hsl(46, 100, 65)
 
     val warmGrey5 = hsl(41, 15, 28)
     val warmGrey4 = hsl(40, 12, 43)
@@ -226,25 +182,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val fullHeight by css {
         height = 100.vh
     }
-    val maxWidthFitContent by css {
-        maxWidth = LinearDimension.fitContent
-    }
-    val fileItemText by css {
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.small
-    }
-    val tinyTextAvatar by css {
-        height = FontSizes.normal
-        width = 20.px
-        fontSize = FontSizes.tiny
-        fontFamily = FontFamilies.nonCode
-    }
-    val smallTextAvatar by css {
-        height = FontSizes.medium
-        width = 28.px
-        fontSize = FontSizes.tiny
-        fontFamily = FontFamilies.nonCode
-    }
 
     val keyboardShortcutSingleCharBox by css {
         width = 44.px
@@ -263,14 +200,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         alignContent = Align.center
     }
 
-    val backgroundAccentPrimary4 by css {
-        backgroundColor = Colors.accentPrimary4
-    }
-
-    val gutterLessListItem by css {
-        paddingLeft = 0.px
-        paddingRight = 0.px
-    }
     val genericListHeader by css {
         fontSize = FontSizes.large
         fontFamily = FontFamilies.nonCode
@@ -575,14 +504,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         width = 120.px
     }
 
-    val loginComponentPaper by css {
-        backgroundColor = Colors.background7
-        fontSize = FontSizes.normal
-        fontFamily = FontFamilies.nonCode
-        color = Colors.baseText1
-//        marginTop = 150.px
-        padding(32.px)
-    }
     val repoInitialiserRepoPathInput by css {
         ".MuiOutlinedInput-input" {
             fontSize = FontSizes.normal
@@ -638,9 +559,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         marginTop = 20.px
         marginBottom = 20.px
         color = Colors.textMediumGrey
-    }
-    val actionBarItem by css {
-        width = LinearDimension.fitContent
     }
 
     val diffViewNewText by css {
