@@ -54,6 +54,16 @@ class GithubOauthClient constructor(
         }
     }
 
+    suspend fun initDummyCreds(): Boolean {
+        return try {
+            superCrClient.initDummyCreds()
+            true
+        } catch (throwable: Throwable) {
+            console.log("Could not determine login status ", throwable)
+            false
+        }
+    }
+
     override suspend fun getToken(options: Map<String, Any>): String {
         return superCrClient.githubAccessToken().access_token
     }

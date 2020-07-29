@@ -121,6 +121,12 @@ class SuperCrClient(
         })
     }
 
+    suspend fun initDummyCreds() {
+        httpClient.post<HttpResponse> {
+            url("$baseUrl/providers/github/dummy_login")
+        }
+    }
+
     suspend fun loginToGithub(accessTokenParams: AccessTokenParams): AccessTokenResponse {
         return httpClient.post<AccessTokenResponse> {
             body = accessTokenParams

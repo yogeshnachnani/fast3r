@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 
 class GithubClientTest {
     val githubClient = GithubClient(
-        oauthClient = DumbOauthClient("4da05160ff8311a45f31fe8fd6ab374b8a6f9fe9"),
+        oauthClient = DumbOauthClient(""),
         httpClient = HttpClient() {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))

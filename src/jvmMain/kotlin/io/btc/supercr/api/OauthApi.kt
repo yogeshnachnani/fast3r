@@ -1,5 +1,7 @@
 package io.btc.supercr.api
 
+import YOGESHNACHNANI_GITHUB_USERNAME
+import YOGESHNACHNANI_PUBLIC_REPO_PERSONAL_ACCESS_TOKEN
 import git.provider.AccessTokenParams
 import git.provider.AccessTokenRequest
 import git.provider.AccessTokenResponse
@@ -49,6 +51,15 @@ class OauthApi constructor(
         routing {
             route("/providers")  {
                 route("{provider_name}") {
+                    post("dummy_login") {
+                        val randomString = "dummy_${UUID.randomUUID().toString().replace("-", "")}"
+                        oauthTokensRepository.createNewTokenRequest(YOGESHNACHNANI_GITHUB_USERNAME, randomString)
+                        val existingLogin = oauthTokensRepository.retrieveExistingLogin(state = randomString)!!
+                        oauthTokensRepository.updateAuthToken(
+                            existingLogin.copy(authToken = YOGESHNACHNANI_PUBLIC_REPO_PERSONAL_ACCESS_TOKEN, scope = "repo", tokenType = "bearer")
+                        )
+                        call.respond(HttpStatusCode.Created)
+                    }
                     post("initiate_login") {
                         val initiatePacket = call.receive<InitiateLoginPacket>()
                         val randomString = UUID.randomUUID().toString().replace("-", "")

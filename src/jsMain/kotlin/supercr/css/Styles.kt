@@ -5,6 +5,7 @@ import kotlinx.css.BackgroundRepeat
 import kotlinx.css.BorderStyle
 import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
+import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexWrap
 import kotlinx.css.Float
@@ -12,6 +13,7 @@ import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
 import kotlinx.css.Image
 import kotlinx.css.JustifyContent
+import kotlinx.css.LinearDimension
 import kotlinx.css.Outline
 import kotlinx.css.Overflow
 import kotlinx.css.Position
@@ -433,12 +435,52 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
     val loginScreenMessage by css {
         marginLeft = loginScreenItemsLeftMargin
-        marginTop = 44.vh
+        marginTop = 40.vh
         fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.huge
         lineHeight = LineHeights.huge
         color = Colors.textLightGrey
+    }
+
+    val loginScreenOrMessage by css {
+        marginLeft = loginScreenItemsLeftMargin
+        marginTop = 50.px
+        fontFamily = FontFamilies.nonCode
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        color = Colors.textLightGrey
+        textAlign = TextAlign.center
+        width = 800.px
+        display = Display.inlineFlex
+        justifyContent = JustifyContent.center
 //        flex(flexBasis = FlexBasis.maxContent)
+    }
+
+    val loginScreenDemoButton by css {
+//        backgroundColor = Colors.primaryBlue
+        backgroundColor = Color.transparent
+        borderRadius = 11.px
+        borderColor = Colors.primaryBlue
+        borderWidth = 4.px
+        borderStyle = BorderStyle.solid
+        fontWeight = FontWeight.w600
+        fontFamily = FontFamilies.nonCode
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textLightGrey
+        padding(vertical = 24.px, horizontal = 38.px)
+        marginLeft = 24.px
+        width = 450.px
+    }
+    val loginScreenPressCtrlEnterLabel by css {
+        width = LinearDimension.fitContent
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
+        marginTop = 38.px
+        marginBottom = 38.px
+        marginLeft = 30.px
+        display = Display.inlineBlock
     }
 
     val loginScreenUsernameBoxContainer by css {

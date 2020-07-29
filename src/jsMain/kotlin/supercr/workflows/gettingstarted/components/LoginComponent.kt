@@ -1,19 +1,11 @@
 package supercr.workflows.gettingstarted.components
 
-import Paper
 import PermIdentity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.css.Display
 import kotlinx.css.display
-import kotlinx.css.marginTop
-import kotlinx.css.maxWidth
-import kotlinx.css.px
-import kotlinx.css.width
-import kotlinx.html.InputType
-import kotlinx.html.js.onSubmitFunction
-import kotlinx.html.onSubmit
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -21,8 +13,6 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import react.createRef
-import react.dom.defaultValue
-import react.dom.span
 import react.setState
 import styled.css
 import styled.getClassName
@@ -31,6 +21,7 @@ import styled.styledInput
 import styled.styledP
 import styled.styledSpan
 import supercr.css.ComponentStyles
+import supercr.kb.components.ctrlEnterAtivatedButton
 import supercr.kb.components.enterActivatedButton
 import supercr.workflows.login.github.GithubOauthClient
 
@@ -58,20 +49,104 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
                 }
             }
         } else {
-            renderLoginButton()
+            styledDiv {
+                css {
+                    +ComponentStyles.loginScreen
+                }
+                renderLoginButton()
+                renderDemoLoginButton()
+            }
         }
     }
 
     override fun componentDidMount() {
+        checkAndSetLoginStatus {
+            props.githubOauthClient.completeLoginIfApplicable()
+//            disableLogin()
+        }
+    }
+
+    private fun RBuilder.renderDemoLoginButton() {
+        styledDiv {
+            css {
+                + ComponentStyles.loginScreenOrMessage
+            }
+            styledP {
+                css {
+                    display = Display.inlineBlock
+                }
+                + "OR"
+            }
+            ctrlEnterAtivatedButton {
+                attrs {
+                    label = "Use Demo Credentials"
+                    enterTextOnLeft = false
+                    onSelected = handleCtrlEnter
+                    buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginScreenDemoButton  }
+                    enterTextClazz = ComponentStyles.getClassName { ComponentStyles::loginScreenPressCtrlEnterLabel }
+                }
+            }
+        }
+    }
+
+    private fun RBuilder.renderLoginButton() {
+        styledDiv {
+            css {
+                + ComponentStyles.loginScreenMessage
+            }
+            + "Enter your Github username"
+        }
+        styledDiv {
+            css {
+                + ComponentStyles.loginScreenUsernameBoxContainer
+            }
+            styledDiv {
+                css {
+                    + ComponentStyles.loginScreenUserIcon
+                }
+                PermIdentity {
+                    attrs {
+                        fontSize = "inherit"
+                    }
+                }
+            }
+            styledInput {
+                css {
+                    + ComponentStyles.loginGithubUsername
+                }
+                attrs {
+                    autoFocus = true
+                }
+                ref = githubUsernameInputRef
+            }
+            styledSpan {
+                css {
+                    + ComponentStyles.loginPressEnterLabel
+                }
+                + "Press Enter ↵"
+            }
+            enterActivatedButton {
+                label = "Go"
+                onSelected = handleEnter
+                buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginGo }
+            }
+        }
+    }
+
+    private val handleEnter : () ->  Unit = {
+        props.githubOauthClient.webLogin(githubUsernameInputRef.current!!.value)
+    }
+
+    private val checkAndSetLoginStatus: (suspend () -> Boolean) -> Unit = { loginMethod ->
         GlobalScope.async(context = Dispatchers.Main) {
-            val loggedIn = props.githubOauthClient.completeLoginIfApplicable()
-//            val loggedIn = false
+            val loggedIn = loginMethod.invoke()
             setState {
                 isLoggedIn = loggedIn
             }
             if (loggedIn) {
                 props.onLoginDone()
             }
+
         }.invokeOnCompletion { throwable ->
             if (throwable != null) {
                 console.error("Something bad happened while checking if user is logged in within LoginComponent")
@@ -80,57 +155,18 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
         }
     }
 
-    private fun RBuilder.renderLoginButton() {
-        styledDiv {
-            css {
-                +ComponentStyles.loginScreen
-            }
-            styledDiv {
-                css {
-                    + ComponentStyles.loginScreenMessage
-                }
-                + "Enter your Github username"
-            }
-            styledDiv {
-                css {
-                    + ComponentStyles.loginScreenUsernameBoxContainer
-                }
-                styledDiv {
-                    css {
-                        + ComponentStyles.loginScreenUserIcon
-                    }
-                    PermIdentity {
-                        attrs {
-                            fontSize = "inherit"
-                        }
-                    }
-                }
-                styledInput {
-                    css {
-                        + ComponentStyles.loginGithubUsername
-                    }
-                    attrs {
-                        autoFocus = true
-                    }
-                }
-                styledSpan {
-                    css {
-                        + ComponentStyles.loginPressEnterLabel
-                    }
-                    + "Press Enter ↵"
-                }
-                enterActivatedButton {
-                    label = "Go"
-                    onSelected = handleEnter
-                    buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginGo }
-                }
-            }
+    private val handleCtrlEnter: () -> Unit = {
+        checkAndSetLoginStatus {
+            loginViaDemoCreds()
         }
-
     }
 
-    private val handleEnter : () ->  Unit = {
-        props.githubOauthClient.webLogin(githubUsernameInputRef.current!!.value)
+    private val disableLogin: suspend () -> Boolean = {
+        false
+    }
+
+    private val loginViaDemoCreds: suspend () -> Boolean = {
+        props.githubOauthClient.initDummyCreds()
     }
 }
 fun RBuilder.loginComponent(handler: LoginComponentProps.() -> Unit): ReactElement {
