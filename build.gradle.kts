@@ -52,7 +52,8 @@ kotlin {
             }
         }
         tasks {
-            register<Copy>("copyBuiltArtifacts") {
+            /** Run compilations + tests and copy all built artifacts into build/electron directory */
+            register<Copy>("buildAllArtifacts") {
                 dependsOn(
                     "clean",
                     "compileJava",
@@ -115,6 +116,18 @@ kotlin {
                 from("$buildDir/distributions") {
                     into("js")
                 }
+            }
+            register<Exec>("electronPackage") {
+                dependsOn("buildAllArtifacts")
+                val locationOfElectronPackager = "$projectDir/../electron"
+                println("Copying built artifacts from $buildDir/electron to $locationOfElectronPackager")
+                copy {
+                    from("$buildDir/electron")
+                    into("$locationOfElectronPackager/lib")
+                }
+                println("Will run electron packager now")
+                workingDir = File(locationOfElectronPackager)
+                commandLine("node_modules/electron-packager/bin/electron-packager.js", ".", "--platform", "darwin")
             }
         }
         val test by compilations.getting {
