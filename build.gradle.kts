@@ -128,6 +128,7 @@ kotlin {
                 println("Will run electron packager now")
                 workingDir = File(locationOfElectronPackager)
                 commandLine("node_modules/electron-packager/bin/electron-packager.js", ".", "--platform", "darwin")
+                commandLine("node_modules/electron-packager/bin/electron-packager.js", ".", "--platform", "linux", "x64")
             }
         }
         val test by compilations.getting {
