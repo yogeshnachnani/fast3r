@@ -31,6 +31,7 @@ import supercr.css.ComponentStyles
 import supercr.css.FontSizes
 import supercr.kb.components.ctrlEnterInput
 import supercr.utils.iso8601ToHuman
+import supercr.utils.toDateTimeRepresentation
 
 external interface CommentThreadProps : RProps {
     var comments: List<FileLineItem.Comment>
@@ -134,7 +135,7 @@ class CommentThread(
                     css {
                         + ComponentStyles.commentThreadDateTime
                     }
-                    + comment.updatedAt.iso8601ToHuman()
+                    + comment.updatedAt.toDateTimeRepresentation()
                 }
                 styledP {
                     css {

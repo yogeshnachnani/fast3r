@@ -27,6 +27,8 @@ import kotlinx.css.backgroundPosition
 import kotlinx.css.backgroundRepeat
 import kotlinx.css.backgroundSize
 import kotlinx.css.basis
+import kotlinx.css.borderBottomLeftRadius
+import kotlinx.css.borderBottomRightRadius
 import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
 import kotlinx.css.borderRightColor
@@ -287,16 +289,16 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.tiny
         lineHeight = LineHeights.tiny
         marginTop = 4.px
-        marginLeft = 25.px
+        marginLeft = 20.px
         marginBottom = 0.px
         color = Colors.textDarkGrey
     }
 
     val commentThreadCommentBody by css {
-        marginTop = 16.px
+        marginTop = 12.px
         fontSize = FontSizes.tiny
         lineHeight = LineHeights.tiny
-        marginLeft = 24.px
+        marginLeft = 20.px
         marginRight = 24.px
         marginBottom = 20.px
         color = Colors.textMediumGrey
@@ -535,7 +537,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
     val loginGo by css {
         backgroundColor = Colors.primaryBlue
-        borderRadius = 11.px
+        borderTopRightRadius = 11.px
+        borderBottomRightRadius = 11.px
+        borderTopLeftRadius = 0.px
+        borderBottomLeftRadius = 0.px
         fontWeight = FontWeight.w600
         fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.extraLarge
