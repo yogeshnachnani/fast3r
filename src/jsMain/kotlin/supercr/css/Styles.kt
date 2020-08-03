@@ -492,7 +492,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         borderWidth = 1.px
         boxSizing = BoxSizing.borderBox
         borderRadius = 11.px
-        width = 800.px
+        width = LinearDimension.fitContent
         height = 100.px
         display = Display.inlineFlex
 //        alignContent = Align.flexEnd
@@ -525,7 +525,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val loginPressEnterLabel by css {
-        width = 100.px
+        width = LinearDimension.fitContent
         fontSize = FontSizes.normal
         lineHeight = LineHeights.normal
         color = Colors.textDarkGrey
