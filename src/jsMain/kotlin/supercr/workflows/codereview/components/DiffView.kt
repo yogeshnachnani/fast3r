@@ -30,6 +30,8 @@ import supercr.css.ComponentStyles
 import supercr.css.GutterDecorationStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
+import supercr.kb.UniversalShortcuts
+import supercr.kb.getShortcutString
 import supercr.workflows.codereview.processor.FileCommentHandler
 import supercr.workflows.codereview.processor.hasBothFiles
 import supercr.workflows.codereview.processor.nextEditPosition
@@ -416,7 +418,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         val (nextEditIndex, positionToJumpTo) = props.fileDiff.nextEditPosition(givenHunkIndex)
         console.log("Seems like we'll be jumping to $positionToJumpTo . and next edit index is $nextEditIndex")
         if (nextEditIndex == null) {
-            console.log("Seems we have reached the end")
+            console.log("Seems we have reached the last hunk, jumping to next file")
+            props.defaultActionBarActions.find { it.assignedShortcut == UniversalShortcuts.NextFile.getShortcutString() } ?.handler ?.invoke()
         } else {
             leftEditor!!.gotoLine(lineNumber = positionToJumpTo!! + 1, column = 0, animate = true)
             rightEditor!!.gotoLine(lineNumber = positionToJumpTo + 1, column = 0, animate = true)

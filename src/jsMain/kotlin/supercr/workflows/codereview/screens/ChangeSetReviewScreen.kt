@@ -18,6 +18,9 @@ import react.ReactElement
 import react.setState
 import styled.css
 import styled.styledDiv
+import supercr.kb.UniversalShortcuts
+import supercr.kb.getLabel
+import supercr.kb.getShortcutString
 import supercr.workflows.codereview.components.ActionBarShortcut
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
@@ -135,8 +138,8 @@ class ChangeSetReviewScreen(
     }
 
     private val defaultActions = listOf(
-        ActionBarShortcut("Next File", "fj", handleNextFileCommand),
-        ActionBarShortcut("Review Later", "fl", handleSaveForLater)
+        ActionBarShortcut( UniversalShortcuts.NextFile.getLabel(), UniversalShortcuts.NextFile.getShortcutString(), handleNextFileCommand),
+        ActionBarShortcut( UniversalShortcuts.ReviewLater.getLabel(), UniversalShortcuts.ReviewLater.getShortcutString(), handleSaveForLater)
     )
 
     private fun changeCurrentFileStateTo(statusToChangeTo: FileReviewStatus) {

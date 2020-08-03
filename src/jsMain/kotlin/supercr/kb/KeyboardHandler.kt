@@ -29,11 +29,27 @@ import kotlin.browser.window
  * TODO: Write test cases before making further edits
  */
 
+enum class UniversalShortcuts {
+    NextFile,
+    ReviewLater
+}
+
+fun UniversalShortcuts.getLabel(): String {
+    return when(this) {
+        UniversalShortcuts.NextFile -> "Next File"
+        UniversalShortcuts.ReviewLater -> "Review Later"
+    }
+}
+
+fun UniversalShortcuts.getShortcutString(): String {
+    return when(this) {
+        UniversalShortcuts.NextFile -> "fj"
+        UniversalShortcuts.ReviewLater -> "fl"
+    }
+}
+
+
 object UniversalKeyboardShortcutHandler {
-    val universalShortCuts = setOf(
-        "[[", /** During a code review, go to the Previous file */ /** During a code review, go to the Previous file */
-        "]]" /** During a code review, got to the Next file */ /** During a code review, got to the Next file */
-    )
 
     /**
      * To be called at startup time
