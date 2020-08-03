@@ -422,7 +422,9 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             props.defaultActionBarActions.find { it.assignedShortcut == UniversalShortcuts.NextFile.getShortcutString() } ?.handler ?.invoke()
         } else {
             leftEditor!!.gotoLine(lineNumber = positionToJumpTo!! + 1, column = 0, animate = true)
+            leftEditor!!.scrollToLine(lineNumber = positionToJumpTo + 1, animate = false, center = true)
             rightEditor!!.gotoLine(lineNumber = positionToJumpTo + 1, column = 0, animate = true)
+            rightEditor!!.scrollToLine(lineNumber = positionToJumpTo + 1, animate = false, center = true)
             setState {
                 currentHunkIndex = nextEditIndex
             }
