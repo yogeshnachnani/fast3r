@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.css.height
 import kotlinx.css.px
+import kotlinx.css.vh
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -20,6 +21,7 @@ import react.ReactElement
 import react.setState
 import styled.css
 import styled.styledDiv
+import styled.styledP
 import supercr.css.ComponentStyles
 import supercr.css.styles
 import supercr.workflows.codereview.screens.changeSetScreen
@@ -68,20 +70,20 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
             attrs {
                 container = true
                 item = false
-                justify = "space-evenly"
-                alignItems = "center"
+                justify = "center"
                 direction = "row"
-                spacing = 1
+                spacing = 2
             }
             Grid {
                 attrs {
                     container = false
                     item = true
-                    md = 8
+                    md = 12
                 }
                 styledDiv {
+                    /** This div will later house the logo etc */
                     css {
-                        height = 100.px
+                        height = 16.vh
                     }
                 }
             }
@@ -91,18 +93,16 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                     item = true
                     md = 8
                 }
+                styledP {
+                    css {
+                        + ComponentStyles.overviewScreenNumPullRequests
+                    }
+                    + "${state.pullRequests.size} Pull Requests"
+                }
                 pullRequestList {
                     pullRequests = state.pullRequests
                     onPullRequestSelect = handlePullRequestSelect
                 }
-            }
-            Grid {
-                attrs {
-                    container = false
-                    item = true
-                    md = 4
-                }
-                renderRightSection()
             }
         }
     }

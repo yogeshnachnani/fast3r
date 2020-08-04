@@ -18,6 +18,7 @@ import kotlinx.css.Outline
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.TextAlign
+import kotlinx.css.VerticalAlign
 import kotlinx.css.alignContent
 import kotlinx.css.alignItems
 import kotlinx.css.background
@@ -46,6 +47,7 @@ import kotlinx.css.boxSizing
 import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.flex
+import kotlinx.css.flexBasis
 import kotlinx.css.flexWrap
 import kotlinx.css.float
 import kotlinx.css.fontFamily
@@ -56,6 +58,7 @@ import kotlinx.css.height
 import kotlinx.css.hsl
 import kotlinx.css.hsla
 import kotlinx.css.justifyContent
+import kotlinx.css.left
 import kotlinx.css.lineHeight
 import kotlinx.css.margin
 import kotlinx.css.marginBottom
@@ -81,6 +84,7 @@ import kotlinx.css.rgba
 import kotlinx.css.right
 import kotlinx.css.textAlign
 import kotlinx.css.top
+import kotlinx.css.verticalAlign
 import kotlinx.css.vh
 import kotlinx.css.vw
 import kotlinx.css.width
@@ -121,6 +125,7 @@ object Colors {
     val primaryTeal = hsl(169, 92, 71)
 
     val backgroundDarkestGrey = hsl(222, 20, 17)
+    val backgroundDarkestGreyAlpha04 = hsla(222, 20, 17, 0.4)
     val backgroundDarkGrey = hsl(224, 19, 23)
     val backgroundMediumGrey = hsl(220, 22, 24)
     val backgroundGrey = hsl(220, 21, 27)
@@ -142,10 +147,6 @@ object EditorThemeColors {
     val editorBackground = Colors.primaryBlack
     val editorColor = Colors.textMediumGrey
     val gutterActiveLineBorderColor = Colors.primaryTeal
-    val orange = hsl(29, 100, 58)
-    val lightBlue = hsl(198, 100, 70)
-    val blue = hsl(234, 100, 69)
-    val pink = hsl(0, 100, 74)
     val lightGreen = hsl(165, 100, 69)
     val highlightsLightGreen = hsla(159, 42, 42, 0.3)
     val highlightsGreen = hsla(159, 76, 43, 0.7)
@@ -153,6 +154,18 @@ object EditorThemeColors {
     val gutterHighlightsLightRed = hsla(0, 48, 45, 0.3)
     val highlightsRed = hsla(0, 61, 55, 0.7)
     val highlightsGrey = hsla(0, 2, 77, 0.22)
+
+    val tokenOrange = hsl(29, 100, 58)
+    val tokenLightBlue = hsl(198, 100, 70)
+    val tokenBlue = hsl(234, 100, 69)
+    val tokenPink = hsl(0, 100, 74)
+    val tokenLightGreen = hsl(165, 100, 69)
+    val tokenGreen = hsl(158, 86, 35)
+    val tokenYellow = hsl(54, 100, 50)
+    val tokenLightOrange = hsl(40, 98, 61)
+    val tokenRed = hsl(0, 100, 66)
+    val tokenLightPurple = hsl(328, 100, 73)
+    val tokenPurple = hsl(289, 100, 69)
 }
 
 object FontSizes {
@@ -634,6 +647,166 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = EditorThemeColors.gutterHighlightsLightRed
         position = Position.absolute
     }
+
+    val overviewScreenNumPullRequests by css {
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textDarkGrey
+    }
+
+    val pullRequestSummaryCard by css {
+        backgroundColor = Colors.backgroundDarkGrey
+        borderRadius = 8.px
+        boxShadow(color = rgba(0, 0, 0, 0.25), offsetX = 0.px, offsetY = 4.px, blurRadius = 74.px )
+        margin(0.px)
+        padding(0.px)
+    }
+
+    val pullRequestSummaryCardHeading by css {
+        marginTop = 24.px
+        marginLeft = 24.px
+        marginBottom = 0.px
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textMediumGrey
+    }
+    val pullRequestSummaryHeaderContainer by css {
+        display = Display.inlineFlex
+        justifyContent = JustifyContent.spaceBetween
+        width = 100.pct
+        margin(0.px)
+    }
+
+    val pullRequestSummaryAgeRibbon by css {
+        borderTopLeftRadius = 15.px
+        borderBottomLeftRadius = 15.px
+        borderTopRightRadius = 0.px
+        borderBottomRightRadius = 0.px
+        height = 36.px
+//        padding(vertical = 6.px, horizontal = 20.px)
+        marginTop = 24.px
+        color = Colors.textLightGrey
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        fontFamily = FontFamilies.nonCode
+        verticalAlign = VerticalAlign.middle
+        textAlign = TextAlign.center
+    }
+
+    val pullRequestSummaryAgeText by css {
+        marginLeft = 20.px
+        marginRight = 36.px
+        marginTop = 6.px
+        marginBottom = 6.px
+        display = Display.inlineBlock
+    }
+
+    val pullRequestSummaryProjectName by css {
+        backgroundColor = Colors.backgroundDarkestGreyAlpha04
+        borderRadius = 100.px
+        width = LinearDimension.fitContent
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textLightGrey
+        marginLeft = 24.px
+        marginTop = 12.px
+        marginBottom = 12.px
+        display = Display.block
+        padding(vertical = 6.px, horizontal = 12.px)
+    }
+
+    val pullRequestSummaryCommentContainer by css {
+        borderRadius = 5.px
+        backgroundColor = Colors.backgroundDarkestGrey
+        marginLeft = 24.px
+        marginRight = 24.px
+        marginBottom = 16.px
+        display = Display.flex
+        justifyContent = JustifyContent.center
+        alignItems = Align.center
+        color = Colors.textDarkGrey
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        fontFamily = FontFamilies.nonCode
+        position = Position.relative
+    }
+
+    val pullRequestSummaryCommentBody by css {
+        height = LinearDimension(LineHeights.normal.value).times(2)
+    }
+
+    val pullRequestSummaryCommentUserAvatar by css {
+        position = Position.absolute
+        display = Display.inlineFlex
+        top = 24.px
+        left = 24.px
+    }
+
+    val pullRequestMetaDataContainer by css {
+        marginLeft = 24.px
+        marginRight = 24.px
+        paddingBottom = 14.px
+        display = Display.flex
+        justifyContent = JustifyContent.spaceBetween
+        alignContent = Align.center
+    }
+
+    val pullRequestMetaDataItems by css {
+        width = LinearDimension.fitContent
+        display = Display.inlineFlex
+        justifyContent = JustifyContent.flexStart
+        alignItems = Align.center
+        flex(flexBasis = 40.pct.basis)
+    }
+    val pullRequestSummaryMetaDataText by css {
+        display = Display.inlineFlex
+        color = Colors.textMediumGrey
+        marginLeft = 8.px
+    }
+    val pullRequestSummaryMetaDataEstTime by css {
+        display = Display.inlineFlex
+        fontSize = FontSizes.normal
+        color = Colors.primaryBlue
+        flexBasis = 60.pct.basis
+        justifyContent = JustifyContent.flexStart
+        alignItems = Align.center
+    }
+
+    val pullRequestSummaryMetaDataSize by css {
+        display = Display.inlineFlex
+        fontSize = FontSizes.normal
+        color = Colors.primaryBlue
+        justifyContent = JustifyContent.flexStart
+        alignItems = Align.center
+    }
+
+    val pullRequestSummaryCardKeyboardShortcut by css {
+        width = 44.px
+        height = 42.px
+        backgroundColor = Colors.backgroundGrey
+        borderRadius = 4.px
+        fontFamily = FontFamilies.nonCode
+        fontStyle = FontStyle.normal
+        fontWeight = FontWeight.normal
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        display = Display.flex
+        textAlign = TextAlign.center
+        justifyContent = JustifyContent.center
+        alignItems = Align.center
+        alignContent = Align.center
+        color = Colors.textMediumGrey
+    }
+
+    val avatarInitials by css {
+        width = 34.px
+        height = 34.px
+        backgroundColor = EditorThemeColors.tokenOrange
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+    }
 }
 
 var styles = CSSBuilder().apply {
@@ -649,7 +822,7 @@ var styles = CSSBuilder().apply {
         fontSize = FontSizes.normal
         color = Colors.baseText1
         overflow = Overflow.hidden
-        backgroundColor = Colors.backgroundDarkGrey
+        backgroundColor = Colors.primaryBlack
         margin(0.px)
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
@@ -691,31 +864,31 @@ var styles = CSSBuilder().apply {
         borderRightColor = EditorThemeColors.gutterActiveLineBorderColor
     }
     ".ace-fast3r-dark .ace_keyword" {
-        color = EditorThemeColors.orange
+        color = EditorThemeColors.tokenOrange
     }
     ".ace-fast3r-dark .ace_meta" {
-        color = EditorThemeColors.orange
+        color = EditorThemeColors.tokenOrange
     }
     ".ace-fast3r-dark .ace_support.ace_constant.ace_property-value" {
-        color = EditorThemeColors.orange
+        color = EditorThemeColors.tokenOrange
     }
     ".ace-fast3r-dark .ace_string" {
-        color = EditorThemeColors.lightBlue
+        color = EditorThemeColors.tokenLightBlue
     }
     ".ace-fast3r-dark .ace_storage" {
 
     }
     ".ace-fast3r-dark .ace_support.ace_class" {
-        color = EditorThemeColors.pink
+        color = EditorThemeColors.tokenPink
     }
     ".ace-fast3r-dark .ace_support.ace_function" {
-        color = EditorThemeColors.pink
+        color = EditorThemeColors.tokenPink
     }
     ".ace-fast3r-dark .ace_support.ace_other" {
-        color = EditorThemeColors.pink
+        color = EditorThemeColors.tokenPink
     }
     ".ace-fast3r-dark .ace_support.ace_type" {
-        color = EditorThemeColors.pink
+        color = EditorThemeColors.tokenPink
     }
 
 }

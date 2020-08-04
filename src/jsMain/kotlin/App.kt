@@ -1,5 +1,6 @@
 import codereview.FileDiffListV2
 import codereview.FileLineItem
+import codereview.Project
 import codereview.ReviewInfo
 import codereview.ReviewStorageProvider
 import codereview.SuperCrClient
@@ -26,6 +27,7 @@ import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetReview
 import supercr.workflows.gettingstarted.components.loginComponent
 import supercr.workflows.mainScreen
+import supercr.workflows.overview.components.pullRequestList
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.js.Date
@@ -55,6 +57,7 @@ fun main ()  {
 //        renderLoginView()
 //        renderDiffView()
         renderMainScreen()
+//        renderPullRequests()
     }
 //    renderDiffView()
 //    renderGettingStarted()
@@ -113,6 +116,21 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
             console.log("Hello, I am $it")
         }
         Pair(element!!, handler)
+    }
+}
+
+private fun RBuilder.renderPullRequests() {
+    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        pullRequestList {
+            pullRequests = listOf(
+                Pair(Project("foo", "bar", "btcmain"), samplePullRequestSummary),
+                Pair(Project("foo", "bar", "detekt"), samplePullRequestSummary))
+        }
     }
 }
 

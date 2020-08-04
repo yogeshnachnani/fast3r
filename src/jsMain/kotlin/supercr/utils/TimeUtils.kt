@@ -1,10 +1,6 @@
 package supercr.utils
 
-import codereview.FileLineItem
-import io.ktor.util.date.Month
-import io.ktor.util.date.WeekDay
 import kotlin.js.Date
-import kotlin.js.json
 
 fun String.iso8601ToHuman(): String {
     return Date(this).toLocaleString()
@@ -24,4 +20,24 @@ fun String.toDateTimeRepresentation(): String {
     })
 
     return "$dateRep | $timeRep"
+}
+
+fun String.ageInDaysFromNow(): Long  {
+    val givenDate = Date(this)
+    return (( Date().getTime() - givenDate.getTime() )/ (1000 * 3600 * 24)).toLong()
+}
+
+fun String.ageInHoursFromNow(): Long {
+    val givenDate = Date(this)
+    return (( Date().getTime() - givenDate.getTime() )/ (1000 * 3600 )).toLong()
+}
+
+fun String.getAgeFromNow(): String {
+    val diffInDays = this.ageInDaysFromNow()
+    return if ( diffInDays > 0) {
+        "$diffInDays day${if (diffInDays > 1) "s" else ""}"
+    } else {
+        val diffInHours = this.ageInHoursFromNow()
+        "$diffInHours hour${if (diffInHours > 1) "s" else ""}"
+    }
 }
