@@ -655,6 +655,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         lineHeight = LineHeights.huge
         fontFamily = FontFamilies.nonCode
         color = Colors.textDarkGrey
+        marginBottom = 70.px
     }
 
     val pullRequestSummaryCard by css {
@@ -681,8 +682,8 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val pullRequestSummaryAgeRibbon by css {
-        borderTopLeftRadius = 15.px
-        borderBottomLeftRadius = 15.px
+        borderTopLeftRadius = 100.px
+        borderBottomLeftRadius = 100.px
         borderTopRightRadius = 0.px
         borderBottomRightRadius = 0.px
         height = 36.px
@@ -793,7 +794,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val pullRequestSummaryCardKeyboardShortcut by css {
         width = 44.px
         height = 42.px
-        backgroundColor = Colors.backgroundGrey
+        backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
         fontFamily = FontFamilies.nonCode
         fontStyle = FontStyle.normal
