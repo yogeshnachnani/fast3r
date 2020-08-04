@@ -11,12 +11,11 @@ data class PrefixMatchHandlers(
 )
 
 object KeyboardShortcutTrie {
+    val listOfAvailableCharsForFirstLetter = listOf('a', 'd', 'e',  'g', 'q', 'r', 't', 'v', 'w', 'x', 'z')
+    val listOfAvailableCharsFor2ndLetter = listOf('h', 'j', 'k', 'l', 'u', 'i', 'o', 'p', 'n')
+    val MAX_COMPONENTS_SUPPORTED = listOfAvailableCharsForFirstLetter.size * listOfAvailableCharsFor2ndLetter.size
     private val keyboardShortcutTrie = KeyboardShortcutTrieNode()
 
-    /**
-     * Assuming _at max_ we'd want to 'generate' shortcuts for 26*26 items
-     */
-    private val MAX_COMPONENTS_SUPPORTED = 26*26
     operator fun get(shortcutString: CharSequence): PrefixMatchResult {
         return keyboardShortcutTrie.fetchHandler(shortcutString)
     }
@@ -29,46 +28,41 @@ object KeyboardShortcutTrie {
         )
     }
 
-    fun listAvailableChars(prefixString: CharSequence): Set<Char> {
-        return keyboardShortcutTrie.listAvailableChars(prefixString)
-    }
-
     fun clear() {
         keyboardShortcutTrie.clear()
     }
 
     /**
-     * There should almost never be a reason to actually use a [prefixString].
-     * Prefer calling it with [prefixString] = null. This will ensure that we never have trie entries for "aa" as well as "aabb".
-     * TODO: Take care of the corner case above
+     * The [firstLetterPreference] is just what the name suggests - a preference. In case we can't generate shortcuts with the given prefix, we still
+     * go ahead and see if we can generate it using other available prefixes
      */
-    fun generatePossiblePrefixCombos(prefixString: CharSequence?, numberOfComponents: Int): List<String> {
+    fun generateTwoLetterCombos(numberOfComponents: Int, firstLetterPreference: Char? = 'd'): List<String> {
         if (numberOfComponents > MAX_COMPONENTS_SUPPORTED) {
             throw RuntimeException("Can't generate $numberOfComponents. That's too much")
         }
-        val availableCharsForPrefix = listAvailableChars(prefixString ?: "")
-        return if ( numberOfComponents > availableCharsForPrefix.size ) {
-            /** TODO: Figure out a better way here - right now it is doing iterating over all [availableCharsForPrefix] all the time */
-            availableCharsForPrefix.fold(emptyList<String>()) { prefixesSelected, currentPrefixChar ->
-                if (prefixesSelected.size == numberOfComponents) {
-                    prefixesSelected
-                } else {
-                    val availableSuffixesForGivenChar = listAvailableChars("$currentPrefixChar")
-                    val stringsWithCurrentCharPrefix = availableSuffixesForGivenChar.takeDesired(
-                        numberOfComponents = minOf(availableCharsForPrefix.size, numberOfComponents - prefixesSelected.size)
-                    )
-                        .map {
-                            "$currentPrefixChar$it"
-                        }
-                    prefixesSelected.plus(stringsWithCurrentCharPrefix)
-                }
-            }
+        val possibleFirstCharacters = if (firstLetterPreference != null) {
+            listOf(firstLetterPreference).plus(listOfAvailableCharsForFirstLetter.minus(firstLetterPreference))
         } else {
-            availableCharsForPrefix.takeDesired(numberOfComponents)
+            listOfAvailableCharsForFirstLetter
+        }
+        return possibleFirstCharacters.fold(emptyList<String>()) { prefixesSelected, currentPrefixChar ->
+            if (prefixesSelected.size == numberOfComponents) {
+                prefixesSelected
+            } else {
+                val possible2ndCharacters =
+                    keyboardShortcutTrie.fetchNode("$currentPrefixChar")?.fetchRemainingChildren(listOfAvailableCharsFor2ndLetter) ?: listOfAvailableCharsFor2ndLetter
+                val stringsWithCurrentCharPrefix = possible2ndCharacters.takeDesired(
+                    numberOfComponents = minOf(possibleFirstCharacters.size, numberOfComponents - prefixesSelected.size)
+                )
+                    .map {
+                        "$currentPrefixChar$it"
+                    }
+                prefixesSelected.plus(stringsWithCurrentCharPrefix)
+            }
         }
     }
 
-    private fun Set<Char>.takeDesired(numberOfComponents: Int): List<String> {
+    private fun List<Char>.takeDesired(numberOfComponents: Int): List<String> {
         return this.foldIndexed(emptyList<String>()) { index , selectedChars, currentChar ->
             if (index < numberOfComponents) {
                 selectedChars.plus(currentChar.toString())
@@ -87,9 +81,7 @@ private class KeyboardShortcutTrieNode {
     private val children: MutableMap<Char, KeyboardShortcutTrieNode> = mutableMapOf()
     private var fullMatchHandler :( () -> Unit )? = null
     private var partialMatchHandlers: MutableList<() -> Unit> = mutableListOf()
-    companion object {
-        private val setOfChars = setOf('a', 'b', 'c', 'd', 'e',  'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 't', 'u', 'v', 'w', 'x', 'y', 'z')
-    }
+
 
     fun addShortcut(shortcutString: CharSequence, fullMatchHandler: () -> Unit, partialMatchHandler: () -> Unit) {
         when(val prefix = shortcutString.firstOrNull()) {
@@ -142,14 +134,6 @@ private class KeyboardShortcutTrieNode {
         }
     }
 
-    fun listAvailableChars(prefixString: CharSequence): Set<Char> {
-        return if (prefixString.isEmpty()) {
-            setOfChars.minus(children.keys)
-        } else {
-            fetchNode(prefixString)?.availablePrefixesForNode() ?: setOfChars
-        }
-    }
-
     fun clear() {
         children.clear()
     }
@@ -182,7 +166,7 @@ private class KeyboardShortcutTrieNode {
         this.partialMatchHandlers.add(partialMatchHandler)
     }
 
-    private fun fetchNode(forString: CharSequence): KeyboardShortcutTrieNode? {
+    fun fetchNode(forString: CharSequence): KeyboardShortcutTrieNode? {
         return if (forString.isNullOrEmpty()) {
             null
         } else {
@@ -197,8 +181,8 @@ private class KeyboardShortcutTrieNode {
         }
     }
 
-    private fun availablePrefixesForNode(): Set<Char> {
-        return setOfChars.minus(children.keys)
+    fun fetchRemainingChildren(superSet: List<Char>): List<Char> {
+        return superSet.minus(children.keys)
     }
 
 }

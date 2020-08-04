@@ -80,10 +80,7 @@ class ChangeSetReviewScreen(
     }
 
     private fun generateFileDiffAndMetaData(): List<FileDiffStateAndMetaData> {
-        return KeyboardShortcutTrie.generatePossiblePrefixCombos(
-            prefixString = "d",
-            numberOfComponents = props.fileDiffList.fileDiffs.size
-        )
+        return KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = props.fileDiffList.fileDiffs.size)
             .mapIndexed { index, prefix ->
                 val fileDiff = props.fileDiffList.fileDiffs[index]
                 val handler = createHandlerFor(fileDiff)

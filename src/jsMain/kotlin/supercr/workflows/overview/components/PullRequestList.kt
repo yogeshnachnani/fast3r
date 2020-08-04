@@ -6,24 +6,24 @@ import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import react.RBuilder
 import react.RComponent
+import react.RElementBuilder
 import react.RProps
 import react.RState
 import react.ReactElement
 
 external interface PullRequestListProps: RProps {
-    var pullRequests: List<Pair<Project, PullRequestSummary>>
+    var pullRequests: List<Triple<Project, PullRequestSummary, String>>
     var onPullRequestSelect: (Int) -> Unit
 }
 
 external interface PullRequestListState: RState {
 }
 
-class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>() {
+class PullRequestList constructor(
+    constructorProps: PullRequestListProps
+) : RComponent<PullRequestListProps, PullRequestListState>(constructorProps) {
+
     override fun RBuilder.render() {
-        val keyboardShortcuts = KeyboardShortcutTrie.generatePossiblePrefixCombos(
-            prefixString = "d",
-            numberOfComponents = props.pullRequests.size
-        )
         Grid {
             attrs {
                 container = true
@@ -32,7 +32,7 @@ class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>()
                 spacing = 6
                 justify = "flex-start"
             }
-            props.pullRequests.mapIndexed { index, (currentPRProject, currentPullRequest) ->
+            props.pullRequests.mapIndexed { index, (currentPRProject, currentPullRequest, kbShortcut) ->
                 Grid {
                     attrs {
                         item = true
@@ -43,7 +43,7 @@ class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>()
                         project = currentPRProject
                         pullRequestSummary = currentPullRequest
                         onClickHandler = createPullRequestSelectHandler(index)
-                        assignedKeyboardShortcut = keyboardShortcuts[index]
+                        assignedKeyboardShortcut = kbShortcut
                     }
                 }
             }
@@ -60,8 +60,8 @@ class PullRequestList : RComponent<PullRequestListProps, PullRequestListState>()
     }
 }
 
-fun RBuilder.pullRequestList(handler: PullRequestListProps.() -> Unit): ReactElement {
+fun RBuilder.pullRequestList(handler: RElementBuilder<PullRequestListProps>.() -> Unit): ReactElement {
     return child(PullRequestList::class) {
-        this.attrs(handler)
+        handler()
     }
 }

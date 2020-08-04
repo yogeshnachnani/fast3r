@@ -5,6 +5,7 @@ import codereview.FileDiffListV2
 import codereview.Project
 import codereview.ReviewInfo
 import codereview.SuperCrClient
+import datastructures.KeyboardShortcutTrie
 import git.provider.GithubClient
 import git.provider.PullRequestSummary
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ external interface OverviewScreenProps: RProps {
 }
 
 external interface OverviewScreenState: RState {
-    var pullRequests: List<Pair<Project, PullRequestSummary>>
+    var pullRequests: List<Triple<Project, PullRequestSummary, String>>
     var selectedPullRequestIndex: Int
 }
 
@@ -100,8 +101,10 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                     + "${state.pullRequests.size} Pull Requests"
                 }
                 pullRequestList {
-                    pullRequests = state.pullRequests
-                    onPullRequestSelect = handlePullRequestSelect
+                    attrs {
+                        pullRequests = state.pullRequests
+                        onPullRequestSelect = handlePullRequestSelect
+                    }
                 }
             }
         }
@@ -134,7 +137,10 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
             GlobalScope.async(context = Dispatchers.Main) {
                 props.getGithubClient().listPullRequests(project)
                     .let { retrievedPullRequests ->
-                        val newlyRetrievedPrs = retrievedPullRequests.map { Pair(project, it) }
+                        val kbShortcuts = KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = retrievedPullRequests.size)
+                        val newlyRetrievedPrs = retrievedPullRequests.mapIndexed { index, pullRequestSummary ->
+                            Triple(project, pullRequestSummary, kbShortcuts[index])
+                        }
                         val existingPrInfo = state.pullRequests
                         /** TODO : Figure out if it's better to update the state in one shot or for each retrieval like this */
                         setState {

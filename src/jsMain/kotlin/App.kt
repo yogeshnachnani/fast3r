@@ -127,9 +127,11 @@ private fun RBuilder.renderPullRequests() {
             injectFirst = true
         }
         pullRequestList {
-            pullRequests = listOf(
-                Pair(Project("foo", "bar", "btcmain"), samplePullRequestSummary),
-                Pair(Project("foo", "bar", "detekt"), samplePullRequestSummary))
+            attrs {
+                pullRequests = listOf(
+                    Triple(Project("foo", "bar", "btcmain"), samplePullRequestSummary, "ab"),
+                    Triple(Project("foo", "bar", "detekt"), samplePullRequestSummary, "ac"))
+            }
         }
     }
 }
@@ -150,10 +152,9 @@ private fun RBuilder.renderDraggableFileList() {
     val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
     val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
     console.log("File diff is : ", sampleFileDiff)
-    val kbShortcuts = KeyboardShortcutTrie.generatePossiblePrefixCombos(
-            prefixString = "d",
-            numberOfComponents = sampleFileDiff.fileDiffs.size
-        )
+    val kbShortcuts = KeyboardShortcutTrie.generateTwoLetterCombos(
+        numberOfComponents = sampleFileDiff.fileDiffs.size
+    )
     val fileDiffAndShortcuts = sampleFileDiff.fileDiffs.mapIndexed { index, fileDiffV2 ->
         FileDiffAndShortcut(
             fileDiffV2 = fileDiffV2,

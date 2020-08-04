@@ -53,24 +53,6 @@ class KeyboardShortcutTrieNodeTest {
     }
 
     @Test
-    fun testAvailabilityOfChars() {
-        val noOp: () -> Unit = {
-
-        }
-        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("").count())
-        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("a").count())
-        KeyboardShortcutTrie["a"] = PrefixMatchHandlers(noOp, noOp)
-        assertEquals(23 , KeyboardShortcutTrie.listAvailableChars("").count())
-        /**
-         * The following test means that we can make 24 strings starting with the prefix 'a' : aa, ab, ac.. az
-         */
-        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("a").count())
-        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("b").count())
-        assertEquals(24 , KeyboardShortcutTrie.listAvailableChars("abc").count())
-
-    }
-
-    @Test
     fun testPrefixMatchResultingInFullMatch() {
         val noOp: () -> Unit = {
 
@@ -159,9 +141,9 @@ class KeyboardShortcutTrieNodeTest {
     }
 
     @Test
-    fun testPrefixGeneration_BadInputShouldBomb() {
+    fun testTwoLetterShortcutGeneration_BadInputShouldBomb() {
         try {
-            KeyboardShortcutTrie.generatePossiblePrefixCombos("ab", 26*26 + 1)
+            KeyboardShortcutTrie.generateTwoLetterCombos(255, 'd')
             fail("Should have failed")
         } catch (expectedException: RuntimeException) {
             //expected
@@ -169,64 +151,40 @@ class KeyboardShortcutTrieNodeTest {
     }
 
     @Test
-    fun testPrefixGeneration_emptyPrefixOfSize1() {
-        /**
-         * We want 26 components - all shortcuts should fit in a single character
-         */
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString = null, numberOfComponents = 24)
-            .also { results ->
-                assertEquals(24, results.size)
-                results.forEachIndexed { _, s ->
-                    assertEquals(1, s.count())
-                }
-            }
-    }
-
-    @Test
-    fun testPrefixGeneration_emptyPrefix_WithPreviousShortcutAssigned() {
+    fun testTwoLetterShortcutGeneration_emptyPrefix_WithPreviousShortcutAssigned() {
         val noOp: () -> Unit = {
 
         }
-        KeyboardShortcutTrie["a"] = PrefixMatchHandlers(noOp, noOp)
+        KeyboardShortcutTrie["ah"] = PrefixMatchHandlers(noOp, noOp)
         /**
          * We want 26 components - but 1 component "a" is already reserved, so we'll get shortcuts of length 2
          */
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString = null, numberOfComponents = 26)
+        KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = 26, firstLetterPreference = 'a')
             .also { results ->
                 assertEquals(26, results.size)
                 results.forEachIndexed { _, s ->
                     assertEquals(2, s.count())
                 }
+                assertFalse(results.contains("ah"))
             }
     }
 
     @Test
-    fun testPrefixGeneration_emptyPrefixOfSize2() {
-        /**
-         * We desire 115 components - we'll prefer to generate all shortcuts of uniform length to accommodate them
-         */
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString = null, numberOfComponents = 115)
-            .also { results ->
-                assertEquals(115, results.size)
-                results.forEachIndexed { _, s ->
-                    assertEquals(2, s.count())
-                }
-            }
-    }
-
-    @Test
-    fun testPrefixGeneration_withDesiredPrefixFull() {
+    fun testTwoLetterShortcutGeneration_withDesiredPrefixFull() {
         val noOp: () -> Unit = {
 
         }
-        val setOfChars = setOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
-        setOfChars.forEach {
+        val listOfAvailableCharsFor2ndLetter = listOf('h', 'j', 'k', 'l', 'u', 'i', 'o', 'p', 'n')
+        listOfAvailableCharsFor2ndLetter.forEach {
             KeyboardShortcutTrie["a${it}"] = PrefixMatchHandlers(noOp, noOp)
         }
-
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString =  "a", numberOfComponents = 1)
-            .also {
-                assertTrue(it.isEmpty())
+        /**
+         * Since all shortcuts beginning with 'a' are full, we will get shortcuts with other available prefixes
+         */
+        KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = 11, firstLetterPreference = 'a')
+            .also { results ->
+                assertEquals(9, results.filter { it.startsWith('d') }.size)
+                assertEquals(2, results.filter { it.startsWith('e') }.size)
             }
     }
 
@@ -237,20 +195,10 @@ class KeyboardShortcutTrieNodeTest {
         }
         KeyboardShortcutTrie["ab"] = PrefixMatchHandlers(noOp, noOp)
 
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString =  "a", numberOfComponents = 23)
+        KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = 8, firstLetterPreference = 'a')
             .also { results ->
-                assertEquals(23, results.size)
-                results.forEachIndexed { _, s ->
-                    assertEquals(1, s.count())
-                }
-            }
-
-        KeyboardShortcutTrie.generatePossiblePrefixCombos(prefixString =  "a", numberOfComponents = 55)
-            .also { results ->
-                assertEquals(55, results.size)
-                results.forEachIndexed { _, s ->
-                    assertEquals(2, s.count())
-                }
+                assertEquals(8, results.size)
+                assertEquals(8, results.filter { it.startsWith('a') }.size)
             }
     }
 
@@ -266,19 +214,19 @@ class KeyboardShortcutTrieNodeTest {
         /** Just ensuring that we have "ab" inserted first */
         KeyboardShortcutTrie["ab"] = PrefixMatchHandlers(fullMatch = functionForAb, partialMatchHandler = noOp)
         KeyboardShortcutTrie["a"] = PrefixMatchHandlers(fullMatch = functionForAb, partialMatchHandler = noOp)
-        assertEquals(23, KeyboardShortcutTrie.listAvailableChars("").size)
-        assertEquals(23, KeyboardShortcutTrie.listAvailableChars("a").size)
         assertNotNull(KeyboardShortcutTrie["ab"].fullMatch)
         assertNotNull(KeyboardShortcutTrie["a"].fullMatch)
 
         KeyboardShortcutTrie.remove("ab")
-        assertEquals(23, KeyboardShortcutTrie.listAvailableChars("").size)
-        assertEquals(24, KeyboardShortcutTrie.listAvailableChars("a").size)
         assertTrue(KeyboardShortcutTrie["ab"].isNoMatch())
 
         KeyboardShortcutTrie.remove("a")
-        assertEquals(24, KeyboardShortcutTrie.listAvailableChars("").size)
         assertTrue(KeyboardShortcutTrie["a"].isNoMatch())
+    }
+
+    @Test
+    fun testToGuardAgainstAccidentalRepeatsInSetsOfChars() {
+//        assertTrue(KeyboardShortcutTrie.listOfAvailableCharsFor2ndLetter.intersect(KeyboardShortcutTrie.listOfAvailableCharsForFirstLetter).isEmpty())
     }
 
 }

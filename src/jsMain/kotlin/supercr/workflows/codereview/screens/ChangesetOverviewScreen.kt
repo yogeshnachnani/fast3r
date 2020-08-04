@@ -41,10 +41,7 @@ class ChangesetOverviewScreen constructor(
 ) : RComponent<ChangesetOverviewScreenProps, ChangeSetOverviewScreenState>(constructorProps) {
 
     override fun ChangeSetOverviewScreenState.init(props: ChangesetOverviewScreenProps) {
-        val kbShortcuts = KeyboardShortcutTrie.generatePossiblePrefixCombos(
-            prefixString = "d",
-            numberOfComponents = props.fileDiffList.fileDiffs.size
-        )
+        val kbShortcuts = KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = props.fileDiffList.fileDiffs.size)
         fileDiffListAndShortcuts = props.fileDiffList.fileDiffs.mapIndexed { index, fileDiffV2 ->
             FileDiffAndShortcut(
                 fileDiffV2 = fileDiffV2,
