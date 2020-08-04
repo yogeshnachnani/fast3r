@@ -18,6 +18,7 @@ import kotlinx.css.Outline
 import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.TextAlign
+import kotlinx.css.TextOverflow
 import kotlinx.css.VerticalAlign
 import kotlinx.css.alignContent
 import kotlinx.css.alignItems
@@ -83,6 +84,7 @@ import kotlinx.css.px
 import kotlinx.css.rgba
 import kotlinx.css.right
 import kotlinx.css.textAlign
+import kotlinx.css.textOverflow
 import kotlinx.css.top
 import kotlinx.css.verticalAlign
 import kotlinx.css.vh
@@ -735,6 +737,12 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val pullRequestSummaryCommentBody by css {
         height = LinearDimension(LineHeights.normal.value).times(2)
+        marginBottom = 22.px
+        textOverflow = TextOverflow.ellipsis
+        overflow = Overflow.hidden
+        put("display", "-webkit-box")
+        put("-webkit-line-clamp", "2")
+        put("-webkit-box-orient", "vertical")
     }
 
     val pullRequestSummaryCommentUserAvatar by css {

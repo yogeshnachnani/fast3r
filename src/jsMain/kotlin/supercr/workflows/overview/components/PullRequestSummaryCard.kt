@@ -148,7 +148,7 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                     }
                     + props.pullRequestSummary.user.login
                 }
-                styledP {
+                styledDiv {
                     css {
                         + ComponentStyles.pullRequestSummaryCommentBody
                     }

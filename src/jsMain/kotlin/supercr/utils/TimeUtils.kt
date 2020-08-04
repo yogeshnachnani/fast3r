@@ -32,12 +32,21 @@ fun String.ageInHoursFromNow(): Long {
     return (( Date().getTime() - givenDate.getTime() )/ (1000 * 3600 )).toLong()
 }
 
+fun String.ageInMinutesFromNow(): Long {
+    val givenDate = Date(this)
+    return (( Date().getTime() - givenDate.getTime() )/ ( 1000* 60 )).toLong()
+}
+
 fun String.getAgeFromNow(): String {
     val diffInDays = this.ageInDaysFromNow()
     return if ( diffInDays > 0) {
         "$diffInDays day${if (diffInDays > 1) "s" else ""}"
     } else {
         val diffInHours = this.ageInHoursFromNow()
-        "$diffInHours hour${if (diffInHours > 1) "s" else ""}"
+        if (diffInHours < 1) {
+            "${ageInMinutesFromNow()} mins"
+        } else {
+            "$diffInHours hour${if (diffInHours > 1) "s" else ""}"
+        }
     }
 }
