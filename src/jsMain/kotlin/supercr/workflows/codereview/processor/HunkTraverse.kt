@@ -9,19 +9,6 @@ fun FileDiffV2.hasBothFiles(): Boolean {
     return hasOldFile() && hasNewFile()
 }
 
-fun FileDiffV2.getNextHunk(viewPositionLeft: Number, viewPositionRight: Number): Int? {
-    val leftEdit = editList.firstOrNull { it.beginA > viewPositionLeft.toLong() }
-    val rightEdit = editList.firstOrNull { it.beginB > viewPositionLeft.toLong() }
-    return when {
-        leftEdit == null && rightEdit == null -> null
-        leftEdit == null ||
-        leftEdit == rightEdit -> newFile!!.getViewPositionForFilePosition(rightEdit!!.beginB.toInt())
-        rightEdit == null ||
-        leftEdit.beginA < rightEdit.beginB -> oldFile!!.getViewPositionForFilePosition(leftEdit.beginB.toInt())
-        else -> newFile!!.getViewPositionForFilePosition(rightEdit.beginB.toInt())
-    }
-}
-
 fun FileDiffV2.nextEditPosition(currentEditIndex: Int): Pair<Int?, Int?> {
     return if (currentEditIndex == editList.lastIndex || newFile == null) {
         Pair(null, null)
