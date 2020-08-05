@@ -17,6 +17,6 @@ fun FileDiffV2.nextEditPosition(currentEditIndex: Int): Pair<Int?, Int?> {
     }
 }
 
-private fun FileData.getViewPositionForFilePosition(givenFilePosition: Int): Int {
+fun FileData.getViewPositionForFilePosition(givenFilePosition: Int): Int {
     return fileLines.indexOfFirst { it.filePosition == givenFilePosition }
 }

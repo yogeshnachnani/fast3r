@@ -1,7 +1,10 @@
 package supercr.workflows.codereview.processor
 
 import JsDiffResult
+import diffChars
+import diffLines
 import diffWords
+import diffWordsWithSpace
 
 enum class HighlightType {
     TextAdded,
@@ -34,7 +37,7 @@ class LineDiffProcessor {
          * Similarly, a [HighlightType.TextRemoved] would never appear in the 2nd part of the pair.
          */
         fun getDiffMarkers(oldLine: String, newLine: String): Pair<List<VimDiffRowMarker>, List<VimDiffRowMarker>> {
-            val diff = diffWords(oldLine, newLine)
+            val diff = diffWordsWithSpace(oldLine, newLine)
             val initialAccumulator = Triple(0L, 0L, listOf<VimDiffRowMarker>())
             return diff.fold(initialAccumulator) { (oldTextIndex, newTextIndex, accumulatedMarkers), currentDiff ->
                 when(currentDiff.getType()) {
@@ -54,12 +57,12 @@ class LineDiffProcessor {
                     }
                 }
             }.let { (oldTextIndex, newTextIndex, accumulatedMarkers) ->
-                require(oldTextIndex.toInt() == oldLine.length) {
-                    "For some reason, for the oldLine, We got only up to $oldTextIndex whereas we should have got up till ${oldLine.length}"
-                }
-                require(newTextIndex.toInt() == newLine.length) {
-                    "For some reason, for the newLine, We got only up to $newTextIndex whereas we should have got up till ${newLine.length}"
-                }
+//                require(oldTextIndex.toInt() == oldLine.length) {
+//                    "For some reason, for the oldLine, We got only up to $oldTextIndex whereas we should have got up till ${oldLine.length}"
+//                }
+//                require(newTextIndex.toInt() == newLine.length) {
+//                    "For some reason, for the newLine, We got only up to $newTextIndex whereas we should have got up till ${newLine.length}"
+//                }
                 Pair(
                     first = accumulatedMarkers.filter { it.highlightType == HighlightType.TextRemoved },
                     second = accumulatedMarkers.filter { it.highlightType == HighlightType.TextAdded }

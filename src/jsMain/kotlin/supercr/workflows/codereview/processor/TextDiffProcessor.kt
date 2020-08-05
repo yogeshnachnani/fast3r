@@ -4,6 +4,8 @@ import Editor
 import Range
 import codereview.DiffEditType
 import codereview.Edit
+import codereview.FileData
+import codereview.FileDiffV2
 import codereview.FileLine
 import styled.getClassName
 import supercr.css.ComponentStyles
@@ -16,14 +18,16 @@ class TextDiffProcessor constructor(
     private val editorWithNewText: Editor
 ) {
     /**
-     * Process the [editList] to highlight the diff in oth the editors
+     * Process the [fileDiffV2.editList] to highlight the diff in oth the editors
      */
-    fun processEditList(editList: List<Edit>) {
-        editList
-            .filter { it.editType == DiffEditType.REPLACE }
-            .forEach { currentEdit ->
-                currentEdit.processEdit()
-            }
+    fun processEditList(fileDiffV2: FileDiffV2) {
+        with(fileDiffV2) {
+            editList
+                .filter { it.editType == DiffEditType.REPLACE }
+                .forEach { currentEdit ->
+                    currentEdit.processEdit(this.newFile!!)
+                }
+        }
     }
 
     fun highlightLinesAddedForBalance(oldFileLines: List<FileLine>, newFileLines: List<FileLine>) {
@@ -43,15 +47,16 @@ class TextDiffProcessor constructor(
             }
     }
 
-    private fun Edit.processEdit() {
+    private fun Edit.processEdit(fileData: FileData) {
         require(editType == DiffEditType.REPLACE)
+        val beginBPositionInView = ( fileData.getViewPositionForFilePosition(beginB.toInt()) ).toLong()
         /** If there is new text on the right hand side, that means we have to highlight the empty lines we inserted in oldText for balance */
         if (lengthB > lengthA) {
             val numLines = lengthB - lengthA
-            highlighLinesWithGutter(editorWithOldText, beginB + lengthA, numLines, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalanceBackground })
+            highlighLinesWithGutter(editorWithOldText, beginBPositionInView + lengthA, numLines, ComponentStyles.getClassName { ComponentStyles::diffViewTextAddedForBalanceBackground })
         }
         /** We have the same number or rows to process in both [editorWithOldText] and [editorWithNewText] */
-        val fromRow = beginB
+        val fromRow = beginBPositionInView
         val upTillRow = fromRow + lengthB
         (fromRow until upTillRow).map { rowIndex ->
             val oldText = getLineAt(rowIndex, editorWithOldText)
@@ -87,8 +92,8 @@ class TextDiffProcessor constructor(
 
         }
         /** Finally, highlight the gutters */
-        highlightGutter(editor = editorWithNewText, fromRow = beginB , numLines = lengthB, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewTextBackground })
-        highlightGutter(editor = editorWithOldText, fromRow = beginB , numLines = lengthA, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewDeletedTextBackground })
+        highlightGutter(editor = editorWithNewText, fromRow = beginBPositionInView , numLines = lengthB, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewNewTextBackground })
+        highlightGutter(editor = editorWithOldText, fromRow = beginBPositionInView , numLines = lengthA, cssClazz = ComponentStyles.getClassName { ComponentStyles::diffViewDeletedTextBackground })
     }
 
     private fun getLineAt(rowIndex: Long, editor: Editor): String {

@@ -313,7 +313,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         val rightEditor = ace.edit(RIGHT_EDITOR_DIV_ID) as Editor
         TextDiffProcessor(leftEditor, rightEditor)
             .apply {
-                processEditList(props.fileDiff.editList)
+                processEditList(props.fileDiff)
                 highlightLinesAddedForBalance(
                     oldFileLines = props.fileDiff.oldFile?.fileLines ?: listOf(),
                     newFileLines = props.fileDiff.newFile?.fileLines ?: listOf()
