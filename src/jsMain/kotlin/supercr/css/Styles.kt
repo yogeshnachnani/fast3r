@@ -144,7 +144,7 @@ object Colors {
 
 object EditorThemeColors {
 //    val tokenComment = Colors.textDarkGrey
-    val gutterBackground = Colors.backgroundDarkestGrey
+    val gutterBackground = Colors.backgroundDarkestGrey.withAlpha(0.6)
     val gutterColor = hsla(0, 0, 93, 0.5)
     val editorBackground = Colors.primaryBlack
     val editorColor = Colors.textMediumGrey
@@ -226,7 +226,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontWeight = FontWeight.w700
     }
     val fileListPane by css {
-        marginTop = 30.px
+        paddingTop = 30.px
         height = 100.vh
         minWidth = 400.px
         paddingRight = 8.px
@@ -234,6 +234,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         marginRight = 0.px
         marginBottom = 0.px
         minWidth = 450.px
+        backgroundColor = Colors.backgroundDarkGrey
     }
     val fileListHeaderItem by css {
         marginTop = 40.px
@@ -578,7 +579,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = Colors.backgroundDarkestGrey
         width = 100.pct
         height = 100.pct
-        marginTop = 4.px
+        marginTop = 0.px
+        borderTopStyle = BorderStyle.solid
+        borderTopWidth = 4.px
+        borderTopColor = Colors.backgroundDarkestGrey
     }
 
     val extraInfoWindowHeader by css {
