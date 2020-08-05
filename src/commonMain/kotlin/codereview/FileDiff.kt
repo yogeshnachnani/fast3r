@@ -52,16 +52,34 @@ fun FileData.retrieveAllLineItems(): List<Triple<Int, Int?, List<FileLineItem>>>
 }
 
 @Serializable
+enum class FilePatchType {
+    BINARY,
+    TEXT
+}
+
+@Serializable
 data class FileDiffV2(
     val oldFile: FileData? = null,
     val newFile: FileData? = null,
     val diffChangeType: DiffChangeType,
     val tShirtSize: FileTShirtSize,
-    val editList: List<Edit>
+    val editList: List<Edit>,
+    val patchType: FilePatchType = FilePatchType.TEXT
 )
 
-fun FileData.getText(): String {
-    return fileLines.joinToString(separator = "\n") { it.lineText }
+fun FileDiffV2.getOldFileText(): String {
+    return oldFile?.getText(patchType) ?: ""
+}
+
+fun FileDiffV2.getNewFileText(): String {
+    return newFile?.getText(patchType) ?: ""
+}
+
+private fun FileData.getText(patchType: FilePatchType): String {
+    return when(patchType) {
+        FilePatchType.BINARY -> "Binary File"
+        FilePatchType.TEXT -> fileLines.joinToString(separator = "\n") { it.lineText }
+    }
 }
 
 fun FileDiffV2.getUniqueIdentifier(): String {

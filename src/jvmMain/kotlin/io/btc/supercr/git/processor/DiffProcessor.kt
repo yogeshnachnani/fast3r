@@ -6,6 +6,7 @@ import codereview.Edit
 import codereview.FileData
 import codereview.FileDiffV2
 import codereview.FileLine
+import codereview.FilePatchType
 import codereview.FileTShirtSize
 import codereview.SimpleFileDiff
 import kotlinx.serialization.Serializable
@@ -13,12 +14,14 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
+import org.eclipse.jgit.patch.FileHeader
 
 /**
  *
  */
 fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileText: String?): FileDiffV2 {
-    val edits = this.toFileHeader(diffEntry).toEditList()
+    val fileHeader = this.toFileHeader(diffEntry)
+    val edits = fileHeader.toEditList()
         .map { edit ->
             Edit(
                 beginA = edit.beginA.toLong(),
@@ -27,7 +30,11 @@ fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileTex
                 endB = edit.endB.toLong()
             )
         }
-    val (linesForOldText, linesForNewText) = edits.processWith(oldFileText, newFileText)
+    val (linesForOldText, linesForNewText) = if (fileHeader.patchType == FileHeader.PatchType.BINARY) {
+        convertTextToFileLines(oldFileText, newFileText)
+    } else {
+        edits.processWith(oldFileText, newFileText)
+    }
     return FileDiffV2(
         oldFile = FileData(
             objectId = diffEntry.oldId.name() ,
@@ -58,11 +65,25 @@ fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileTex
                 else -> FileTShirtSize.XL
             }
         },
-        editList = edits
+        editList = edits,
+        patchType = if (fileHeader.patchType == FileHeader.PatchType.BINARY || fileHeader.patchType == FileHeader.PatchType.GIT_BINARY) {
+            FilePatchType.BINARY
+        } else {
+            FilePatchType.TEXT
+        }
     )
 }
 
 fun List<Edit>.processWith(oldFileText: String?, newFileText: String?): Pair<List<FileLine>, List<FileLine>> {
+    val (oldFileLines, newFileLines) = convertTextToFileLines(oldFileText, newFileText)
+    return if (oldFileLines.isEmpty() || newFileLines.isEmpty()) {
+        Pair(oldFileLines, newFileLines)
+    } else {
+        processDiff(oldFileLines, newFileLines)
+    }
+}
+
+private fun convertTextToFileLines(oldFileText: String?, newFileText: String?): Pair<List<FileLine>, List<FileLine>> {
     val oldFileLines = oldFileText?.lines() ?: listOf()
     val newFileLines = newFileText?.lines() ?: listOf()
     require(oldFileLines.isNotEmpty() || newFileLines.isNotEmpty())
@@ -72,17 +93,16 @@ fun List<Edit>.processWith(oldFileText: String?, newFileText: String?): Pair<Lis
             newFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf())}
         )
     } else {
-        processDiff(oldFileLines, newFileLines)
+        Pair(
+            oldFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf()) },
+            newFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf())}
+        )
     }
 }
 
-private fun List<Edit>.processDiff(oldFileLines: List<String>, newFileLines: List<String>): Pair<List<FileLine>, List<FileLine>> {
-    val generatedOldFileLineData = oldFileLines
-        .mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf()) }
-        .toMutableList()
-    val generatedNewFileLineData= newFileLines
-        .mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf())}
-        .toMutableList()
+private fun List<Edit>.processDiff(oldFileLines: List<FileLine>, newFileLines: List<FileLine>): Pair<List<FileLine>, List<FileLine>> {
+    val generatedOldFileLineData = oldFileLines.toMutableList()
+    val generatedNewFileLineData= newFileLines.toMutableList()
     this.fold(initial = 0L) { totalLinesAddedToNewFile, currentEdit ->
         val numLinesAddedForCurrentEdit = currentEdit.processEdit(totalLinesAddedToNewFile, generatedOldFileLineData, generatedNewFileLineData)
         totalLinesAddedToNewFile + numLinesAddedForCurrentEdit

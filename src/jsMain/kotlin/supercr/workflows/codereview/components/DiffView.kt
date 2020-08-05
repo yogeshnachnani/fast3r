@@ -7,7 +7,8 @@ import RowColObject
 import codereview.FileData
 import codereview.FileDiffV2
 import codereview.FileLineItem
-import codereview.getText
+import codereview.getNewFileText
+import codereview.getOldFileText
 import codereview.getUniqueIdentifier
 import codereview.hasNewFile
 import codereview.hasOldFile
@@ -115,7 +116,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                     codeView {
                         attrs {
                             id = leftSideTextId()
-                            fileText = props.fileDiff.oldFile?.getText() ?: ""
+                            fileText = props.fileDiff.getOldFileText()
                             divId = LEFT_EDITOR_DIV_ID
                             actionBarActions = if (!props.fileDiff.hasNewFile()) {
                                 props.defaultActionBarActions
@@ -136,7 +137,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                     codeView {
                         attrs {
                             id = rightSideTextId()
-                            fileText = props.fileDiff.newFile?.getText() ?: ""
+                            fileText = props.fileDiff.getNewFileText()
                             divId = RIGHT_EDITOR_DIV_ID
                             actionBarActions = props.defaultActionBarActions.plus(additionalShortcutsForTwoPaneView)
                         }

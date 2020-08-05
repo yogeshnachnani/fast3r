@@ -4,6 +4,7 @@ import Grid
 import Paper
 import codereview.DiffChangeType
 import codereview.FileDiffV2
+import codereview.FilePatchType
 import codereview.getUniqueIdentifier
 import kotlinx.css.Align
 import kotlinx.css.BoxSizing
@@ -79,6 +80,10 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
                     DiffChangeType.DELETE -> props.fileDiff.oldFile!!.path
                     DiffChangeType.ADD ->  props.fileDiff.newFile!!.path
                     DiffChangeType.COPY -> TODO()
+                }
+                + when(props.fileDiff.patchType) {
+                    FilePatchType.BINARY -> " (Binary)"
+                    FilePatchType.TEXT -> ""
                 }
             }
         }
