@@ -831,7 +831,7 @@ var styles = CSSBuilder().apply {
         fontSize = FontSizes.normal
         color = Colors.baseText1
         overflow = Overflow.hidden
-        backgroundColor = Colors.backgroundDarkGrey
+        backgroundColor = Colors.primaryBlack
         margin(0.px)
     }
     ".ace-clouds-midnight .ace_gutter-active-line" {
