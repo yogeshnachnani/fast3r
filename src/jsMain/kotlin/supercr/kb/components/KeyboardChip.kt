@@ -71,11 +71,13 @@ class KeyboardChip(
                 }
                 + "${props.assignedShortcut[0]}"
             }
-            styledDiv {
-                css {
-                    classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
-                }
+            if (props.assignedShortcut.length == 2) {
+                styledDiv {
+                    css {
+                        classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
+                    }
                     +"${props.assignedShortcut[1]}"
+                }
             }
         }
     }

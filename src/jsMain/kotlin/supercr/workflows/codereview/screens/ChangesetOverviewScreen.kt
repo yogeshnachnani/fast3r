@@ -4,15 +4,21 @@ import AccessTime
 import Battery20
 import Grid
 import codereview.FileDiffListV2
+import codereview.FileDiffV2
 import codereview.Project
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import kotlinx.css.Display
 import kotlinx.css.JustifyContent
+import kotlinx.css.LinearDimension
+import kotlinx.css.basis
 import kotlinx.css.display
+import kotlinx.css.flex
+import kotlinx.css.flexBasis
 import kotlinx.css.flexGrow
 import kotlinx.css.justifyContent
 import kotlinx.css.marginBottom
+import kotlinx.css.marginTop
 import kotlinx.css.pct
 import kotlinx.css.px
 import kotlinx.css.width
@@ -21,6 +27,7 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.buildElement
 import react.setState
 import styled.css
 import styled.getClassName
@@ -33,6 +40,7 @@ import supercr.kb.components.iconAndLogoutButton
 import supercr.kb.components.pullRequestAgeRibbon
 import supercr.workflows.codereview.components.FileDiffAndShortcut
 import supercr.workflows.codereview.components.dndFileList
+import supercr.workflows.codereview.components.numberBasedReOrderableList
 import supercr.workflows.codereview.components.reviewCommentsList
 
 external interface ChangesetOverviewScreenProps: RProps {
@@ -74,8 +82,8 @@ class ChangesetOverviewScreen constructor(
             attrs {
                 container = true
                 item = false
-                spacing = 0
                 justify = "center"
+//                spacing = 10
             }
             Grid {
                 attrs {
@@ -89,10 +97,53 @@ class ChangesetOverviewScreen constructor(
                 attrs {
                     container = false
                     item = true
+                    md = 2
+                }
+                renderOrderableFileList()
+            }
+            Grid {
+                attrs {
+                    container = false
+                    item = true
+                    md = 1
+                }
+            }
+            Grid {
+                attrs {
+                    container = false
+                    item = true
                     md = 5
                 }
                 renderCenterContentV2()
             }
+        }
+    }
+
+    private fun RBuilder.renderOrderableFileList() {
+        styledDiv {
+            css {
+                + ComponentStyles.changeSetOverviewFileListTitle
+            }
+            styledP {
+                css {
+                    width = 100.pct
+                    flexBasis = 100.pct.basis
+                    marginBottom = 0.px
+                }
+                + "Set the File Review Sequence"
+            }
+            styledP {
+                css {
+                    + ComponentStyles.changeSetOverViewFileListSubText
+                }
+                + "Press a number assigned to each file to reorder"
+            }
+        }
+        numberBasedReOrderableList {
+            children = props.fileDiffList.fileDiffs.map { it.renderFileInList() }
+            handleReorderingFn = handleReorderingOfFiles
+            itemClazz = ComponentStyles.getClassName { ComponentStyles::changeSetOverviewFileItemContainer }
+            listClazz = "${ComponentStyles.getClassName { ComponentStyles::compactList }} ${ComponentStyles.getClassName { ComponentStyles::changeSetOverviewFileList }}"
         }
     }
 
@@ -218,6 +269,35 @@ class ChangesetOverviewScreen constructor(
             pullRequestAgeRibbon {
                 pullRequestSummary = props.pullRequestSummary
                 roundedBothSides = true
+            }
+        }
+    }
+
+    private fun FileDiffV2.renderFileInList(): () -> ReactElement {
+        return {
+            buildElement {
+                styledDiv {
+                    css {
+                        justifyContent = JustifyContent.spaceAround
+                        display = Display.inlineFlex
+                        width = LinearDimension.fillAvailable
+                    }
+                    styledDiv {
+                        css {
+                            display = Display.inlineFlex
+                            flex(flexBasis = 10.pct.basis)
+                            justifyContent = JustifyContent.flexStart
+                        }
+                        + this@renderFileInList.tShirtSize.name
+                    }
+                    styledDiv {
+                        css {
+                            display = Display.inlineFlex
+                            flex(flexBasis = 80.pct.basis)
+                        }
+                        +(this@renderFileInList.newFile?.path ?: (this@renderFileInList.oldFile!!.path)).split("/").last()
+                    }
+                }
             }
         }
     }

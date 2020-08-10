@@ -801,7 +801,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val pullRequestSummaryCardKeyboardShortcut by css {
-        width = 44.px
+        width = 42.px
         height = 42.px
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
@@ -933,6 +933,55 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         marginTop = 14.px
         marginBottom = 14.px
         display = Display.inlineBlock
+    }
+
+    val changeSetOverviewFileItemContainer by css {
+        backgroundColor = Colors.backgroundDarkGrey
+        borderRadius = 8.px
+        fontSize = FontSizes.large
+        lineHeight = LineHeights.large
+        color = Colors.textMediumGrey
+        justifyContent = JustifyContent.spaceAround
+        display = Display.inlineFlex
+        width = 80.pct
+        marginBottom = 24.px
+        height = 60.px
+    }
+
+    val compactList by css {
+        padding(all = 0.px)
+    }
+    val changeSetOverviewFileList by css {
+        /** size it roughly equal to 15 items */
+        maxHeight = ((60 + 24) * 15).px
+        overflow = Overflow.auto
+        "::-webkit-scrollbar-thumb" {
+            borderRadius = 6.px
+            backgroundColor = Colors.backgroundMediumGrey
+        }
+        "::-webkit-scrollbar" {
+            width = 10.px
+            backgroundColor = Colors.backgroundDarkestGrey
+        }
+    }
+
+    val changeSetOverviewFileListTitle by css {
+        display = Display.flex
+        justifyContent = JustifyContent.spaceAround
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textMediumGrey
+        marginBottom = 18.px
+        width = 65.pct
+        flexWrap = FlexWrap.wrap
+    }
+
+    val changeSetOverViewFileListSubText by css {
+        marginTop = 28.px
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
+        flexBasis = 100.pct.basis
     }
 }
 
