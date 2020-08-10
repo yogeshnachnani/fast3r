@@ -55,8 +55,8 @@ fun main ()  {
     console.log("We are at ${window.location.href} and ${window.location.search}")
     render(document.getElementById("root"))  {
 //        renderLoginView()
-        renderDiffView()
-//        renderMainScreen()
+//        renderDiffView()
+        renderMainScreen()
 //        renderPullRequests()
     }
 //    renderDiffView()
