@@ -24,6 +24,7 @@ import supercr.workflows.codereview.components.FileDiffAndShortcut
 import supercr.workflows.codereview.components.commentThread
 import supercr.workflows.codereview.components.dndFileList
 import supercr.workflows.codereview.components.fileView
+import supercr.workflows.codereview.screens.changeSetOverviewScreen
 import supercr.workflows.codereview.screens.changeSetReview
 import supercr.workflows.gettingstarted.components.loginComponent
 import supercr.workflows.mainScreen
@@ -56,7 +57,8 @@ fun main ()  {
     render(document.getElementById("root"))  {
 //        renderLoginView()
 //        renderDiffView()
-        renderMainScreen()
+//        renderMainScreen()
+        renderChangesetOverviewScreen()
 //        renderPullRequests()
     }
 //    renderDiffView()
@@ -143,6 +145,25 @@ private fun RBuilder.renderMainScreen() {
         }
         mainScreen {
 
+        }
+    }
+}
+
+private fun RBuilder.renderChangesetOverviewScreen() {
+    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        changeSetOverviewScreen {
+            pullRequestSummary = samplePullRequestSummary
+            fileDiffList = sampleFileDiff
+            handleStartReview = {
+                console.log("Will start review")
+            }
+            project = Project("some_path", "some/path", "btcmain")
         }
     }
 }

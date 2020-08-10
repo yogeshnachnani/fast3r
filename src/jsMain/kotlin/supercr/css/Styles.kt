@@ -7,6 +7,7 @@ import kotlinx.css.BoxSizing
 import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
 import kotlinx.css.Display
+import kotlinx.css.FlexDirection
 import kotlinx.css.FlexWrap
 import kotlinx.css.Float
 import kotlinx.css.FontStyle
@@ -19,6 +20,7 @@ import kotlinx.css.Overflow
 import kotlinx.css.Position
 import kotlinx.css.TextAlign
 import kotlinx.css.TextOverflow
+import kotlinx.css.TextTransform
 import kotlinx.css.VerticalAlign
 import kotlinx.css.alignContent
 import kotlinx.css.alignItems
@@ -49,6 +51,8 @@ import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.flex
 import kotlinx.css.flexBasis
+import kotlinx.css.flexDirection
+import kotlinx.css.flexGrow
 import kotlinx.css.flexWrap
 import kotlinx.css.float
 import kotlinx.css.fontFamily
@@ -78,6 +82,7 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
+import kotlinx.css.properties.LineHeight
 import kotlinx.css.properties.boxShadow
 import kotlinx.css.properties.lh
 import kotlinx.css.px
@@ -85,6 +90,7 @@ import kotlinx.css.rgba
 import kotlinx.css.right
 import kotlinx.css.textAlign
 import kotlinx.css.textOverflow
+import kotlinx.css.textTransform
 import kotlinx.css.top
 import kotlinx.css.verticalAlign
 import kotlinx.css.vh
@@ -688,8 +694,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val pullRequestSummaryAgeRibbon by css {
         borderTopLeftRadius = 100.px
         borderBottomLeftRadius = 100.px
-        borderTopRightRadius = 0.px
-        borderBottomRightRadius = 0.px
         height = 36.px
 //        padding(vertical = 6.px, horizontal = 20.px)
         marginTop = 24.px
@@ -793,6 +797,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.primaryBlue
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
+        flexGrow = 2.0
     }
 
     val pullRequestSummaryCardKeyboardShortcut by css {
@@ -819,6 +824,115 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = EditorThemeColors.tokenOrange
         fontSize = FontSizes.normal
         lineHeight = LineHeights.normal
+    }
+
+    val changeSetOverviewTitleAndAge by css {
+        display = Display.flex
+        justifyContent = JustifyContent.spaceAround
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textMediumGrey
+        marginBottom = 18.px
+        width = 65.pct
+    }
+
+    val changeSetOverviewMetaInfo by css {
+        display = Display.flex
+        justifyContent = JustifyContent.spaceEvenly
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textMediumGrey
+        marginBottom = 100.px
+        flex(flexBasis = 40.pct.basis)
+        width = 35.pct
+    }
+
+    val changeSetOverviewMetaInfoItems by css {
+        width = LinearDimension.fitContent
+        display = Display.inlineFlex
+        justifyContent = JustifyContent.flexStart
+        alignItems = Align.center
+        flex(flexBasis = 70.pct.basis)
+    }
+    val changeSetOverviewMetaInfoProjectName by css {
+        backgroundColor = Colors.textMediumGrey.withAlpha(0.4)
+        borderRadius = 100.px
+        width = LinearDimension.fitContent
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textLightGrey
+        marginLeft = 0.px
+        marginTop = 12.px
+        marginBottom = 12.px
+        padding(vertical = 6.px, horizontal = 12.px)
+    }
+    val changeSetOverviewMetaInfoEstTime by css {
+        display = Display.inlineFlex
+        fontSize = FontSizes.normal
+        color = Colors.primaryBlue
+        justifyContent = JustifyContent.flexStart
+        alignItems = Align.center
+        flexGrow = 2.0
+    }
+    val reviewCommentsContainer by css {
+        display = Display.flex
+        flexDirection = FlexDirection.column
+        maxHeight = 48.vh
+        overflow = Overflow.auto
+        marginBottom = 70.px
+        "::-webkit-scrollbar-thumb" {
+            borderRadius = 6.px
+            backgroundColor = Colors.backgroundMediumGrey
+        }
+        "::-webkit-scrollbar" {
+            width = 10.px
+            backgroundColor = Colors.backgroundDarkestGrey
+        }
+    }
+
+    val reviewCommentContainer by css {
+        display = Display.flex
+        justifyContent = JustifyContent.spaceAround
+        position = Position.relative
+        marginBottom = 24.px
+    }
+    val reviewCommentAvatarContainer by css {
+        display = Display.inlineFlex
+    }
+
+    val reviewCommentBox by css {
+        display = Display.block
+        flex(flexBasis = 88.pct.basis)
+        backgroundColor = Colors.backgroundDarkestGrey
+        borderRadius = 8.px
+        padding(vertical = 20.px, horizontal = 30.px)
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textMediumGrey
+    }
+
+    val changeSetReviewButton by css {
+        backgroundColor = Colors.primaryBlue
+        borderRadius = 6.px
+        fontWeight = FontWeight.w600
+        fontFamily = FontFamilies.nonCode
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textLightGrey
+        padding(vertical = 14.px, horizontal = 26.px)
+        width = 135.px
+        textTransform = TextTransform.none
+    }
+
+    val changeSetOverviewPressEnterText by css {
+        width = LinearDimension.fitContent
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
+        marginTop = 14.px
+        marginBottom = 14.px
+        display = Display.inlineBlock
     }
 }
 

@@ -38,8 +38,11 @@ import supercr.css.ComponentStyles
 import supercr.css.EditorThemeColors
 import supercr.css.FontSizes
 import supercr.kb.components.keyboardChip
+import supercr.kb.components.projectNameChip
+import supercr.kb.components.pullRequestAgeRibbon
 import supercr.utils.ageInHoursFromNow
 import supercr.utils.getAgeFromNow
+import supercr.utils.pickAgeRibbonColor
 
 external interface PullRequestSummaryCardProps : RProps {
     var project: Project
@@ -178,17 +181,9 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                 }
                 + props.pullRequestSummary.title
             }
-            styledDiv {
-                css {
-                    + ComponentStyles.pullRequestSummaryAgeRibbon
-                    backgroundColor = props.pullRequestSummary.pickAgeRibbonColor()
-                }
-                styledSpan {
-                    css {
-                        + ComponentStyles.pullRequestSummaryAgeText
-                    }
-                    +props.pullRequestSummary.created_at.getAgeFromNow()
-                }
+            pullRequestAgeRibbon {
+                pullRequestSummary = props.pullRequestSummary
+                roundedBothSides = false
             }
         }
     }
@@ -197,15 +192,6 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
         //no op
     }
 
-    private fun PullRequestSummary.pickAgeRibbonColor(): Color {
-        val ageInHours = this.created_at.ageInHoursFromNow()
-        return when {
-            ageInHours < 1 -> EditorThemeColors.tokenBlue.withAlpha(0.7)
-            ageInHours < 24 -> EditorThemeColors.tokenGreen.withAlpha(0.7)
-            ageInHours <= 72 -> EditorThemeColors.tokenOrange.withAlpha(0.7)
-            else -> EditorThemeColors.tokenRed.withAlpha(0.7)
-        }
-    }
 }
 
 fun RBuilder.pullRequestSummaryCard(handler: PullRequestSummaryCardProps.() -> Unit): ReactElement {

@@ -25,6 +25,7 @@ import styled.styledDiv
 import styled.styledP
 import supercr.css.ComponentStyles
 import supercr.css.styles
+import supercr.kb.components.iconAndLogoutButton
 import supercr.workflows.codereview.screens.changeSetScreen
 import supercr.workflows.overview.components.projectList
 import supercr.workflows.overview.components.pullRequestList
@@ -81,12 +82,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                     item = true
                     md = 12
                 }
-                styledDiv {
-                    /** This div will later house the logo etc */
-                    css {
-                        height = 16.vh
-                    }
-                }
+                iconAndLogoutButton {  }
             }
             Grid {
                 attrs {

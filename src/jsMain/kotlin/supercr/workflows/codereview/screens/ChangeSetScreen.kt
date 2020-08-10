@@ -69,6 +69,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
                 pullRequestSummary = props.pullRequestSummary
                 fileDiffList = state.fileDiffList!!
                 handleStartReview = startReview
+                project = props.project
             }
         } else {
             styledP {

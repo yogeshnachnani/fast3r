@@ -1,27 +1,45 @@
 package supercr.workflows.codereview.screens
 
+import AccessTime
+import Battery20
 import Grid
 import codereview.FileDiffListV2
+import codereview.Project
 import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
+import kotlinx.css.Display
+import kotlinx.css.JustifyContent
+import kotlinx.css.display
+import kotlinx.css.flexGrow
+import kotlinx.css.justifyContent
+import kotlinx.css.marginBottom
+import kotlinx.css.pct
+import kotlinx.css.px
+import kotlinx.css.width
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
 import react.setState
+import styled.css
 import styled.getClassName
+import styled.styledDiv
+import styled.styledP
+import styled.styledSpan
 import supercr.css.ComponentStyles
 import supercr.kb.components.enterActivatedButton
+import supercr.kb.components.iconAndLogoutButton
+import supercr.kb.components.pullRequestAgeRibbon
 import supercr.workflows.codereview.components.FileDiffAndShortcut
-import supercr.workflows.codereview.components.changeSummary
 import supercr.workflows.codereview.components.dndFileList
-import supercr.workflows.codereview.components.titleAndDescription
+import supercr.workflows.codereview.components.reviewCommentsList
 
 external interface ChangesetOverviewScreenProps: RProps {
     var fileDiffList: FileDiffListV2
     var pullRequestSummary: PullRequestSummary
     var handleStartReview: (FileDiffListV2) -> Unit
+    var project: Project
 }
 
 external interface ChangeSetOverviewScreenState: RState {
@@ -58,75 +76,148 @@ class ChangesetOverviewScreen constructor(
                 item = false
                 spacing = 0
                 justify = "center"
-                className = ComponentStyles.getClassName { ComponentStyles::fullHeight }
-            }
-            renderLeftSide()
-            renderCenterContent()
-            renderRightSideContent()
-        }
-    }
-
-    private fun RBuilder.renderCenterContent() {
-        Grid {
-            attrs {
-                container = false
-                item = true
-                md = 4
             }
             Grid {
                 attrs {
-                    container = true
-                    item = false
-                    alignItems = "center"
-                    alignContent = "center"
-                    spacing = 1
-                    className = ComponentStyles.getClassName { ComponentStyles::fullHeight }
+                    container = false
+                    item = true
+                    md = 12
                 }
-                Grid {
+                iconAndLogoutButton {}
+            }
+            Grid {
+                attrs {
+                    container = false
+                    item = true
+                    md = 5
+                }
+                renderCenterContentV2()
+            }
+        }
+    }
+
+    private fun RBuilder.renderCenterContentV2() {
+        styledDiv {
+            css {
+                width = 100.pct
+            }
+            renderTitleAndAge()
+            renderPRMetaInfo()
+            reviewCommentsList {
+
+            }
+            startReviewButton()
+        }
+    }
+
+    private fun RBuilder.startReviewButton() {
+        Grid {
+            attrs {
+                container = true
+                item = false
+                justify = "flex-end"
+                alignItems = "center"
+                spacing = 2
+            }
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                }
+                styledSpan {
+                    css {
+                        + ComponentStyles.changeSetOverviewPressEnterText
+                    }
+                    + "Press Enter ↵"
+                }
+            }
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 1
+                }
+                enterActivatedButton {
+                    label = "Review"
+                    onSelected = startReviewCallback
+                    buttonClazz = ComponentStyles.getClassName { ComponentStyles::changeSetReviewButton }
+                }
+            }
+        }
+    }
+
+    private fun RBuilder.renderPRMetaInfo() {
+        styledDiv {
+            css {
+                + ComponentStyles.changeSetOverviewMetaInfo
+            }
+            styledDiv {
+                css {
+                    flexGrow = 1.0
+                    display = Display.flex
+                    justifyContent = JustifyContent.center
+                }
+                styledDiv {
+                    css {
+                        + ComponentStyles.changeSetOverviewMetaInfoProjectName
+                    }
+                    + props.project.name
+                }
+            }
+            /** Estimated Time */
+            styledDiv {
+                css {
+                    + ComponentStyles.changeSetOverviewMetaInfoEstTime
+                }
+                AccessTime {
                     attrs {
-                        item = true
-                        container = false
-                        md = 12
-                    }
-                    titleAndDescription {
-                        pullRequestSummary = props.pullRequestSummary
+                        fontSize = "inherit"
                     }
                 }
-                Grid {
+                styledSpan {
+                    css {
+                        + ComponentStyles.pullRequestSummaryMetaDataText
+                    }
+                    + " Est. Time: 10mins "
+                }
+            }
+            /** Size */
+            styledDiv {
+                css {
+                    css {
+                        + ComponentStyles.pullRequestSummaryMetaDataSize
+                    }
+                }
+                Battery20 {
                     attrs {
-                        item = true
-                        container = false
-                        md = 12
-                    }
-                    changeSummary {
-                        fileDiffList = props.fileDiffList
+                        fontSize = "inherit"
                     }
                 }
-                Grid {
-                    attrs {
-                        item = true
-                        container = false
-                        md = 12
+                styledSpan {
+                    css {
+                        + ComponentStyles.pullRequestSummaryMetaDataText
                     }
-                    Grid {
-                        attrs {
-                            container = true
-                            item = false
-                            justify = "center"
-                            spacing = 4
-                        }
-                        Grid {
-                            attrs {
-                                item = true
-                                container = false
-                            }
-                            enterActivatedButton {
-                                label = "Start Review"
-                                onSelected = startReviewCallback
-                            }
-                        }
-                    }
+                    + " Size: XS "
                 }
+            }
+        }
+    }
+
+    private fun RBuilder.renderTitleAndAge() {
+        styledDiv {
+            css {
+                + ComponentStyles.changeSetOverviewTitleAndAge
+            }
+            styledP {
+                css {
+                    width = 80.pct
+                    marginBottom = 0.px
+                }
+                + props.pullRequestSummary.title
+            }
+            pullRequestAgeRibbon {
+                pullRequestSummary = props.pullRequestSummary
+                roundedBothSides = true
             }
         }
     }
@@ -148,16 +239,6 @@ class ChangesetOverviewScreen constructor(
     private val startReviewCallback : () -> Unit = {
         val reorderedFileList = state.fileDiffListAndShortcuts.map { it.fileDiffV2 }
         props.handleStartReview(FileDiffListV2(fileDiffs = reorderedFileList))
-    }
-
-    private fun RBuilder.renderRightSideContent() {
-        Grid {
-            attrs {
-                container = false
-                item = true
-                md = 4
-            }
-        }
     }
 
     private val noOpFileHandler: () -> Unit = {
