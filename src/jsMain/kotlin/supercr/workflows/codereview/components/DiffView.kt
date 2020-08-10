@@ -432,8 +432,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         }
     }
     private val additionalShortcutsForTwoPaneView = listOf(
-        ActionBarShortcut("Next Hunk", "sl", jumpToNextHunkFromCurrentState),
-        ActionBarShortcut("Prev Hunk", "sh", {console.log("Will move hunk backword")})
+        ActionBarShortcut("Next Hunk", "sj", jumpToNextHunkFromCurrentState),
+        ActionBarShortcut("Prev Hunk", "sk", {console.log("Will move hunk backword")})
     )
 
 }
