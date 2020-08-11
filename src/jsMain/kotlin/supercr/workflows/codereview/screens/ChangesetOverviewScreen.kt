@@ -6,7 +6,6 @@ import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
 import codereview.Project
-import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import kotlinx.css.Display
 import kotlinx.css.JustifyContent
@@ -18,7 +17,6 @@ import kotlinx.css.flexBasis
 import kotlinx.css.flexGrow
 import kotlinx.css.justifyContent
 import kotlinx.css.marginBottom
-import kotlinx.css.marginTop
 import kotlinx.css.pct
 import kotlinx.css.px
 import kotlinx.css.width
@@ -39,7 +37,6 @@ import supercr.kb.components.enterActivatedButton
 import supercr.kb.components.iconAndLogoutButton
 import supercr.kb.components.pullRequestAgeRibbon
 import supercr.workflows.codereview.components.FileDiffAndShortcut
-import supercr.workflows.codereview.components.dndFileList
 import supercr.workflows.codereview.components.numberBasedReOrderableList
 import supercr.workflows.codereview.components.reviewCommentsList
 
@@ -51,7 +48,7 @@ external interface ChangesetOverviewScreenProps: RProps {
 }
 
 external interface ChangeSetOverviewScreenState: RState {
-    var fileDiffListAndShortcuts: List<FileDiffAndShortcut>
+    var reOrderAbleFileDiffList: List<FileDiffV2>
 }
 
 /**
@@ -67,14 +64,7 @@ class ChangesetOverviewScreen constructor(
 ) : RComponent<ChangesetOverviewScreenProps, ChangeSetOverviewScreenState>(constructorProps) {
 
     override fun ChangeSetOverviewScreenState.init(props: ChangesetOverviewScreenProps) {
-        val kbShortcuts = KeyboardShortcutTrie.generateTwoLetterCombos(numberOfComponents = props.fileDiffList.fileDiffs.size)
-        fileDiffListAndShortcuts = props.fileDiffList.fileDiffs.mapIndexed { index, fileDiffV2 ->
-            FileDiffAndShortcut(
-                fileDiffV2 = fileDiffV2,
-                kbShortcut = kbShortcuts[index],
-                handlerForFile = noOpFileHandler
-            )
-        }
+        reOrderAbleFileDiffList = props.fileDiffList.fileDiffs.map { it }
     }
 
     override fun RBuilder.render() {
@@ -140,7 +130,7 @@ class ChangesetOverviewScreen constructor(
             }
         }
         numberBasedReOrderableList {
-            children = props.fileDiffList.fileDiffs.map { it.renderFileInList() }
+            children = state.reOrderAbleFileDiffList.map { it.renderFileInList() }
             handleReorderingFn = handleReorderingOfFiles
             itemClazz = ComponentStyles.getClassName { ComponentStyles::changeSetOverviewFileItemContainer }
             listClazz = "${ComponentStyles.getClassName { ComponentStyles::compactList }} ${ComponentStyles.getClassName { ComponentStyles::changeSetOverviewFileList }}"
@@ -302,34 +292,17 @@ class ChangesetOverviewScreen constructor(
         }
     }
 
-    private fun RBuilder.renderLeftSide() {
-        Grid {
-            attrs {
-                container = false
-                item = true
-                md = 4
-            }
-            dndFileList {
-                fileList = state.fileDiffListAndShortcuts
-                handleReordering = handleReorderingOfFiles
-            }
-        }
-    }
-
     private val startReviewCallback : () -> Unit = {
-        val reorderedFileList = state.fileDiffListAndShortcuts.map { it.fileDiffV2 }
+        val reorderedFileList = state.reOrderAbleFileDiffList.map { it }
         props.handleStartReview(FileDiffListV2(fileDiffs = reorderedFileList))
     }
 
-    private val noOpFileHandler: () -> Unit = {
-
-    }
     private val handleReorderingOfFiles: (Int, Int) -> Unit = { fromIndex, toIndex ->
-        val newList = state.fileDiffListAndShortcuts.map { it.copy() }.toMutableList()
+        val newList = state.reOrderAbleFileDiffList.map { it.copy() }.toMutableList()
         val movedFile = newList.removeAt(fromIndex)
         newList.add(toIndex, movedFile)
         setState {
-            fileDiffListAndShortcuts = newList
+            reOrderAbleFileDiffList = newList
         }
     }
 
