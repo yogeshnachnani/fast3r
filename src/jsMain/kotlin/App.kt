@@ -4,8 +4,6 @@ import codereview.Project
 import codereview.ReviewInfo
 import codereview.ReviewStorageProvider
 import codereview.SuperCrClient
-import codereview.getUniqueIdentifier
-import datastructures.KeyboardShortcutTrie
 import git.provider.PullRequestSummary
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
@@ -20,9 +18,7 @@ import react.dom.span
 import supercr.css.ComponentStyles
 import supercr.css.styles
 import supercr.kb.UniversalKeyboardShortcutHandler
-import supercr.workflows.codereview.components.FileDiffAndShortcut
 import supercr.workflows.codereview.components.commentThread
-import supercr.workflows.codereview.components.dndFileList
 import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetOverviewScreen
 import supercr.workflows.codereview.screens.changeSetReview
@@ -164,33 +160,6 @@ private fun RBuilder.renderChangesetOverviewScreen() {
                 console.log("Will start review")
             }
             project = Project("some_path", "some/path", "btcmain")
-        }
-    }
-}
-
-private fun RBuilder.renderDraggableFileList() {
-    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
-    val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
-    console.log("File diff is : ", sampleFileDiff)
-    val kbShortcuts = KeyboardShortcutTrie.generateTwoLetterCombos(
-        numberOfComponents = sampleFileDiff.fileDiffs.size
-    )
-    val fileDiffAndShortcuts = sampleFileDiff.fileDiffs.mapIndexed { index, fileDiffV2 ->
-        FileDiffAndShortcut(
-            fileDiffV2 = fileDiffV2,
-            kbShortcut = kbShortcuts[index],
-            handlerForFile = {
-                console.log(" handler clicked for ${fileDiffV2.getUniqueIdentifier()}")
-            }
-        )
-    }
-    StylesProvider {
-        attrs {
-            injectFirst = true
-        }
-        dndFileList {
-            fileList = fileDiffAndShortcuts
         }
     }
 }

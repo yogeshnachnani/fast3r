@@ -36,7 +36,6 @@ import supercr.css.ComponentStyles
 import supercr.kb.components.enterActivatedButton
 import supercr.kb.components.iconAndLogoutButton
 import supercr.kb.components.pullRequestAgeRibbon
-import supercr.workflows.codereview.components.FileDiffAndShortcut
 import supercr.workflows.codereview.components.numberBasedReOrderableList
 import supercr.workflows.codereview.components.reviewCommentsList
 
