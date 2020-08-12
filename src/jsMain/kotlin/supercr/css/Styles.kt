@@ -82,7 +82,6 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
-import kotlinx.css.properties.LineHeight
 import kotlinx.css.properties.border
 import kotlinx.css.properties.boxShadow
 import kotlinx.css.properties.lh
@@ -111,16 +110,6 @@ class GutterDecorationStyles {
 }
 
 object Colors {
-    /** Backgrounds */
-    val background7 = hsl(0, 0, 38)
-
-    /** Text */
-    val baseText4 = hsl(0, 0, 88)
-    val baseText3 = hsl(0, 0, 93)
-    val baseText = hsl(0, 0, 96)
-    val baseText1 = hsl(0, 0, 98)
-
-
     val accentHighlight2 = hsl(45, 100, 85)
 
     val warmGrey5 = hsl(41, 15, 28)
@@ -205,9 +194,6 @@ val commentBoxWidth = 312.px
 val loginScreenItemsLeftMargin = 36.vw
 
 object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
-    val fullHeight by css {
-        height = 100.vh
-    }
 
     val keyboardShortcutSingleCharBox by css {
         width = 44.px
@@ -226,12 +212,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         alignContent = Align.center
     }
 
-    val genericListHeader by css {
-        fontSize = FontSizes.large
-        fontFamily = FontFamilies.nonCode
-        color = Colors.baseText1
-        fontWeight = FontWeight.w700
-    }
     val fileListPane by css {
         paddingTop = 30.px
         height = 100.vh
@@ -370,7 +350,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         boxShadow(color = rgba(0, 0, 0, 0.25), offsetX = 0.px, offsetY = 4.px, blurRadius = 34.px)
         fontSize = FontSizes.normal
         fontFamily = FontFamilies.nonCode
-        color = Colors.baseText1
+        color = Colors.textMediumGrey
         maxWidth = commentBoxWidth
     }
 
@@ -435,13 +415,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         marginBottom = 24.px
         marginLeft = 36.px
         color = Colors.textDarkGrey
-    }
-
-    val infoPaper by css {
-        backgroundColor = Colors.background7
-        fontSize = FontSizes.normal
-        fontFamily = FontFamilies.nonCode
-        color = Colors.baseText1
     }
 
     val loginScreen by css {
@@ -1053,14 +1026,14 @@ var styles = CSSBuilder().apply {
     "html" {
         fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.normal
-        color = Colors.baseText1
+        color = Colors.textMediumGrey
         overflow = Overflow.hidden
         backgroundColor = Colors.backgroundMediumGrey
     }
     "body" {
         fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.normal
-        color = Colors.baseText1
+        color = Colors.textMediumGrey
         overflow = Overflow.hidden
         backgroundColor = Colors.primaryBlack
         margin(0.px)

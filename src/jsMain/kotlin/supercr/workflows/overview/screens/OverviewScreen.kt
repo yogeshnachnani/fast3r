@@ -11,9 +11,6 @@ import git.provider.PullRequestSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.css.height
-import kotlinx.css.px
-import kotlinx.css.vh
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -21,16 +18,11 @@ import react.RState
 import react.ReactElement
 import react.setState
 import styled.css
-import styled.styledDiv
 import styled.styledP
 import supercr.css.ComponentStyles
-import supercr.css.styles
 import supercr.kb.components.iconAndLogoutButton
 import supercr.workflows.codereview.screens.changeSetScreen
-import supercr.workflows.overview.components.projectList
 import supercr.workflows.overview.components.pullRequestList
-import supercr.workflows.overview.components.userStats
-import kotlin.browser.document
 
 external interface OverviewScreenProps: RProps {
     var projects : List<Project>
@@ -152,35 +144,6 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
         }
     }
 
-    private fun RBuilder.renderRightSection(): ReactElement {
-        return Grid {
-            attrs {
-                container = true
-                item = false
-                alignItems = "stretch"
-            }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
-                    md = 12
-                }
-                userStats {
-
-                }
-            }
-            Grid {
-                attrs {
-                    item = true
-                    container = false
-                    md = 12
-                }
-                projectList {
-                    projects = props.projects
-                }
-            }
-        }
-    }
 }
 
 fun RBuilder.overviewScreen(handler: OverviewScreenProps.() -> Unit): ReactElement {
