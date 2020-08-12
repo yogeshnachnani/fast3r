@@ -8,12 +8,26 @@ import git.provider.RepoSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.css.Align
 import kotlinx.css.Display
+import kotlinx.css.JustifyContent
 import kotlinx.css.LinearDimension
+import kotlinx.css.TextAlign
+import kotlinx.css.alignContent
+import kotlinx.css.alignItems
+import kotlinx.css.basis
+import kotlinx.css.color
 import kotlinx.css.display
+import kotlinx.css.flexBasis
+import kotlinx.css.fontFamily
+import kotlinx.css.fontSize
+import kotlinx.css.justifyContent
+import kotlinx.css.lineHeight
 import kotlinx.css.margin
+import kotlinx.css.marginBottom
 import kotlinx.css.pct
 import kotlinx.css.px
+import kotlinx.css.textAlign
 import kotlinx.css.width
 import kotlinx.html.js.onChangeFunction
 import org.w3c.dom.HTMLInputElement
@@ -32,7 +46,12 @@ import styled.getClassName
 import styled.styledDiv
 import styled.styledInput
 import styled.styledP
+import styled.styledSpan
+import supercr.css.Colors
 import supercr.css.ComponentStyles
+import supercr.css.FontFamilies
+import supercr.css.FontSizes
+import supercr.css.LineHeights
 
 external interface RepoComponentProps: RProps {
     var repoSummary: RepoSummary
@@ -53,25 +72,19 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
     }
 
     override fun RBuilder.render() {
-        ListItem {
-            attrs {
-                button = false
-                alignItems = "center"
-                divider = true
-                disabled = state.isProcessed
-                key = props.repoSummary.full_name
+        styledDiv {
+            css {
+                + ComponentStyles.repoMappingRepoComponentContainer
             }
             styledDiv {
                 css {
-                    display = Display.flex
-                    width = 600.px
+                    + ComponentStyles.repoMappingRepoName
                 }
-                styledP {
-                    css {
-                        display = Display.inlineBlock
-                        margin(18.px)
-                    }
                     +props.repoSummary.full_name
+            }
+            styledDiv {
+                css {
+                    flexBasis = 50.pct.basis
                 }
                 OutlinedInput {
                     attrs {
@@ -87,6 +100,7 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
                 }
             }
         }
+
     }
 
 }

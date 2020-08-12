@@ -1,5 +1,7 @@
 package supercr.workflows.gettingstarted.components
 
+import Grid
+import ListItem
 import MaterialUIList
 import codereview.Project
 import codereview.SuperCrClient
@@ -7,9 +9,25 @@ import git.provider.GithubClient
 import git.provider.RepoSummary
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.css.Align
+import kotlinx.css.Display
+import kotlinx.css.JustifyContent
+import kotlinx.css.LinearDimension
+import kotlinx.css.alignContent
+import kotlinx.css.alignItems
 import kotlinx.css.color
+import kotlinx.css.display
+import kotlinx.css.flex
+import kotlinx.css.flexBasis
+import kotlinx.css.fontSize
+import kotlinx.css.justifyContent
+import kotlinx.css.lineHeight
+import kotlinx.css.map
 import kotlinx.css.margin
+import kotlinx.css.marginRight
+import kotlinx.css.marginTop
 import kotlinx.css.maxWidth
+import kotlinx.css.pct
 import kotlinx.css.px
 import kotlinx.css.width
 import react.RBuilder
@@ -19,10 +37,16 @@ import react.RState
 import react.ReactElement
 import react.setState
 import styled.css
+import styled.getClassName
 import styled.styledDiv
 import styled.styledP
+import styled.styledSpan
 import supercr.css.Colors
+import supercr.css.ComponentStyles
+import supercr.css.FontSizes
+import supercr.css.LineHeights
 import supercr.kb.components.enterActivatedButton
+import supercr.kb.components.iconAndLogoutButton
 
 interface RepoInitProps: RProps {
     var githubClient: GithubClient
@@ -42,18 +66,47 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
     }
 
     override fun RBuilder.render() {
-        if (state.repoToDetectedProject.isNotEmpty()) {
-            renderRepoList()
+        Grid {
+            attrs {
+                container = true
+                item = false
+                justify = JustifyContent.center.name
+            }
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 12
+                }
+                iconAndLogoutButton {  }
+            }
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 5
+                }
+                renderRepoList()
+                renderPageListAndActionButton()
+            }
+        }
+    }
+
+    private fun RBuilder.renderPageListAndActionButton() {
+        styledDiv {
+            css {
+                + ComponentStyles.repoMappingActionButtonContainer
+            }
             styledDiv {
                 css {
-                    width = 190.px
-                    maxWidth = 190.px
-                    margin(18.px)
+                    + ComponentStyles.repoMappingActionButtonHelpText
                 }
-                enterActivatedButton {
-                    label = "Done"
-                    onSelected = handleDone
-                }
+                + "Press Enter ↵"
+            }
+            enterActivatedButton {
+                label = "Looks Good"
+                onSelected = handleDone
+                buttonClazz = ComponentStyles.getClassName { ComponentStyles::repoMappingActionButton }
             }
         }
     }
@@ -66,17 +119,32 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
         if (state.repoToDetectedProject.isNotEmpty()) {
             styledP {
                 css {
-                    color = Colors.baseText
+                    + ComponentStyles.repoMappingTitle
                 }
                 + "We automatically mapped your github repos to existing code on your computer"
             }
-        }
-        MaterialUIList {
-            state.repoToDetectedProject.map { (fetchedRepoSummary, detectedProject) ->
-                repoComponent {
-                    repoSummary = fetchedRepoSummary
-                    onLocalPathChange = handleUpdatePathForProject
-                    guessedProject = detectedProject
+            styledP {
+                css {
+                    +ComponentStyles.repoMappingSubtitle
+                }
+                + "${state.userFinalisedProjects.size} repo${if (state.userFinalisedProjects.size > 1) "s" else ""} found"
+            }
+            MaterialUIList {
+                state.repoToDetectedProject.map { (fetchedRepoSummary, detectedProject) ->
+                    ListItem {
+                        attrs {
+                            button = false
+                            alignItems = "center"
+                            divider = true
+                            disabled = false
+                            key = fetchedRepoSummary.full_name
+                        }
+                        repoComponent {
+                            repoSummary = fetchedRepoSummary
+                            onLocalPathChange = handleUpdatePathForProject
+                            guessedProject = detectedProject
+                        }
+                    }
                 }
             }
         }

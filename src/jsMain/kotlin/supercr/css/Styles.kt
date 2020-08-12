@@ -83,6 +83,7 @@ import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
 import kotlinx.css.properties.LineHeight
+import kotlinx.css.properties.border
 import kotlinx.css.properties.boxShadow
 import kotlinx.css.properties.lh
 import kotlinx.css.px
@@ -575,9 +576,14 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val repoInitialiserRepoPathInput by css {
         ".MuiOutlinedInput-input" {
-            fontSize = FontSizes.normal
-            fontFamily = FontFamilies.code
-            color = Colors.baseText1
+            fontSize = FontSizes.extraLarge
+            lineHeight = LineHeights.extraLarge
+            fontFamily = FontFamilies.nonCode
+            fontWeight = FontWeight.w600
+            color = Colors.textDarkGrey
+            backgroundColor = Colors.backgroundDarkGrey
+            border(width = 1.px, style = BorderStyle.solid, color = Colors.backgroundGrey, borderRadius = 6.px)
+            paddingLeft = 32.px
         }
     }
 
@@ -927,11 +933,6 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val changeSetOverviewPressEnterText by css {
         width = LinearDimension.fitContent
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        color = Colors.textDarkGrey
-        marginTop = 14.px
-        marginBottom = 14.px
         display = Display.inlineBlock
     }
 
@@ -982,6 +983,69 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         lineHeight = LineHeights.normal
         color = Colors.textDarkGrey
         flexBasis = 100.pct.basis
+    }
+
+    val repoMappingTitle by css {
+        fontSize = FontSizes.huge
+        lineHeight = LineHeights.huge
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textMediumGrey
+        marginBottom = 30.px
+    }
+    val repoMappingSubtitle by css {
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textDarkGrey
+        marginBottom = 80.px
+    }
+
+    val repoMappingRepoComponentContainer by css {
+        display = Display.inlineFlex
+        width = 100.pct
+        marginBottom = 40.px
+        justifyContent = JustifyContent.spaceAround
+    }
+
+    val repoMappingRepoName by css {
+        justifyContent = JustifyContent.flexStart
+        alignItems = Align.center
+        flexBasis = 30.pct.basis
+        textAlign = TextAlign.start
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        fontFamily = FontFamilies.nonCode
+        color = Colors.textMediumGrey
+        display = Display.flex
+    }
+
+    val repoMappingActionButtonContainer by css {
+        display = Display.flex
+        justifyContent = JustifyContent.flexEnd
+        alignItems = Align.center
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
+        marginTop = 100.px
+        width = 95.pct
+    }
+
+    val repoMappingActionButtonHelpText by css {
+        width = LinearDimension.fitContent
+        display = Display.flex
+        marginRight = 28.px
+    }
+
+    val repoMappingActionButton by css {
+        backgroundColor = Colors.primaryBlue
+        borderRadius = 6.px
+        fontWeight = FontWeight.w600
+        fontFamily = FontFamilies.nonCode
+        fontSize = FontSizes.extraLarge
+        lineHeight = LineHeights.extraLarge
+        color = Colors.textLightGrey
+        padding(vertical = 14.px, horizontal = 26.px)
+        textTransform = TextTransform.none
     }
 }
 

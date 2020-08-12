@@ -23,6 +23,7 @@ import supercr.workflows.codereview.components.fileView
 import supercr.workflows.codereview.screens.changeSetOverviewScreen
 import supercr.workflows.codereview.screens.changeSetReview
 import supercr.workflows.gettingstarted.components.loginComponent
+import supercr.workflows.gettingstarted.components.repoInit
 import supercr.workflows.mainScreen
 import supercr.workflows.overview.components.pullRequestList
 import kotlin.browser.document
@@ -53,9 +54,10 @@ fun main ()  {
     render(document.getElementById("root"))  {
 //        renderLoginView()
 //        renderDiffView()
-//        renderMainScreen()
-        renderChangesetOverviewScreen()
+        renderMainScreen()
+//        renderChangesetOverviewScreen()
 //        renderPullRequests()
+//        renderRepoList()
     }
 //    renderDiffView()
 //    renderGettingStarted()
@@ -140,6 +142,17 @@ private fun RBuilder.renderMainScreen() {
             injectFirst = true
         }
         mainScreen {
+
+        }
+    }
+}
+
+private fun RBuilder.renderRepoList() {
+    StylesProvider {
+        attrs {
+            injectFirst = true
+        }
+        repoInit {
 
         }
     }
