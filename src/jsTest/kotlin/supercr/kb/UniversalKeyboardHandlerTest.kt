@@ -179,4 +179,60 @@ class UniversalKeyboardHandlerTest {
         assertEquals(1 ,handlerInvoked)
     }
 
+    @Test
+    fun shouldHandleNumericKeyboardShortcuts() {
+        var numericCHandlerInvoked = 0
+        val numericCHandler: (Int) -> Unit = { _ ->
+            numericCHandlerInvoked++
+        }
+
+        var numericFHandlerInvoked = 0
+        var numberForFHandler: Int?  = null
+        val numericFHandler : (Int)  -> Unit = { numPressed ->
+            numericFHandlerInvoked++
+            numberForFHandler = numPressed
+        }
+
+        UniversalKeyboardShortcutHandler.registerNumericEndKey('c', numericCHandler)
+        UniversalKeyboardShortcutHandler.registerNumericEndKey('f', numericFHandler)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("1")))
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("2")))
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("f")))
+        assertEquals(1 , numericFHandlerInvoked)
+        assertEquals(12 , numberForFHandler)
+        assertEquals(0 , numericCHandlerInvoked)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("1")))
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("2")))
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("c")))
+        assertEquals(1 , numericCHandlerInvoked)
+    }
+
+    @Test
+    fun shouldInvokeEscHandlerIfNumericShortcutInvalid() {
+        var numericCHandlerInvoked = 0
+        val numericCHandler: () -> Unit = {
+            numericCHandlerInvoked++
+        }
+
+        var escapeHandlerInvoked = 0
+        val escapeHandler : () -> Unit = {
+            escapeHandlerInvoked++
+        }
+        UniversalKeyboardShortcutHandler.registerEscapeHandler(escapeHandler)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("1")))
+        assertEquals(0 , escapeHandlerInvoked)
+        assertEquals(0 , numericCHandlerInvoked)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("2")))
+        assertEquals(0 , escapeHandlerInvoked)
+        assertEquals(0 , numericCHandlerInvoked)
+
+        window.dispatchEvent(KeyboardEvent(type = "keydown", eventInitDict = KeyboardEventInit("c")))
+        assertEquals(1 , escapeHandlerInvoked)
+        assertEquals(0 , numericCHandlerInvoked)
+    }
+
 }

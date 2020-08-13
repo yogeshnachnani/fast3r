@@ -105,6 +105,8 @@ object UniversalKeyboardShortcutHandler {
     }
 
     private var currentSelectedPrefix = ""
+    private var currentNumericPrefix = ""
+    private val numericEndKeyAndHandlers: MutableMap<Char, (Int) -> Unit> = mutableMapOf()
     private var currentPartialMatches = mutableSetOf<() -> Unit>()
     private var isInitialised = false
     private var enterKeyHandler: ( () -> Unit )? = null
@@ -129,29 +131,62 @@ object UniversalKeyboardShortcutHandler {
             }
             else -> {
                 if (!this.isDisabled) {
-                    val newSelectedPrefix = "$currentSelectedPrefix${kbEvent.key}"
-                    KeyboardShortcutTrie[newSelectedPrefix]
-                        .also { (fullMatch, partialMatchHandlers )->
-                            if (fullMatch == null && partialMatchHandlers.isEmpty()) {
-                                /** We didn't hit anything */
-                                invokeAndClearSelection(null)
-                            } else {
-                                kbEvent.preventDefault()
-                                if (fullMatch != null) {
-                                    invokeAndClearSelection(fullMatch)
-                                } else {
-                                    setCurrentPrefix(newSelectedPrefix)
-                                    partialMatchHandlers.forEach {
-                                        it.invoke()
-                                        currentPartialMatches.add(it)
-                                    }
-                                }
-                            }
-                        }
+                    if (keydownEvent.key.toIntOrNull() != null || currentNumericPrefix.isNotEmpty()) {
+                        /** this is either a number, or the culmination of a numeric shortcut */
+                        kbEvent.handleNumericShortcut()
+                    }
+                    handleCharBasedShortcut(kbEvent)
                 }
             }
         }
     }
+
+    private fun KeyboardEvent.handleNumericShortcut() {
+        val number = this.key.toIntOrNull()
+        if (number != null) {
+            /** It's a number, so just keep adding to the prefix */
+            currentNumericPrefix = "$currentNumericPrefix$number"
+        } else {
+            /** The shortcut handler must be invoked */
+            val handler = numericEndKeyAndHandlers[this.key[0]]
+            if (handler != null) {
+                invokeNumericShortcutHandlerAndClearSelection(handler)
+            } else {
+                /** The user pressed a character that doesn't have a handler */
+                invokeNumericShortcutHandlerAndClearSelection(null)
+                escapeKeyHandler?.invoke()
+            }
+        }
+    }
+
+    private fun handleCharBasedShortcut(kbEvent: KeyboardEvent) {
+        val newSelectedPrefix = "$currentSelectedPrefix${kbEvent.key}"
+        KeyboardShortcutTrie[newSelectedPrefix]
+            .also { (fullMatch, partialMatchHandlers) ->
+                if (fullMatch == null && partialMatchHandlers.isEmpty()) {
+                    /** We didn't hit anything */
+                    invokeAndClearSelection(null)
+                } else {
+                    kbEvent.preventDefault()
+                    if (fullMatch != null) {
+                        invokeAndClearSelection(fullMatch)
+                    } else {
+                        setCurrentPrefix(newSelectedPrefix)
+                        partialMatchHandlers.forEach {
+                            it.invoke()
+                            currentPartialMatches.add(it)
+                        }
+                    }
+                }
+            }
+    }
+
+    private val invokeNumericShortcutHandlerAndClearSelection: (( (Int) -> Unit )?) -> Unit = { handlerToInvoke ->
+        val prefixAsNumber = currentNumericPrefix.toInt()
+        handlerToInvoke?.invoke(prefixAsNumber)
+        currentNumericPrefix = ""
+    }
+
     private val invokeAndClearSelection: (( ()->Unit )?) -> Unit = { handlerToInvoke ->
         setCurrentPrefix("")
         handlerToInvoke?.invoke()
@@ -174,6 +209,11 @@ object UniversalKeyboardShortcutHandler {
         this.escapeKeyHandler = null
         this.ctrlEnterKeyHandler = null
         this.isDisabled = false
+        this.numericEndKeyAndHandlers.clear()
+    }
+
+    fun registerNumericEndKey(endChar: Char, handler: (Int) -> Unit) {
+        numericEndKeyAndHandlers[endChar] = handler
     }
 }
 
