@@ -17,6 +17,7 @@ import kotlinx.css.flexBasis
 import kotlinx.css.flexGrow
 import kotlinx.css.justifyContent
 import kotlinx.css.marginBottom
+import kotlinx.css.marginRight
 import kotlinx.css.pct
 import kotlinx.css.px
 import kotlinx.css.width
@@ -195,7 +196,7 @@ class ChangesetOverviewScreen constructor(
                 css {
                     flexGrow = 1.0
                     display = Display.flex
-                    justifyContent = JustifyContent.center
+                    justifyContent = JustifyContent.flexStart
                 }
                 styledDiv {
                     css {
@@ -250,7 +251,8 @@ class ChangesetOverviewScreen constructor(
             }
             styledP {
                 css {
-                    width = 80.pct
+                    width = LinearDimension.fitContent
+                    marginRight = 18.px
                     marginBottom = 0.px
                 }
                 + props.pullRequestSummary.title

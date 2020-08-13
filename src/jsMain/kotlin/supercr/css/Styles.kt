@@ -776,7 +776,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.primaryBlue
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
-        flexGrow = 2.0
+        flexGrow = 1.0
     }
 
     val pullRequestSummaryCardKeyboardShortcut by css {
@@ -807,7 +807,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val changeSetOverviewTitleAndAge by css {
         display = Display.flex
-        justifyContent = JustifyContent.spaceAround
+        justifyContent = JustifyContent.flexStart
         fontSize = FontSizes.extraLarge
         lineHeight = LineHeights.extraLarge
         color = Colors.textMediumGrey
@@ -852,7 +852,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.primaryBlue
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
-        flexGrow = 2.0
+        flexGrow = 1.0
     }
     val reviewCommentsContainer by css {
         display = Display.flex
@@ -872,12 +872,13 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val reviewCommentContainer by css {
         display = Display.flex
-        justifyContent = JustifyContent.spaceAround
+        justifyContent = JustifyContent.flexStart
         position = Position.relative
         marginBottom = 24.px
     }
     val reviewCommentAvatarContainer by css {
         display = Display.inlineFlex
+        flexBasis = 5.pct.basis
     }
 
     val reviewCommentBox by css {
