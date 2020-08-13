@@ -302,8 +302,13 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private fun addEditorShortcutListeners() {
-        /** Numeric keyboard shortcuts for comments */
         UniversalKeyboardShortcutHandler.registerNumericEndKey('c', handleKeyboardTriggeredComments)
+        UniversalKeyboardShortcutHandler.registerNumericEndKey('g', handleKeyboardTriggeredLineJump)
+    }
+
+    private val handleKeyboardTriggeredLineJump: (Int) -> Unit = { rowNumber ->
+        jumpAndScrollTo(leftEditor, rowNumber )
+        jumpAndScrollTo(rightEditor, rowNumber )
     }
 
     private val handleKeyboardTriggeredComments: (Int) -> Unit = { commentForRow ->
@@ -456,15 +461,19 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             console.log("Seems we have reached the last hunk, jumping to next file")
             props.defaultActionBarActions.find { it.assignedShortcut == UniversalShortcuts.NextFile.getShortcutString() } ?.handler ?.invoke()
         } else {
-            leftEditor!!.gotoLine(lineNumber = positionToJumpTo!! + 1, column = 0, animate = true)
-            leftEditor!!.scrollToLine(lineNumber = positionToJumpTo + 1, animate = false, center = true)
-            rightEditor!!.gotoLine(lineNumber = positionToJumpTo + 1, column = 0, animate = true)
-            rightEditor!!.scrollToLine(lineNumber = positionToJumpTo + 1, animate = false, center = true)
+            jumpAndScrollTo(leftEditor!!, positionToJumpTo!! + 1)
+            jumpAndScrollTo(rightEditor!!, positionToJumpTo + 1)
             setState {
                 currentHunkIndex = nextEditIndex
             }
         }
     }
+
+    private val jumpAndScrollTo: (Editor?, Int) -> Unit = { editor, rowNumber ->
+        editor?.gotoLine(lineNumber = rowNumber, column = 0, animate = true)
+        editor?.scrollToLine(lineNumber = rowNumber, animate = false, center = true)
+    }
+
     private val additionalShortcutsForTwoPaneView = listOf(
         ActionBarShortcut("Next Hunk", "sj", jumpToNextHunkFromCurrentState),
         ActionBarShortcut("Prev Hunk", "sk", {console.log("Will move hunk backword")})
