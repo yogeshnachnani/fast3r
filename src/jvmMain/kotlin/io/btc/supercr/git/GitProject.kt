@@ -123,11 +123,11 @@ class GitProjectCache {
     }
 
     private fun Repository.getProviderPathFromGitConfig(): String? {
-        val regex = Regex(".*github.com:(.*)/(.*).git")
+        val regex = Regex("git@github.com:(.*)/(.*)(.git)?")
         val origin = this.config.getString("remote", "origin", "url")
         return if (origin != null) {
             val results = regex.matchEntire(origin)
-            results?.groupValues?.subList(1, results.groupValues.size)?.joinToString("/")
+            results?.groupValues?.subList(1, results.groupValues.size)?.joinToString("/")?.removeSuffix("/")?.removeSuffix(".git")
         } else {
             null
         }
