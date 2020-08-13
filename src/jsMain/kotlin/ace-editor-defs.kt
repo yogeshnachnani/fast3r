@@ -28,6 +28,8 @@ external class Editor {
     fun on(eventName: String, callback: Any)
 
     fun resize(force: Boolean)
+
+    fun isFocused(): Boolean
 }
 @JsName("EditSession")
 external class EditSession(

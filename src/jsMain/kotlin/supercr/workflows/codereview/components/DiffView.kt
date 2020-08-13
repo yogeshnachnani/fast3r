@@ -31,6 +31,7 @@ import supercr.css.ComponentStyles
 import supercr.css.GutterDecorationStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
+import supercr.kb.UniversalKeyboardShortcutHandler
 import supercr.kb.UniversalShortcuts
 import supercr.kb.getShortcutString
 import supercr.workflows.codereview.processor.FileCommentHandler
@@ -45,7 +46,7 @@ external interface DiffViewProps: RProps {
     var defaultActionBarActions: List<ActionBarShortcut>
 }
 external interface DiffViewState: RState {
-    var currentCommentBoxPosition: RowColObject?
+    var currentCommentBoxRowPosition: Int?
     /** The index of the current Hunk (or Edit) in fileDiff.editList */
     var currentHunkIndex: Int
 }
@@ -53,7 +54,7 @@ external interface DiffViewState: RState {
 class AceCommentsWrapper(
     private var editor: Editor,
     var oldComments: Map<Int, List<FileLineItem.Comment>>,
-    val commentBoxXPosition: (RowColObject) -> LinearDimension,
+    val commentBoxXPosition: () -> LinearDimension,
     val getNewComments: (Int) -> List<FileLineItem.Comment>,
     val commentHandler: FileCommentHandler
 ) {
@@ -66,11 +67,9 @@ class AceCommentsWrapper(
         return true
     }
 
-    fun convertToScreenCoordinates(rowColObject: RowColObject): Pair<Number, Number> {
-        return with(rowColObject) {
-            val screenPosition = editor.renderer.textToScreenCoordinates(row, column)
-            Pair(screenPosition.pageX, screenPosition.pageY)
-        }
+    fun convertToScreenCoordinates(row: Int): Pair<Number, Number> {
+        val screenPosition = editor.renderer.textToScreenCoordinates(row.toDouble(), 0.toDouble())
+        return Pair(screenPosition.pageX, screenPosition.pageY)
     }
 
     private fun Set<Int>.highlightCommentLines(forEditor: Editor) {
@@ -94,7 +93,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     private lateinit var editorForCurrentComment: AceCommentsWrapper
 
     override fun DiffViewState.init() {
-        currentCommentBoxPosition = null
+        currentCommentBoxRowPosition = null
         currentHunkIndex = -1
     }
 
@@ -144,7 +143,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
                     }
                 }
             }
-            if (state.currentCommentBoxPosition != null) {
+            if (state.currentCommentBoxRowPosition != null) {
                 renderCommentBox()
             }
         }
@@ -155,14 +154,14 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     override fun shouldComponentUpdate(nextProps: DiffViewProps, nextState: DiffViewState): Boolean {
-        return (nextProps.identifier != props.identifier) || (nextState.currentCommentBoxPosition != state.currentCommentBoxPosition)
+        return (nextProps.identifier != props.identifier) || (nextState.currentCommentBoxRowPosition != state.currentCommentBoxRowPosition)
     }
 
     override fun componentDidUpdate(prevProps: DiffViewProps, prevState: DiffViewState, snapshot: Any) {
         val updatedDueToDataChange = (snapshot as Boolean)
         if (updatedDueToDataChange) {
             updateOrFirstMountCommon()
-            if (state.currentCommentBoxPosition != null) {
+            if (state.currentCommentBoxRowPosition != null) {
                 hideCommentBox()
             }
         }
@@ -171,6 +170,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     override fun componentDidMount() {
         updateOrFirstMountCommon()
         addGutterListeners()
+        addEditorShortcutListeners()
     }
 
     private fun updateOrFirstMountCommon() {
@@ -222,17 +222,17 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
      * editor).
      */
     private fun RBuilder.renderCommentBox() {
-        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
+        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxRowPosition!!)
         styledDiv {
             css {
                 position = Position.absolute
                 top =  screenPosition.second.px + 8.px
-                left = editorForCurrentComment.commentBoxXPosition(state.currentCommentBoxPosition!!)
+                left = editorForCurrentComment.commentBoxXPosition()
             }
             commentThread {
                 attrs {
-                    comments = editorForCurrentComment.oldComments[state.currentCommentBoxPosition!!.row] ?: listOf()
-                    newComments = editorForCurrentComment.getNewComments(state.currentCommentBoxPosition!!.row.toInt())
+                    comments = editorForCurrentComment.oldComments[state.currentCommentBoxRowPosition!!] ?: listOf()
+                    newComments = editorForCurrentComment.getNewComments(state.currentCommentBoxRowPosition!!)
                     onCommentAdd = handleNewComments
                     hideMe = hideCommentBox
                 }
@@ -287,18 +287,44 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     }
 
-    private val determineCommentBoxXPositionForLeftEditor: (RowColObject) -> LinearDimension = { rowColObject ->
-        rightEditorCommentsWrapper!!.convertToScreenCoordinates(state.currentCommentBoxPosition!!).first.px + 8.px
+    private val determineCommentBoxXPositionForLeftEditor: () -> LinearDimension = {
+        rightEditorCommentsWrapper!!.convertToScreenCoordinates(state.currentCommentBoxRowPosition!!).first.px + 8.px
     }
 
-    private val determineCommentBoxXPositionForRightEditor: (RowColObject) -> LinearDimension = {
-        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
+    private val determineCommentBoxXPositionForRightEditor: () -> LinearDimension = {
+        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxRowPosition!!)
         screenPosition.first.px - commentBoxWidth - 65.px
     }
 
-    private val determineCommentBoxXPositionForSingleEditor: (RowColObject) -> LinearDimension = {
-        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxPosition!!)
+    private val determineCommentBoxXPositionForSingleEditor: () -> LinearDimension = {
+        val screenPosition = editorForCurrentComment.convertToScreenCoordinates(state.currentCommentBoxRowPosition!!)
         screenPosition.first.px
+    }
+
+    private fun addEditorShortcutListeners() {
+        /** Numeric keyboard shortcuts for comments */
+        UniversalKeyboardShortcutHandler.registerNumericEndKey('c', handleKeyboardTriggeredComments)
+    }
+
+    private val handleKeyboardTriggeredComments: (Int) -> Unit = { commentForRow ->
+        /** First figure out the active editor */
+        val activeEditor = when {
+            leftEditor?.isFocused() ?: false -> {
+                leftEditor!!
+            }
+            rightEditor?.isFocused() ?: false ->  {
+                rightEditor!!
+            }
+            else -> {
+                // Ideally should never come here - but what you gonna do! Shit happens at times. The world works in mysterious ways!
+                if (rightEditor != null ) {
+                    rightEditor!!
+                } else {
+                    leftEditor!!
+                }
+            }
+        }
+        handleCommentIntentFor(activeEditor, commentForRow - 1)
     }
 
     private fun addGutterListeners() {
@@ -324,7 +350,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private val handleNewComments: (String) -> Unit = { commentBody ->
-        this.editorForCurrentComment.commentHandler.addNewComment(commentBody, state.currentCommentBoxPosition!!.row.toInt())
+        this.editorForCurrentComment.commentHandler.addNewComment(commentBody, state.currentCommentBoxRowPosition!!)
         forceUpdate()
     }
 
@@ -373,30 +399,38 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     private val gutterListenerForComments: (MouseEvent) -> Unit = { event ->
         val documentPosition = event.getDocumentPosition()
-        val isLeftEditor = LEFT_EDITOR_DIV_ID == ( event.editor.container.id as String )
+        val commentHandled = handleCommentIntentFor(event.editor as Editor, documentPosition.row.toInt())
+        if (commentHandled) {
+            event.stop()
+        }
+    }
+
+    private val handleCommentIntentFor: (editor: Editor, commentForRow: Int) -> Boolean = { editor, commentForRow ->
+        val isLeftEditor = LEFT_EDITOR_DIV_ID == ( editor.container.id )
         editorForCurrentComment = if (isLeftEditor) {
             leftEditorCommentsWrapper!!
         } else {
             rightEditorCommentsWrapper!!
         }
         if (editorForCurrentComment.isCommentAllowed()) {
-            event.stop()
-            showCommentBox(documentPosition)
+            showCommentBox(commentForRow)
+            true
         } else {
             /** Basically toggle */
             hideCommentBox()
+            false
         }
     }
 
-    private val showCommentBox: (RowColObject) -> Unit = { documentPosition->
+    private val showCommentBox: (Int) -> Unit = { rowNumber->
         setState {
-            currentCommentBoxPosition = documentPosition
+            currentCommentBoxRowPosition = rowNumber
         }
     }
 
     private val hideCommentBox: () -> Unit = {
         setState {
-            currentCommentBoxPosition = null
+            currentCommentBoxRowPosition = null
         }
     }
 

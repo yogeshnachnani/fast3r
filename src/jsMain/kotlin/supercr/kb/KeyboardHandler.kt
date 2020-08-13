@@ -150,10 +150,10 @@ object UniversalKeyboardShortcutHandler {
             /** The shortcut handler must be invoked */
             val handler = numericEndKeyAndHandlers[this.key[0]]
             if (handler != null) {
-                invokeNumericShortcutHandlerAndClearSelection(handler)
+                invokeNumericShortcutHandlerAndClearSelection(this, handler)
             } else {
                 /** The user pressed a character that doesn't have a handler */
-                invokeNumericShortcutHandlerAndClearSelection(null)
+                invokeNumericShortcutHandlerAndClearSelection(this, null)
                 escapeKeyHandler?.invoke()
             }
         }
@@ -181,8 +181,11 @@ object UniversalKeyboardShortcutHandler {
             }
     }
 
-    private val invokeNumericShortcutHandlerAndClearSelection: (( (Int) -> Unit )?) -> Unit = { handlerToInvoke ->
+    private val invokeNumericShortcutHandlerAndClearSelection: (KeyboardEvent, ( (Int) -> Unit )?) -> Unit = { keyboardEvent , handlerToInvoke ->
         val prefixAsNumber = currentNumericPrefix.toInt()
+        if (handlerToInvoke != null) {
+            keyboardEvent.preventDefault()
+        }
         handlerToInvoke?.invoke(prefixAsNumber)
         currentNumericPrefix = ""
     }
