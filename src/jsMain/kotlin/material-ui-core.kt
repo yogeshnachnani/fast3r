@@ -66,7 +66,12 @@ external interface GridProps: WithClassName {
     var justify: String
     var spacing: Number
     var wrap: String
+    /** min-width : 960px */
     var md: Number
+    /** min-width: 1440px. Macbook 13" and 15" */
+    var lg: Number
+    /** min-width: 1920px. 2K + displays or Macbook 15" scaled + */
+    var xl: Number
 }
 
 @JsName("Paper")

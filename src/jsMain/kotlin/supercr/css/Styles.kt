@@ -64,6 +64,7 @@ import kotlinx.css.hsl
 import kotlinx.css.hsla
 import kotlinx.css.justifyContent
 import kotlinx.css.left
+import kotlinx.css.letterSpacing
 import kotlinx.css.lineHeight
 import kotlinx.css.margin
 import kotlinx.css.marginBottom
@@ -173,7 +174,6 @@ object FontSizes {
     val medium = 18.px
     val large = 20.px
     val extraLarge = 24.px
-    val huge = 30.px
     val crayCray = 38.px
 }
 object LineHeights {
@@ -181,35 +181,104 @@ object LineHeights {
     val normal = 22.px.lh
     val extraLarge = 32.px.lh
     val large = 28.px.lh
-    val huge = 40.px.lh
     val crayCray = 48.px.lh
 }
 
 object FontFamilies {
     const val code = "Menlo, Consolas, 'DejaVu Sans Mono', monospace"
-    const val nonCode = "Inter, Roboto, Sans-serif"
+    const val nonCode = "Inter"
 }
 
 val commentBoxWidth = 312.px
 val loginScreenItemsLeftMargin = 36.vw
 
+const val MACBOOK_13inch = "screen and (max-width: 1449px) and (min-width: 950px)"
+const val MACBOOK_15inch = "screen and (max-width: 2040px) and (min-width: 1450px)"
+const val QUAD_HD = "screen and (max-width: 2560px) and (min-width: 2041px)"
+const val FOUR_K = "screen and (min-width: 2561px)"
+
 object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
+    val headline1 by css {
+        fontSize = 93.px
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.w300
+        letterSpacing = (-1.5).px
+    }
+    val headline2 by css {
+        fontSize = 58.px
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.w300
+        letterSpacing = (-0.5).px
+    }
+    val headline3 by css {
+        fontSize = 47.px
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
+        letterSpacing = 0.px
+    }
+    val headline4 by css {
+        fontSize = 30.px
+        lineHeight = 40.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
+        letterSpacing = (0.25).px
+    }
+    val headline5 by css {
+        fontSize = 24.px
+        lineHeight = 32.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
+        letterSpacing = 0.px
+    }
+    val headline6 by css {
+        fontSize = 19.px
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.w600
+        letterSpacing = (0.15).px
+    }
+
+    val bodyFont by css {
+        fontSize = 21.px
+        lineHeight = 28.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
+        media(QUAD_HD) {
+            fontSize = 24.px
+            lineHeight = 32.px.lh
+        }
+        media(FOUR_K) {
+            fontSize = 24.px
+            lineHeight = 32.px.lh
+        }
+    }
+
+    val body2Font by css {
+        fontSize = 18.px
+        lineHeight = 24.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
+        media(QUAD_HD) {
+            fontSize = 21.px
+            lineHeight = 28.px.lh
+        }
+        media(FOUR_K) {
+            fontSize = 21.px
+            lineHeight = 28.px.lh
+        }
+    }
 
     val keyboardShortcutSingleCharBox by css {
         width = 44.px
         height = 42.px
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
-        fontFamily = FontFamilies.nonCode
         fontStyle = FontStyle.normal
-        fontWeight = FontWeight.normal
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
         display = Display.flex
         textAlign = TextAlign.center
         justifyContent = JustifyContent.center
         alignItems = Align.center
         alignContent = Align.center
+        + headline4
     }
 
     val fileListPane by css {
@@ -434,23 +503,19 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val loginScreenMessage by css {
         marginLeft = loginScreenItemsLeftMargin
         marginTop = 40.vh
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
         color = Colors.textLightGrey
+        + headline4
     }
 
     val loginScreenOrMessage by css {
         marginLeft = loginScreenItemsLeftMargin
         marginTop = 50.px
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
         color = Colors.textLightGrey
         textAlign = TextAlign.center
         width = 800.px
         display = Display.inlineFlex
         justifyContent = JustifyContent.center
+        + headline4
 //        flex(flexBasis = FlexBasis.maxContent)
     }
 
@@ -549,12 +614,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val repoInitialiserRepoPathInput by css {
         ".MuiOutlinedInput-input" {
-            fontSize = FontSizes.extraLarge
-            lineHeight = LineHeights.extraLarge
-            fontFamily = FontFamilies.nonCode
+            + bodyFont
             fontWeight = FontWeight.w600
-            color = Colors.textDarkGrey
-            backgroundColor = Colors.backgroundDarkGrey
+            color = Colors.textDarkGrey.lighten(20)
+            backgroundColor = Colors.backgroundDarkestGrey
             border(width = 1.px, style = BorderStyle.solid, color = Colors.backgroundGrey, borderRadius = 6.px)
             paddingLeft = 32.px
         }
@@ -597,11 +660,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         height = 42.px
         backgroundColor = Colors.backgroundGrey
         borderRadius = 4.px
-        fontFamily = FontFamilies.nonCode
         fontStyle = FontStyle.normal
-        fontWeight = FontWeight.normal
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
         display = Display.flex
         textAlign = TextAlign.center
         justifyContent = JustifyContent.center
@@ -610,6 +669,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         marginTop = 20.px
         marginBottom = 20.px
         color = Colors.textMediumGrey
+        + headline4
     }
 
     val diffViewNewText by css {
@@ -640,11 +700,9 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val overviewScreenNumPullRequests by css {
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
-        fontFamily = FontFamilies.nonCode
         color = Colors.textDarkGrey
         marginBottom = 70.px
+        + headline4
     }
 
     val pullRequestSummaryCard by css {
@@ -784,17 +842,14 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         height = 42.px
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
-        fontFamily = FontFamilies.nonCode
         fontStyle = FontStyle.normal
-        fontWeight = FontWeight.normal
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
         display = Display.flex
         textAlign = TextAlign.center
         justifyContent = JustifyContent.center
         alignItems = Align.center
         alignContent = Align.center
         color = Colors.textMediumGrey
+        + headline4
     }
 
     val avatarOrangeBackground by css {
@@ -965,26 +1020,45 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         flexBasis = 100.pct.basis
     }
 
-    val repoMappingTitle by css {
-        fontSize = FontSizes.huge
-        lineHeight = LineHeights.huge
+    val repoMappingTitle2 by css {
+        fontSize = FontSizes.small
+        lineHeight = LineHeights.tiny
         fontFamily = FontFamilies.nonCode
         color = Colors.textMediumGrey
-        marginBottom = 30.px
+        marginBottom = 20.px
+    }
+
+    val repoMappingTitle by css {
+        marginBottom = 20.px
+        media(QUAD_HD) {
+            marginBottom = 30.px
+        }
+        media(FOUR_K) {
+            marginBottom = 30.px
+        }
+        color = Colors.textMediumGrey
+        + headline4
     }
     val repoMappingSubtitle by css {
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
-        fontFamily = FontFamilies.nonCode
         color = Colors.textDarkGrey
-        marginBottom = 80.px
+        + headline5
+        marginBottom = 30.px
+        media(QUAD_HD) {
+            marginBottom = 80.px
+        }
+        media(FOUR_K) {
+            marginBottom = 80.px
+        }
     }
 
     val repoMappingRepoComponentContainer by css {
-//        display = Display.inlineFlex
-//        width = 100.pct
-        marginBottom = 40.px
-//        justifyContent = JustifyContent.spaceAround
+        marginBottom = 28.px
+        media(QUAD_HD) {
+            marginBottom = 40.px
+        }
+        media(FOUR_K) {
+            marginBottom = 40.px
+        }
     }
 
     val repoMappingRepoName by css {
@@ -992,11 +1066,9 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         alignItems = Align.center
 //        flexBasis = 30.pct.basis
         textAlign = TextAlign.start
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
-        fontFamily = FontFamilies.nonCode
         color = Colors.textMediumGrey
         display = Display.flex
+        + bodyFont
     }
 
     val repoMappingActionButtonContainer by css {
@@ -1004,15 +1076,20 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         justifyContent = JustifyContent.flexEnd
         alignItems = Align.center
         width = 100.pct
-        marginTop = 100.px
+        marginTop = 40.px
+        media(QUAD_HD) {
+            marginTop = 100.px
+        }
+        media(FOUR_K) {
+            marginTop = 100.px
+        }
     }
 
     val repoMappingActionButtonHelpText by css {
         width = LinearDimension.fitContent
         display = Display.inlineFlex
         marginRight = 28.px
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
+        + body2Font
         color = Colors.textDarkGrey
     }
 
@@ -1024,8 +1101,24 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontSize = FontSizes.extraLarge
         lineHeight = LineHeights.extraLarge
         color = Colors.textLightGrey
-        padding(vertical = 14.px, horizontal = 26.px)
+        padding(vertical = 12.px, horizontal = 22.px)
+        media(QUAD_HD) {
+            padding(vertical = 14.px, horizontal = 26.px)
+        }
+        media(FOUR_K) {
+            padding(vertical = 14.px, horizontal = 26.px)
+        }
         textTransform = TextTransform.none
+    }
+
+    val iconAndLogoutButtonContainer by css {
+        height = 8.vh
+        media(QUAD_HD) {
+            height = 16.vh
+        }
+        media(FOUR_K) {
+            height = 16.vh
+        }
     }
 }
 

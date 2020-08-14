@@ -9,6 +9,7 @@ import react.RState
 import react.ReactElement
 import styled.css
 import styled.styledDiv
+import supercr.css.ComponentStyles
 
 external interface IconAndLogoutButtonProps : RProps {
 }
@@ -22,7 +23,7 @@ class IconAndLogoutButton : RComponent<IconAndLogoutButtonProps, IconAndLogoutBu
         styledDiv {
             /** This div will later house the logo etc */
             css {
-                height = 16.vh
+                + ComponentStyles.iconAndLogoutButtonContainer
             }
         }
     }

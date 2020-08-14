@@ -84,7 +84,9 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
                 attrs {
                     item = true
                     container = false
-                    md = 5
+                    md = 9
+                    lg = 9
+                    xl = 5
                 }
                 renderRepoList()
                 renderPageListAndActionButton()
@@ -154,6 +156,9 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
                 + "${state.userFinalisedProjects.size} repo${if (state.userFinalisedProjects.size > 1) "s" else ""} found"
             }
             MaterialUIList {
+                attrs {
+                    className = ComponentStyles.getClassName { ComponentStyles::compactList }
+                }
                 state.repoToDetectedProject.map { (fetchedRepoSummary, detectedProject) ->
                     ListItem {
                         attrs {
