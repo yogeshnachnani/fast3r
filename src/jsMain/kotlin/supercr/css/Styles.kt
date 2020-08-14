@@ -975,16 +975,16 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val repoMappingRepoComponentContainer by css {
-        display = Display.inlineFlex
-        width = 100.pct
+//        display = Display.inlineFlex
+//        width = 100.pct
         marginBottom = 40.px
-        justifyContent = JustifyContent.spaceAround
+//        justifyContent = JustifyContent.spaceAround
     }
 
     val repoMappingRepoName by css {
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
-        flexBasis = 30.pct.basis
+//        flexBasis = 30.pct.basis
         textAlign = TextAlign.start
         fontSize = FontSizes.extraLarge
         lineHeight = LineHeights.extraLarge
@@ -997,17 +997,17 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         display = Display.flex
         justifyContent = JustifyContent.flexEnd
         alignItems = Align.center
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        color = Colors.textDarkGrey
+        width = 100.pct
         marginTop = 100.px
-        width = 95.pct
     }
 
     val repoMappingActionButtonHelpText by css {
         width = LinearDimension.fitContent
-        display = Display.flex
+        display = Display.inlineFlex
         marginRight = 28.px
+        fontSize = FontSizes.normal
+        lineHeight = LineHeights.normal
+        color = Colors.textDarkGrey
     }
 
     val repoMappingActionButton by css {

@@ -1,5 +1,6 @@
 package supercr.workflows.gettingstarted.components
 
+import Grid
 import ListItem
 import OutlinedInput
 import codereview.Project
@@ -72,19 +73,27 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
     }
 
     override fun RBuilder.render() {
-        styledDiv {
-            css {
-                + ComponentStyles.repoMappingRepoComponentContainer
+        Grid {
+            attrs {
+                container = true
+                item = false
+                justify = "flex-start"
+                className = ComponentStyles.getClassName { ComponentStyles::repoMappingRepoComponentContainer }
             }
-            styledDiv {
-                css {
-                    + ComponentStyles.repoMappingRepoName
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 4
+                    className = ComponentStyles.getClassName { ComponentStyles::repoMappingRepoName }
                 }
-                    +props.repoSummary.full_name
+                + props.repoSummary.full_name
             }
-            styledDiv {
-                css {
-                    flexBasis = 50.pct.basis
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 6
                 }
                 OutlinedInput {
                     attrs {
@@ -100,7 +109,6 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
                 }
             }
         }
-
     }
 
 }

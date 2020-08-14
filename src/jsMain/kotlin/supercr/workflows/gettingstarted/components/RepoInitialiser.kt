@@ -70,7 +70,7 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
             attrs {
                 container = true
                 item = false
-                justify = JustifyContent.center.name
+                justify = "center"
             }
             Grid {
                 attrs {
@@ -93,26 +93,60 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
     }
 
     private fun RBuilder.renderPageListAndActionButton() {
-        styledDiv {
-            css {
-                + ComponentStyles.repoMappingActionButtonContainer
+        Grid {
+            attrs {
+                container = true
+                item = false
+                justify = "flex-start"
+                alignItems = "center"
+                spacing = 2
             }
-            styledDiv {
-                css {
-                    + ComponentStyles.repoMappingActionButtonHelpText
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 4
                 }
-                + "Press Enter ↵"
+                // Empty
             }
-            enterActivatedButton {
-                label = "Looks Good"
-                onSelected = handleDone
-                buttonClazz = ComponentStyles.getClassName { ComponentStyles::repoMappingActionButton }
+            Grid {
+                attrs {
+                    item = true
+                    container = false
+                    md = 6
+                }
+                styledDiv {
+                    css {
+                        + ComponentStyles.repoMappingActionButtonContainer
+                    }
+                    styledDiv {
+                        css {
+                            + ComponentStyles.repoMappingActionButtonHelpText
+                        }
+                        + "Press Enter ↵"
+                    }
+                    enterActivatedButton {
+                        label = "Looks Good"
+                        onSelected = handleDone
+                        buttonClazz = ComponentStyles.getClassName { ComponentStyles::repoMappingActionButton }
+                    }
+                }
             }
         }
     }
 
     override fun componentDidMount() {
-        fetchRepos()
+//        fetchRepos()
+        val detectedProjects = mapOf(
+            RepoSummary("btcmain", "theboringtech/btcmain", true) to Project("/home/yogesh/work/btc", "theboringtech/btcmain", "btc"),
+            RepoSummary("website", "theboringtech/theboringtech.github.io", true) to Project("/home/yogesh/work/theboringtech.github.io", "theboringtech/theboringtech.github.io", "website"),
+            RepoSummary("detekt", "yogeshnachnani/detekt", true) to Project("/home/yogesh/work/detekt", "yogeshnachnani/detect", "detekt"),
+            RepoSummary("vim", "longstoryshort/vim", true) to Project("/home/yogesh/own_stuff/longer_path/more_hefty/vim", "longstoryshort/vim", "vim_noexists")
+        )
+        setState {
+            repoToDetectedProject = detectedProjects
+            userFinalisedProjects = detectedProjects.values.toList()
+        }
     }
 
     private fun RBuilder.renderRepoList() {
@@ -138,6 +172,7 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
                             divider = true
                             disabled = false
                             key = fetchedRepoSummary.full_name
+                            className = ComponentStyles.getClassName { ComponentStyles::compactList }
                         }
                         repoComponent {
                             repoSummary = fetchedRepoSummary
