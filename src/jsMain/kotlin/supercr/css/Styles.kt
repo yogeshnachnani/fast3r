@@ -22,6 +22,7 @@ import kotlinx.css.TextAlign
 import kotlinx.css.TextOverflow
 import kotlinx.css.TextTransform
 import kotlinx.css.VerticalAlign
+import kotlinx.css.WhiteSpace
 import kotlinx.css.alignContent
 import kotlinx.css.alignItems
 import kotlinx.css.background
@@ -96,6 +97,7 @@ import kotlinx.css.top
 import kotlinx.css.verticalAlign
 import kotlinx.css.vh
 import kotlinx.css.vw
+import kotlinx.css.whiteSpace
 import kotlinx.css.width
 import kotlinx.css.zIndex
 import styled.StyleSheet
@@ -186,7 +188,7 @@ object LineHeights {
 
 object FontFamilies {
     const val code = "Menlo, Consolas, 'DejaVu Sans Mono', monospace"
-    const val nonCode = "Inter"
+    const val nonCode = "Inter, Roboto, Sans-serif"
 }
 
 val commentBoxWidth = 312.px
@@ -265,6 +267,19 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
             fontSize = 21.px
             lineHeight = 28.px.lh
         }
+    }
+
+    val buttonCaption by css {
+        fontSize = 16.px
+        lineHeight = 22.px.lh
+        color = Colors.textDarkGrey
+    }
+
+    val primaryActionButtonText by css {
+        + bodyFont
+        fontWeight = FontWeight.w600
+        backgroundColor = Colors.primaryBlue
+        color = Colors.textLightGrey
     }
 
     val keyboardShortcutSingleCharBox by css {
@@ -493,39 +508,57 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundPosition = "center"
         backgroundRepeat = BackgroundRepeat.noRepeat
         backgroundSize = "cover"
+        flexWrap = FlexWrap.wrap
 //        display = Display.flex
 //        transform {
 //            rotate(( -10.81 ).deg)
 //        }
 //        opacity = 0.6
-        display = Display.inlineBlock
+//        display = Display.inlineBlock
     }
     val loginScreenMessage by css {
-        marginLeft = loginScreenItemsLeftMargin
-        marginTop = 40.vh
+//        marginLeft = loginScreenItemsLeftMargin
+//        marginTop = 40.vh
         color = Colors.textLightGrey
+        display = Display.flex
         + headline4
     }
 
     val loginScreenOrMessage by css {
-        marginLeft = loginScreenItemsLeftMargin
+        width = 100.pct
         marginTop = 50.px
+        color = Colors.textDarkGrey
+        + headline5
+        display = Display.flex
+        justifyContent = JustifyContent.center
+        alignItems = Align.center
+    }
+
+    val loginScreenOrLine by css {
+        flexBasis = 48.pct.basis
+        height = 1.px
+        backgroundColor = Colors.backgroundGrey
+    }
+
+    val loginScreenOrText by css {
+        flexBasis = 4.pct.basis
+        textAlign = TextAlign.center
+    }
+
+    val loginScreenDemoCredentialsContainer by css {
+        width = 100.pct
+        marginTop = 20.px
         color = Colors.textLightGrey
         textAlign = TextAlign.center
-        width = 800.px
         display = Display.inlineFlex
         justifyContent = JustifyContent.center
         + headline4
-//        flex(flexBasis = FlexBasis.maxContent)
     }
 
     val loginScreenDemoButton by css {
 //        backgroundColor = Colors.primaryBlue
         backgroundColor = Color.transparent
-        borderRadius = 11.px
-        borderColor = Colors.primaryBlue
-        borderWidth = 4.px
-        borderStyle = BorderStyle.solid
+        border(2.px, BorderStyle.solid, Colors.primaryBlue, 8.px)
         fontWeight = FontWeight.w600
         fontFamily = FontFamilies.nonCode
         fontSize = FontSizes.extraLarge
@@ -547,15 +580,12 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val loginScreenUsernameBoxContainer by css {
-        marginLeft = loginScreenItemsLeftMargin
+//        marginLeft = loginScreenItemsLeftMargin
         marginTop = 44.px
         backgroundColor = Colors.backgroundDarkGrey
-        borderColor = Colors.backgroundGrey
-        borderStyle = BorderStyle.solid
-        borderWidth = 1.px
+        border(1.px, BorderStyle.solid, Colors.backgroundGrey, 11.px)
         boxSizing = BoxSizing.borderBox
-        borderRadius = 11.px
-        width = LinearDimension.fitContent
+        width = 100.pct
         height = 100.px
         display = Display.inlineFlex
 //        alignContent = Align.flexEnd
@@ -573,8 +603,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val loginGithubUsername by css {
-//        width = LinearDimension.fillAvailable
-        maxWidth = 445.px
+//        maxWidth = 445.px
         height = 48.px
         fontSize = FontSizes.crayCray
         lineHeight = LineHeights.crayCray
@@ -589,27 +618,21 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val loginPressEnterLabel by css {
         width = LinearDimension.fitContent
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        color = Colors.textDarkGrey
+        + buttonCaption
         marginTop = 38.px
         marginBottom = 38.px
-        display = Display.inlineBlock
+        marginRight = 24.px
+        display = Display.inlineFlex
+        flexWrap = FlexWrap.nowrap
+        whiteSpace = WhiteSpace.nowrap
     }
     val loginGo by css {
-        backgroundColor = Colors.primaryBlue
         borderTopRightRadius = 11.px
         borderBottomRightRadius = 11.px
         borderTopLeftRadius = 0.px
         borderBottomLeftRadius = 0.px
-        fontWeight = FontWeight.w600
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
-        color = Colors.textLightGrey
+        + primaryActionButtonText
         padding(vertical = 34.px, horizontal = 38.px)
-        marginLeft = 24.px
-        width = 120.px
     }
 
     val repoInitialiserRepoPathInput by css {
@@ -1094,13 +1117,8 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val repoMappingActionButton by css {
-        backgroundColor = Colors.primaryBlue
         borderRadius = 6.px
-        fontWeight = FontWeight.w600
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
-        color = Colors.textLightGrey
+        + primaryActionButtonText
         padding(vertical = 12.px, horizontal = 22.px)
         media(QUAD_HD) {
             padding(vertical = 14.px, horizontal = 26.px)

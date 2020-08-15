@@ -1,11 +1,21 @@
 package supercr.workflows.gettingstarted.components
 
+import Grid
 import PermIdentity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.css.Display
+import kotlinx.css.TextAlign
+import kotlinx.css.backgroundColor
+import kotlinx.css.basis
 import kotlinx.css.display
+import kotlinx.css.flexBasis
+import kotlinx.css.flexGrow
+import kotlinx.css.height
+import kotlinx.css.pct
+import kotlinx.css.px
+import kotlinx.css.textAlign
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -19,7 +29,7 @@ import styled.getClassName
 import styled.styledDiv
 import styled.styledInput
 import styled.styledP
-import styled.styledSpan
+import supercr.css.Colors
 import supercr.css.ComponentStyles
 import supercr.kb.components.ctrlEnterAtivatedButton
 import supercr.kb.components.enterActivatedButton
@@ -49,12 +59,25 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
                 }
             }
         } else {
-            styledDiv {
-                css {
-                    +ComponentStyles.loginScreen
+            Grid {
+                attrs {
+                    container = true
+                    item = false
+                    justify = "center"
+                    alignItems = "center"
+                    className = ComponentStyles.getClassName { ComponentStyles::loginScreen }
                 }
-                renderLoginButton()
-                renderDemoLoginButton()
+                Grid {
+                    attrs {
+                        item = true
+                        container = false
+                        md = 6
+                        lg = 6
+                        xl = 3
+                    }
+                    renderLoginButton()
+                    renderDemoLoginButton()
+                }
             }
         }
     }
@@ -71,11 +94,26 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
             css {
                 + ComponentStyles.loginScreenOrMessage
             }
-            styledP {
+            styledDiv {
                 css {
-                    display = Display.inlineBlock
+                    + ComponentStyles.loginScreenOrLine
                 }
-                + "OR"
+            }
+            styledDiv {
+                css {
+                    + ComponentStyles.loginScreenOrText
+                }
+                + " Or "
+            }
+            styledDiv {
+                css {
+                    + ComponentStyles.loginScreenOrLine
+                }
+            }
+        }
+        styledDiv {
+            css {
+                + ComponentStyles.loginScreenDemoCredentialsContainer
             }
             ctrlEnterAtivatedButton {
                 attrs {
@@ -110,25 +148,36 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
                     }
                 }
             }
-            styledInput {
+            styledDiv {
                 css {
-                    + ComponentStyles.loginGithubUsername
+                    display = Display.flex
+                    flexGrow = 2.0
                 }
-                attrs {
-                    autoFocus = true
+                styledInput {
+                    css {
+                        + ComponentStyles.loginGithubUsername
+                    }
+                    attrs {
+                        autoFocus = true
+                    }
+                    ref = githubUsernameInputRef
                 }
-                ref = githubUsernameInputRef
             }
-            styledSpan {
+            styledDiv {
                 css {
-                    + ComponentStyles.loginPressEnterLabel
+                    display = Display.inlineFlex
                 }
-                + "Press Enter ↵"
-            }
-            enterActivatedButton {
-                label = "Go"
-                onSelected = handleEnter
-                buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginGo }
+                styledP {
+                    css {
+                        + ComponentStyles.loginPressEnterLabel
+                    }
+                    + "Press Enter ↵"
+                }
+                enterActivatedButton {
+                    label = "Go"
+                    onSelected = handleEnter
+                    buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginGo }
+                }
             }
         }
     }
