@@ -18,6 +18,7 @@ import kotlinx.css.flexGrow
 import kotlinx.css.justifyContent
 import kotlinx.css.marginBottom
 import kotlinx.css.marginRight
+import kotlinx.css.marginTop
 import kotlinx.css.pct
 import kotlinx.css.px
 import kotlinx.css.width
@@ -87,7 +88,9 @@ class ChangesetOverviewScreen constructor(
                 attrs {
                     container = false
                     item = true
-                    md = 2
+                    md = 3
+                    lg = 3
+                    xl = 2
                 }
                 renderOrderableFileList()
             }
@@ -96,13 +99,16 @@ class ChangesetOverviewScreen constructor(
                     container = false
                     item = true
                     md = 1
+                    xl = 1
                 }
             }
             Grid {
                 attrs {
                     container = false
                     item = true
-                    md = 5
+                    xl = 5
+                    md = 7
+                    md = 7
                 }
                 renderCenterContentV2()
             }
@@ -158,14 +164,19 @@ class ChangesetOverviewScreen constructor(
                 item = false
                 justify = "flex-end"
                 alignItems = "center"
-                spacing = 2
+                spacing = 1
+                className = ComponentStyles.getClassName { ComponentStyles::changeSetOverviewReviewButtonContainer }
             }
             Grid {
                 attrs {
                     item = true
                     container = false
+                    md = 2
+                    lg = 2
+                    xl = 1
+                    className = ComponentStyles.getClassName { ComponentStyles::changeSetOverviewPressEnterTextContainer }
                 }
-                styledSpan {
+                styledDiv {
                     css {
                         + ComponentStyles.changeSetOverviewPressEnterText
                     }
@@ -176,7 +187,9 @@ class ChangesetOverviewScreen constructor(
                 attrs {
                     item = true
                     container = false
-                    md = 1
+                    md = 2
+                    lg = 2
+                    xl = 1
                 }
                 enterActivatedButton {
                     label = "Review"
@@ -257,9 +270,14 @@ class ChangesetOverviewScreen constructor(
                 }
                 + props.pullRequestSummary.title
             }
-            pullRequestAgeRibbon {
-                pullRequestSummary = props.pullRequestSummary
-                roundedBothSides = true
+            styledDiv {
+                css {
+                    + ComponentStyles.changeSetOverviewPullRequestAgeRibbonBalancer
+                }
+                pullRequestAgeRibbon {
+                    pullRequestSummary = props.pullRequestSummary
+                    roundedBothSides = true
+                }
             }
         }
     }

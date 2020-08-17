@@ -280,6 +280,8 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val buttonCaption by css {
         fontSize = 16.px
         lineHeight = 22.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
         color = Colors.textDarkGrey
     }
 
@@ -899,18 +901,28 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val pullRequestSummaryCardKeyboardShortcut by css {
-        width = 42.px
-        height = 42.px
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
+        width = 28.px
+        height = 28.px
+        + headline6
         fontStyle = FontStyle.normal
+        media(QUAD_HD) {
+            width = 42.px
+            height = 42.px
+            + headline4
+        }
+        media(FOUR_K) {
+            width = 42.px
+            height = 42.px
+            + headline4
+        }
         display = Display.flex
         textAlign = TextAlign.center
         justifyContent = JustifyContent.center
         alignItems = Align.center
         alignContent = Align.center
         color = Colors.textMediumGrey
-        + headline4
     }
 
     val avatarOrangeBackground by css {
@@ -944,15 +956,34 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         width = 65.pct
     }
 
+    val changeSetOverviewPullRequestAgeRibbonBalancer by css {
+        display = Display.inlineFlex
+        marginTop = 8.px
+        media(QUAD_HD) {
+            marginTop = 0.px
+        }
+        media(FOUR_K) {
+            marginTop = 0.px
+        }
+    }
+
     val changeSetOverviewMetaInfo by css {
         display = Display.flex
         justifyContent = JustifyContent.spaceEvenly
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
+        + caption
         color = Colors.textMediumGrey
-        marginBottom = 100.px
+        whiteSpace = WhiteSpace.nowrap
         flex(flexBasis = 40.pct.basis)
-        width = 35.pct
+        width = 45.pct
+        marginBottom = 30.px
+        media(QUAD_HD) {
+            width = 25.pct
+            marginBottom = 100.px
+        }
+        media(FOUR_K) {
+            width = 25.pct
+            marginBottom = 100.px
+        }
     }
 
     val changeSetOverviewMetaInfoItems by css {
@@ -986,9 +1017,18 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val reviewCommentsContainer by css {
         display = Display.flex
         flexDirection = FlexDirection.column
-        maxHeight = 48.vh
+        /** Keep this similar to [changeSetOverviewFileList] */
+        maxHeight = ((40 + 14) * 12).px
+        marginBottom = 30.px
+        media(QUAD_HD) {
+            maxHeight = ((60 + 24) * 15).px
+            marginBottom = 70.px
+        }
+        media(FOUR_K) {
+            maxHeight = ((60 + 24) * 15).px
+            marginBottom = 70.px
+        }
         overflow = Overflow.auto
-        marginBottom = 70.px
         "::-webkit-scrollbar-thumb" {
             borderRadius = 6.px
             backgroundColor = Colors.backgroundMediumGrey
@@ -1003,7 +1043,13 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         display = Display.flex
         justifyContent = JustifyContent.flexStart
         position = Position.relative
-        marginBottom = 24.px
+        marginBottom = 14.px
+        media(QUAD_HD) {
+            marginBottom = 24.px
+        }
+        media(FOUR_K) {
+            marginBottom = 24.px
+        }
     }
     val reviewCommentAvatarContainer by css {
         display = Display.inlineFlex
@@ -1015,9 +1061,14 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         flex(flexBasis = 88.pct.basis)
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 8.px
-        padding(vertical = 20.px, horizontal = 30.px)
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
+        padding(vertical = 8.px, horizontal = 16.px)
+        media(QUAD_HD) {
+            padding(vertical = 20.px, horizontal = 30.px)
+        }
+        media(FOUR_K) {
+            padding(vertical = 20.px, horizontal = 30.px)
+        }
+        + caption
         color = Colors.textMediumGrey
     }
 
@@ -1034,30 +1085,61 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         textTransform = TextTransform.none
     }
 
+    val changeSetOverviewReviewButtonContainer by css {
+        /** That's how bad I am at this :facepalm: */
+        width = 99.pct
+        media(QUAD_HD) {
+            width = 95.pct
+        }
+        media(FOUR_K) {
+            width = 95.pct
+        }
+    }
+
+    val changeSetOverviewPressEnterTextContainer by css {
+        display = Display.inlineFlex
+        justifyContent = JustifyContent.flexEnd
+    }
     val changeSetOverviewPressEnterText by css {
         width = LinearDimension.fitContent
-        display = Display.inlineBlock
+        display = Display.inlineFlex
+        whiteSpace = WhiteSpace.nowrap
     }
 
     val changeSetOverviewFileItemContainer by css {
         backgroundColor = Colors.backgroundDarkGrey
         borderRadius = 8.px
-        fontSize = FontSizes.large
-        lineHeight = LineHeights.large
+        + body2Font
         color = Colors.textMediumGrey
         justifyContent = JustifyContent.spaceAround
         display = Display.inlineFlex
         width = 80.pct
-        marginBottom = 24.px
-        height = 60.px
+        marginBottom = 14.px
+        height = 40.px
+        media(QUAD_HD) {
+            marginBottom = 24.px
+            height = 60.px
+        }
+        media(FOUR_K) {
+            marginBottom = 24.px
+            height = 60.px
+        }
     }
 
     val compactList by css {
         padding(all = 0.px)
     }
     val changeSetOverviewFileList by css {
-        /** size it roughly equal to 15 items */
-        maxHeight = ((60 + 24) * 15).px
+        /** size it roughly equal to 13 items */
+        maxHeight = ((40 + 14) * 13).px
+        media(QUAD_HD) {
+            /** size it roughly equal to 15 items */
+            maxHeight = ((60 + 24) * 15).px
+        }
+        media(FOUR_K) {
+            /** size it roughly equal to 15 items */
+            maxHeight = ((60 + 24) * 15).px
+        }
         overflow = Overflow.auto
         "::-webkit-scrollbar-thumb" {
             borderRadius = 6.px
@@ -1072,19 +1154,21 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val changeSetOverviewFileListTitle by css {
         display = Display.flex
         justifyContent = JustifyContent.spaceAround
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
+        + headline5
         color = Colors.textMediumGrey
         marginBottom = 18.px
-        width = 65.pct
         flexWrap = FlexWrap.wrap
     }
 
     val changeSetOverViewFileListSubText by css {
-        marginTop = 28.px
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        color = Colors.textDarkGrey
+        marginTop = 14.px
+        media(QUAD_HD) {
+            marginTop = 28.px
+        }
+        media(FOUR_K) {
+            marginTop = 28.px
+        }
+        + buttonCaption
         flexBasis = 100.pct.basis
     }
 
