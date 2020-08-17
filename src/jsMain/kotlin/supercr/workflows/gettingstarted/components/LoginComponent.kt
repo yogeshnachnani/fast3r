@@ -117,7 +117,7 @@ class LoginComponent: RComponent<LoginComponentProps, LoginComponentState>() {
             }
             ctrlEnterAtivatedButton {
                 attrs {
-                    label = "Use Demo Credentials"
+                    label = "Sign in using demo credentials"
                     enterTextOnLeft = false
                     onSelected = handleCtrlEnter
                     buttonClazz = ComponentStyles.getClassName { ComponentStyles::loginScreenDemoButton  }

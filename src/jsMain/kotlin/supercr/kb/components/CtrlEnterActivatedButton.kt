@@ -2,7 +2,11 @@ package supercr.kb.components
 
 import Button
 import kotlinx.css.Display
+import kotlinx.css.JustifyContent
 import kotlinx.css.display
+import kotlinx.css.justifyContent
+import kotlinx.css.pct
+import kotlinx.css.width
 import kotlinx.html.DIV
 import react.RBuilder
 import react.RComponent
@@ -32,6 +36,7 @@ class CtrlEnterActivatedButton : RComponent<CtrlEnterActivatedButtonProps, CtrlE
         styledDiv {
             css {
                 display = Display.inlineBlock
+                width = 100.pct
             }
             if (props.enterTextOnLeft) {
                 renderKbShortcutHelpText()
@@ -43,19 +48,19 @@ class CtrlEnterActivatedButton : RComponent<CtrlEnterActivatedButtonProps, CtrlE
                     className = props.buttonClazz!!
                 }
                 + props.label
-            }
-            if (!props.enterTextOnLeft) {
-                renderKbShortcutHelpText()
+                if (!props.enterTextOnLeft) {
+                    renderKbShortcutHelpText()
+                }
             }
         }
     }
 
-    private fun StyledDOMBuilder<DIV>.renderKbShortcutHelpText() {
+    private fun RBuilder.renderKbShortcutHelpText() {
         styledSpan {
             css {
                 classes.add(props.enterTextClazz)
             }
-            +"Press Ctrl+Enter"
+            +"Press Ctrl/Cmd + Enter"
         }
     }
 

@@ -564,25 +564,19 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val loginScreenDemoButton by css {
-//        backgroundColor = Colors.primaryBlue
         backgroundColor = Color.transparent
         border(2.px, BorderStyle.solid, Colors.primaryBlue, 8.px)
+        + headline5
         fontWeight = FontWeight.w600
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
-        color = Colors.textLightGrey
+        color = Colors.textMediumGrey
+        textTransform = TextTransform.none
+        width = 100.pct
+        justifyContent = JustifyContent.spaceBetween
         padding(vertical = 24.px, horizontal = 38.px)
-        marginLeft = 24.px
-        width = 450.px
     }
     val loginScreenPressCtrlEnterLabel by css {
         width = LinearDimension.fitContent
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        color = Colors.textDarkGrey
-        marginTop = 38.px
-        marginBottom = 38.px
+        + buttonCaption
         marginLeft = 30.px
         display = Display.inlineBlock
     }
