@@ -136,7 +136,7 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                 }
                 Avatar {
                     attrs {
-                        className = ComponentStyles.getClassName { ComponentStyles::avatarInitials }
+                        className = "${ComponentStyles.getClassName { ComponentStyles::avatarInitials }} ${ComponentStyles.getClassName { ComponentStyles::avatarOrangeBackground }}"
                     }
                     + "YN"
                 }

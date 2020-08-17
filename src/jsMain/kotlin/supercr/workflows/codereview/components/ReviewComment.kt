@@ -26,6 +26,8 @@ import supercr.css.FontSizes
 
 external interface ReviewCommentProps : RProps {
     var commentBody: String
+    var initials: String
+    var displayDate: String
 }
 
 external interface ReviewCommentState : RState {
@@ -44,9 +46,9 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                 }
                 Avatar {
                     attrs {
-                        className = ComponentStyles.getClassName { ComponentStyles::avatarInitials }
+                        className = "${ComponentStyles.getClassName { ComponentStyles::avatarInitials }} ${if( props.initials == "YN" ) {ComponentStyles.getClassName { ComponentStyles::avatarOrangeBackground }} else {ComponentStyles.getClassName { ComponentStyles::avatarPurpleBackground }} }"
                     }
-                    + "YN"
+                    + props.initials
                 }
             }
             styledDiv {
@@ -59,7 +61,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                         css {
                             fontWeight = FontWeight.w600
                         }
-                        + "yogeshnachnani"
+                        + if(props.initials == "YN") { "yogeshnachnani" } else { "deepakt" }
                     }
                     styledSpan {
                         css {
@@ -69,7 +71,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                             marginLeft = 12.px
                             fontSize = FontSizes.tiny
                         }
-                        + "23rd June"
+                        + props.displayDate
                     }
                 }
                 /** User Comment */

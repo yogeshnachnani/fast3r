@@ -797,10 +797,16 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.textMediumGrey
     }
 
+    val avatarOrangeBackground by css {
+        backgroundColor = EditorThemeColors.tokenOrange
+    }
+    val avatarPurpleBackground by css {
+        backgroundColor = EditorThemeColors.tokenPurple
+    }
+
     val avatarInitials by css {
         width = 34.px
         height = 34.px
-        backgroundColor = EditorThemeColors.tokenOrange
         fontSize = FontSizes.normal
         lineHeight = LineHeights.normal
     }
