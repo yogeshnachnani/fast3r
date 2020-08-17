@@ -136,17 +136,7 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
     }
 
     override fun componentDidMount() {
-//        fetchRepos()
-        val detectedProjects = mapOf(
-            RepoSummary("btcmain", "theboringtech/btcmain", true) to Project("/home/yogesh/work/btc", "theboringtech/btcmain", "btc"),
-            RepoSummary("website", "theboringtech/theboringtech.github.io", true) to Project("/home/yogesh/work/theboringtech.github.io", "theboringtech/theboringtech.github.io", "website"),
-            RepoSummary("detekt", "yogeshnachnani/detekt", true) to Project("/home/yogesh/work/detekt", "yogeshnachnani/detect", "detekt"),
-            RepoSummary("vim", "longstoryshort/vim", true) to Project("/home/yogesh/own_stuff/longer_path/more_hefty/vim", "longstoryshort/vim", "vim_noexists")
-        )
-        setState {
-            repoToDetectedProject = detectedProjects
-            userFinalisedProjects = detectedProjects.values.toList()
-        }
+        fetchRepos()
     }
 
     private fun RBuilder.renderRepoList() {
