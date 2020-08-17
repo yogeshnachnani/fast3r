@@ -84,7 +84,7 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
                 attrs {
                     item = true
                     container = false
-                    md = 4
+                    md = 5
                     className = ComponentStyles.getClassName { ComponentStyles::repoMappingRepoName }
                 }
                 + props.repoSummary.full_name
@@ -93,7 +93,7 @@ class RepoComponent: RComponent<RepoComponentProps, RepoComponentState>() {
                 attrs {
                     item = true
                     container = false
-                    md = 6
+                    md = 7
                 }
                 OutlinedInput {
                     attrs {

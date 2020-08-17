@@ -107,7 +107,7 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
                 attrs {
                     item = true
                     container = false
-                    md = 4
+                    md = 5
                 }
                 // Empty
             }
@@ -115,7 +115,7 @@ class RepoInitComponent: RComponent<RepoInitProps, RepoInitState>() {
                 attrs {
                     item = true
                     container = false
-                    md = 6
+                    md = 7
                 }
                 styledDiv {
                     css {
