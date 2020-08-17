@@ -50,6 +50,7 @@ import kotlinx.css.bottom
 import kotlinx.css.boxSizing
 import kotlinx.css.color
 import kotlinx.css.display
+import kotlinx.css.em
 import kotlinx.css.flex
 import kotlinx.css.flexBasis
 import kotlinx.css.flexDirection
@@ -252,6 +253,13 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
             fontSize = 24.px
             lineHeight = 32.px.lh
         }
+    }
+
+    val caption by css {
+        fontSize = 16.px
+        lineHeight = 22.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
     }
 
     val body2Font by css {
@@ -729,6 +737,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val pullRequestSummaryCard by css {
+        width = 100.pct
         backgroundColor = Colors.backgroundDarkGrey
         borderRadius = 8.px
         boxShadow(color = rgba(0, 0, 0, 0.25), offsetX = 0.px, offsetY = 4.px, blurRadius = 74.px )
@@ -737,12 +746,18 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val pullRequestSummaryCardHeading by css {
-        marginTop = 24.px
+        marginTop = 12.px
         marginLeft = 24.px
         marginBottom = 0.px
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
+        + bodyFont
+        width = LinearDimension.fillAvailable
         color = Colors.textMediumGrey
+        media(QUAD_HD) {
+            marginTop = 24.px
+        }
+        media(FOUR_K) {
+            marginTop = 24.px
+        }
     }
     val pullRequestSummaryHeaderContainer by css {
         display = Display.inlineFlex
@@ -755,14 +770,20 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         borderTopLeftRadius = 100.px
         borderBottomLeftRadius = 100.px
         height = 36.px
-//        padding(vertical = 6.px, horizontal = 20.px)
-        marginTop = 24.px
+        + buttonCaption
         color = Colors.textLightGrey
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        fontFamily = FontFamilies.nonCode
         verticalAlign = VerticalAlign.middle
         textAlign = TextAlign.center
+        marginTop = 12.px
+        whiteSpace = WhiteSpace.nowrap
+        media(QUAD_HD) {
+            marginTop = 24.px
+            marginLeft = 24.px
+        }
+        media(FOUR_K) {
+            marginTop = 24.px
+            marginLeft = 24.px
+        }
     }
 
     val pullRequestSummaryAgeText by css {
@@ -777,15 +798,23 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = Colors.backgroundDarkestGreyAlpha04
         borderRadius = 100.px
         width = LinearDimension.fitContent
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        fontFamily = FontFamilies.nonCode
+        + caption
         color = Colors.textLightGrey
+        marginTop = 8.px
+        marginBottom = 8.px
         marginLeft = 24.px
-        marginTop = 12.px
-        marginBottom = 12.px
+        padding(vertical = 4.px, horizontal = 8.px)
+        media(QUAD_HD) {
+            marginTop = 12.px
+            marginBottom = 12.px
+            padding(vertical = 6.px, horizontal = 12.px)
+        }
+        media(FOUR_K) {
+            marginTop = 12.px
+            marginBottom = 12.px
+            padding(vertical = 6.px, horizontal = 12.px)
+        }
         display = Display.block
-        padding(vertical = 6.px, horizontal = 12.px)
     }
 
     val pullRequestSummaryCommentContainer by css {
@@ -793,41 +822,51 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = Colors.backgroundDarkestGrey
         marginLeft = 24.px
         marginRight = 24.px
-        marginBottom = 16.px
         display = Display.flex
-        justifyContent = JustifyContent.center
-        alignItems = Align.center
+        justifyContent = JustifyContent.spaceAround
         color = Colors.textDarkGrey
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
-        fontFamily = FontFamilies.nonCode
+        + caption
         position = Position.relative
+        marginBottom = 8.px
+        media(QUAD_HD) {
+            marginBottom = 16.px
+        }
+        media(FOUR_K) {
+            marginBottom = 16.px
+        }
     }
 
     val pullRequestSummaryCommentBody by css {
         height = LinearDimension(LineHeights.normal.value).times(2)
-        marginBottom = 22.px
         textOverflow = TextOverflow.ellipsis
         overflow = Overflow.hidden
         put("display", "-webkit-box")
         put("-webkit-line-clamp", "2")
         put("-webkit-box-orient", "vertical")
+        marginBottom = 16.px
+        media(QUAD_HD) {
+            marginBottom = 22.px
+        }
+        media(FOUR_K) {
+            marginBottom = 22.px
+        }
     }
 
     val pullRequestSummaryCommentUserAvatar by css {
-        position = Position.absolute
-        display = Display.inlineFlex
-        top = 24.px
-        left = 24.px
+//        position = Position.absolute
+        marginTop = 1.em
+        display = Display.flex
+//        top = 24.px
+//        left = 24.px
     }
 
     val pullRequestMetaDataContainer by css {
         marginLeft = 24.px
         marginRight = 24.px
-        paddingBottom = 14.px
         display = Display.flex
         justifyContent = JustifyContent.spaceBetween
         alignContent = Align.center
+        paddingBottom = 14.px
     }
 
     val pullRequestMetaDataItems by css {
@@ -835,7 +874,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         display = Display.inlineFlex
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
-        flex(flexBasis = 40.pct.basis)
+        whiteSpace = WhiteSpace.nowrap
     }
     val pullRequestSummaryMetaDataText by css {
         display = Display.inlineFlex
@@ -846,18 +885,23 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         display = Display.inlineFlex
         fontSize = FontSizes.normal
         color = Colors.primaryBlue
-        flexBasis = 60.pct.basis
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
     }
 
     val pullRequestSummaryMetaDataSize by css {
         display = Display.inlineFlex
-        fontSize = FontSizes.normal
+        + caption
         color = Colors.primaryBlue
         justifyContent = JustifyContent.flexStart
         alignItems = Align.center
-        flexGrow = 1.0
+        marginLeft = 28.px
+        media(QUAD_HD) {
+            marginLeft = 42.px
+        }
+        media(FOUR_K) {
+            marginLeft = 42.px
+        }
     }
 
     val pullRequestSummaryCardKeyboardShortcut by css {
@@ -883,10 +927,17 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val avatarInitials by css {
-        width = 34.px
-        height = 34.px
-        fontSize = FontSizes.normal
-        lineHeight = LineHeights.normal
+        width = 28.px
+        height = 28.px
+        + caption
+        media(QUAD_HD) {
+            width = 34.px
+            height = 34.px
+        }
+        media(FOUR_K) {
+            width = 34.px
+            height = 34.px
+        }
     }
 
     val changeSetOverviewTitleAndAge by css {
@@ -1130,7 +1181,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val iconAndLogoutButtonContainer by css {
-        height = 8.vh
+        height = 6.vh
         media(QUAD_HD) {
             height = 16.vh
         }

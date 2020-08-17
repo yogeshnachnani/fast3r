@@ -143,7 +143,7 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
             }
             styledDiv {
                 css {
-                    width = 80.pct
+                    width = 90.pct
                 }
                 styledP {
                     css {

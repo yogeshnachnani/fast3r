@@ -37,7 +37,9 @@ class PullRequestList constructor(
                     attrs {
                         item = true
                         container = false
-                        md = 4
+                        md = 6
+                        lg = 6
+                        xl = 4
                     }
                     pullRequestSummaryCard {
                         project = currentPRProject

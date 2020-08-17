@@ -66,7 +66,6 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 item = false
                 justify = "center"
                 direction = "row"
-                spacing = 2
             }
             Grid {
                 attrs {
@@ -80,7 +79,9 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
                 attrs {
                     container = false
                     item = true
-                    md = 8
+                    xl = 8
+                    md = 10
+                    lg = 10
                 }
                 styledP {
                     css {
