@@ -346,31 +346,34 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val fileListPane by css {
-        paddingTop = 0.px
+        paddingTop = 30.px
         minWidth = 340.px
         maxWidth = 360.px
         media(QUAD_HD) {
-            paddingTop = 30.px
+            paddingTop = 40.px
             minWidth = 450.px
         }
         media(FOUR_K) {
-            paddingTop = 30.px
+            paddingTop = 40.px
             minWidth = 450.px
         }
         height = 100.vh
         paddingRight = 8.px
-        margin(all = 0.px)
         backgroundColor = Colors.backgroundDarkGrey
     }
     val fileListHeaderItem by css {
-        + headline6
-        fontWeight = FontWeight.normal
-        margin(vertical = 16.px)
+        + bodyFont
+        fontWeight = FontWeight.w600
+        marginTop = 0.px
+        marginBottom = 16.px
+        marginLeft = 24.px
         media(QUAD_HD) {
-            margin(vertical = 40.px)
+            marginLeft = 40.px
+            marginBottom = 30.px
         }
         media(FOUR_K) {
-            margin(vertical = 40.px)
+            marginLeft = 40.px
+            marginBottom = 30.px
         }
         color = Colors.textDarkGrey
         padding(0.px)

@@ -1,34 +1,26 @@
 package supercr.workflows.codereview.components
 
+import BookmarkBorder
+import CheckBoxOutlined
+import Done
 import DraggableProvided
 import ListItem
+import NotificationsNone
 import codereview.FileDiffV2
 import kotlinext.js.Object
-import kotlinx.css.Align
+import kotlinx.css.Color
 import kotlinx.css.Display
-import kotlinx.css.FontWeight
-import kotlinx.css.alignContent
 import kotlinx.css.color
 import kotlinx.css.display
-import kotlinx.css.fontSize
-import kotlinx.css.fontWeight
-import kotlinx.css.lineHeight
 import kotlinx.css.margin
-import kotlinx.css.marginRight
 import kotlinx.css.minWidth
-import kotlinx.css.paddingBottom
-import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.px
-import kotlinx.html.attributesMapOf
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLUListElement
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
-import react.createRef
 import styled.css
 import styled.getClassName
 import styled.styledDiv
@@ -36,8 +28,7 @@ import styled.styledP
 import styled.styledSpan
 import supercr.css.Colors
 import supercr.css.ComponentStyles
-import supercr.css.FontSizes
-import supercr.css.LineHeights
+import supercr.css.EditorThemeColors
 import supercr.kb.components.keyboardChip
 
 external interface FileItemProps: RProps {
@@ -46,6 +37,7 @@ external interface FileItemProps: RProps {
     var handlerForFile: () -> Unit
     var assignedShortcut: String
     var providedDraggable: DraggableProvided?
+    var reviewStatus: FileReviewStatus
 }
 
 class FileItem: RComponent<FileItemProps, RState>() {
@@ -96,14 +88,10 @@ class FileItem: RComponent<FileItemProps, RState>() {
                 }
                 styledSpan {
                     css {
-                        color = if (props.isSelected) {
-                            Colors.primaryTeal
-                        } else {
-                            Colors.textDarkGrey
-                        }
+                        color = getIconColor()
                         classes.add(ComponentStyles.getClassName { ComponentStyles::fileListTshirtSizePosition })
                     }
-                    +props.fileDiff.tShirtSize.name
+                    getStatusItem()
                 }
                 styledSpan {
                     css {
@@ -133,6 +121,30 @@ class FileItem: RComponent<FileItemProps, RState>() {
 
     private val removePrefixOnUnmount : (String) -> Unit = { _ ->
         // No-op
+    }
+
+    private fun getIconColor(): Color {
+        return if (props.isSelected) {
+            Colors.primaryTeal
+        } else {
+            when(props.reviewStatus) {
+                FileReviewStatus.TO_BE_REVIEWED -> Colors.textDarkGrey
+                FileReviewStatus.REVIEWED -> EditorThemeColors.tokenLightBlue
+                FileReviewStatus.SAVED_FOR_LATER -> EditorThemeColors.tokenLightOrange
+            }
+        }
+    }
+
+    private fun RBuilder.getStatusItem() {
+        when(props.reviewStatus) {
+            FileReviewStatus.TO_BE_REVIEWED -> + props.fileDiff.tShirtSize.name
+            FileReviewStatus.REVIEWED -> Done {
+                attrs { fontSize = "1.25em" }
+            }
+            FileReviewStatus.SAVED_FOR_LATER -> BookmarkBorder {
+                attrs { fontSize = "1.25em" }
+            }
+        }
     }
 }
 

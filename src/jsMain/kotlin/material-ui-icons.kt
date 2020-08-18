@@ -14,10 +14,13 @@ external val ExpandMore: RClass<RProps>
 external val NotificationsNone: RClass<RProps>
 
 @JsName("BookmarkBorder")
-external val BookmarkBorder: RClass<RProps>
+external val BookmarkBorder: RClass<SvgIconProps>
 
 @JsName("CheckBoxOutlined")
-external val CheckBoxOutlined: RClass<RProps>
+external val CheckBoxOutlined: RClass<SvgIconProps>
+
+@JsName("Done")
+external val Done: RClass<SvgIconProps>
 
 @JsName("PermIdentity")
 external val PermIdentity: RClass<SvgIconProps>
