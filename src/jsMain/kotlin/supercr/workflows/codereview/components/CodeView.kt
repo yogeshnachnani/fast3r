@@ -54,10 +54,7 @@ class CodeView(
     override fun RBuilder.render() {
         styledDiv {
             css {
-                width = LinearDimension.inherit
-                height = 70.vh
-                fontSize = FontSizes.normal
-                lineHeight = LineHeights.normal
+                + ComponentStyles.codeViewPane
             }
             attrs {
                 ref = internalDivRef
@@ -81,7 +78,6 @@ class CodeView(
             "theme" to "ace/theme/fast3r_dark",
             "readOnly" to true,
             "highlightActiveLine" to false,
-            "fontSize" to FontSizes.normal,
             "showGutter" to true,
             "tabSize" to 4,
             "mode" to "ace/mode/kotlin"

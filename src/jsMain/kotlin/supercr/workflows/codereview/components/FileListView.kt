@@ -113,13 +113,7 @@ class FileListView: RComponent<FileListViewProps, FileListViewState>() {
             }
             styledP {
                 css {
-                    fontFamily = FontFamilies.nonCode
-                    fontStyle = FontStyle.normal
-                    fontWeight = FontWeight.w600
-                    fontSize = FontSizes.extraLarge
-                    lineHeight = LineHeights.extraLarge
-                    marginTop = 8.px
-                    marginBottom = 8.px
+                    + ComponentStyles.fileListHeaderText
                 }
                 + fileReviewStatus.displayText()
             }

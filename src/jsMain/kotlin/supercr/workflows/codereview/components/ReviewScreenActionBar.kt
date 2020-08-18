@@ -2,9 +2,16 @@ package supercr.workflows.codereview.components
 
 import Grid
 import Paper
+import kotlinx.css.Align
 import kotlinx.css.Display
+import kotlinx.css.JustifyContent
+import kotlinx.css.alignContent
+import kotlinx.css.alignItems
+import kotlinx.css.basis
 import kotlinx.css.color
 import kotlinx.css.display
+import kotlinx.css.flexBasis
+import kotlinx.css.justifyContent
 import kotlinx.css.marginBottom
 import kotlinx.css.marginRight
 import kotlinx.css.marginTop
@@ -60,16 +67,11 @@ class ReviewScreenActionBar : RComponent<ReviewScreenActionBarProps, ReviewScree
     private fun RBuilder.renderAction(actionBarShortcut: ActionBarShortcut) {
         styledDiv {
             css {
-                display = Display.flex
-                maxWidth = 25.pct
-                marginRight = 50.px
+                + ComponentStyles.actionBarShortcutContainer
             }
-            styledSpan {
+            styledDiv {
                 css {
-                    display = Display.inlineBlock
-                    marginTop = 28.px
-                    marginBottom = 28.px
-                    marginRight = 16.px
+                    display = Display.inlineFlex
                 }
                 + actionBarShortcut.textToDisplay
             }

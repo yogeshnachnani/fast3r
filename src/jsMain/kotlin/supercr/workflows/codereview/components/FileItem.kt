@@ -92,13 +92,7 @@ class FileItem: RComponent<FileItemProps, RState>() {
             }
             styledP {
                 css {
-                    margin(all = 0.px)
-                    paddingTop = 18.px
-                    paddingBottom = 18.px
-                    alignContent = Align.baseline
-                    fontSize = FontSizes.large
-                    lineHeight = LineHeights.large
-                    fontWeight = FontWeight.normal
+                    + ComponentStyles.fileListItemContainer
                 }
                 styledSpan {
                     css {
@@ -115,7 +109,6 @@ class FileItem: RComponent<FileItemProps, RState>() {
                     css {
                         minWidth = 70.pct
                         color = Colors.textMediumGrey
-//                        marginLeft = 40.px
                     }
                     +(props.fileDiff.newFile?.path ?: (props.fileDiff.oldFile!!.path)).split("/").last()
                 }
@@ -126,7 +119,7 @@ class FileItem: RComponent<FileItemProps, RState>() {
     private fun RBuilder.renderKeyboardShortcut() {
         styledDiv {
             css {
-                marginRight = 36.px
+                + ComponentStyles.fileListItemKeyboardShortcutContainer
             }
             keyboardChip {
                 this.attrs {

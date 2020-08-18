@@ -70,7 +70,7 @@ class FileView : RComponent<FileViewProps, FileViewState>() {
             css {
                 + ComponentStyles.fileViewFileInfo
             }
-            styledP {
+            styledDiv {
                 css {
                     + ComponentStyles.fileViewFileInfoText
                 }

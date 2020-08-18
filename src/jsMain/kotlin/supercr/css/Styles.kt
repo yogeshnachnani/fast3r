@@ -261,6 +261,20 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         fontFamily = FontFamilies.nonCode
         fontWeight = FontWeight.normal
     }
+    val helpTextCaption by css {
+        fontSize = 12.px
+        lineHeight = 16.px.lh
+        fontFamily = FontFamilies.nonCode
+        fontWeight = FontWeight.normal
+        media(QUAD_HD) {
+            fontSize = 16.px
+            lineHeight = 22.px.lh
+        }
+        media(FOUR_K) {
+            fontSize = 16.px
+            lineHeight = 22.px.lh
+        }
+    }
 
     val body2Font by css {
         fontSize = 18.px
@@ -292,58 +306,112 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.textLightGrey
     }
 
+    val codeFont by css {
+        fontSize = 13.px
+        lineHeight = 17.px.lh
+        media(QUAD_HD) {
+            fontSize = 16.px
+            lineHeight = 22.px.lh
+        }
+        media(FOUR_K) {
+            fontSize = 16.px
+            lineHeight = 22.px.lh
+        }
+    }
+
     val keyboardShortcutSingleCharBox by css {
-        width = 44.px
-        height = 42.px
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
         fontStyle = FontStyle.normal
+        width = 28.px
+        height = 28.px
+        + headline6
+        fontStyle = FontStyle.normal
+        media(QUAD_HD) {
+            width = 42.px
+            height = 42.px
+            + headline4
+        }
+        media(FOUR_K) {
+            width = 42.px
+            height = 42.px
+            + headline4
+        }
         display = Display.flex
         textAlign = TextAlign.center
         justifyContent = JustifyContent.center
         alignItems = Align.center
         alignContent = Align.center
-        + headline4
+        color = Colors.textMediumGrey
     }
 
     val fileListPane by css {
-        paddingTop = 30.px
+        paddingTop = 0.px
+        minWidth = 340.px
+        maxWidth = 360.px
+        media(QUAD_HD) {
+            paddingTop = 30.px
+            minWidth = 450.px
+        }
+        media(FOUR_K) {
+            paddingTop = 30.px
+            minWidth = 450.px
+        }
         height = 100.vh
-        minWidth = 400.px
         paddingRight = 8.px
-        marginLeft = 0.px
-        marginRight = 0.px
-        marginBottom = 0.px
-        minWidth = 450.px
+        margin(all = 0.px)
         backgroundColor = Colors.backgroundDarkGrey
     }
     val fileListHeaderItem by css {
-        marginTop = 40.px
-        marginBottom = 40.px
+        + headline6
+        fontWeight = FontWeight.normal
+        margin(vertical = 16.px)
+        media(QUAD_HD) {
+            margin(vertical = 40.px)
+        }
+        media(FOUR_K) {
+            margin(vertical = 40.px)
+        }
         color = Colors.textDarkGrey
-        paddingLeft = 0.px
-        paddingRight = 0.px
-        paddingBottom = 0.px
-        paddingTop = 0.px
+        padding(0.px)
         maxWidth = 480.px
         maxHeight = 60.px
-        fontSize = FontSizes.large
-        lineHeight = LineHeights.large
     }
     val fileListItem by css {
-        paddingLeft = 0.px
-        paddingRight = 0.px
-        paddingBottom = 0.px
-        paddingTop = 0.px
-        maxWidth = 480.px
+        padding(all = 0.px)
+        maxWidth = 360.px
+        media(QUAD_HD) {
+            maxWidth = 480.px
+        }
+        media(FOUR_K) {
+            maxWidth = 480.px
+        }
         maxHeight = 60.px
-        fontSize = FontSizes.large
-        lineHeight = LineHeights.large
+        + body2Font
+    }
+
+    val fileListItemContainer by css {
+        margin(all = 0.px)
+        padding(vertical = 8.px)
+        media(QUAD_HD) {
+            padding(vertical = 18.px)
+        }
+        media(FOUR_K) {
+            padding(vertical = 18.px)
+        }
+        alignContent = Align.baseline
+        + body2Font
     }
 
     val fileList by css {
-        maxWidth = 480.px
-        maxHeight = 900.px
+        maxWidth = 360.px
+        media(QUAD_HD) {
+            maxWidth = 480.px
+        }
+        media(FOUR_K) {
+            maxWidth = 480.px
+        }
+        maxHeight = 80.vh
         width = 100.pct
         overflow = Overflow.auto
     }
@@ -352,7 +420,23 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         float = Float.left
         minWidth = 10.pct
         marginRight = 4.px
-        marginLeft = 40.px
+        marginLeft = 24.px
+        media(QUAD_HD) {
+            marginLeft = 40.px
+        }
+        media(FOUR_K) {
+            marginLeft = 40.px
+        }
+    }
+
+    val fileListItemKeyboardShortcutContainer by css {
+        marginRight = 24.px
+        media(QUAD_HD) {
+            marginRight = 36.px
+        }
+        media(FOUR_K) {
+            marginRight = 36.px
+        }
     }
 
     val fileListHeaderIcon by css {
@@ -361,6 +445,12 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         marginRight = 4.px
         marginLeft = 32.px
         color = Colors.iconGrey
+    }
+
+    val fileListHeaderText by css {
+        + bodyFont
+        fontWeight = FontWeight.w600
+        margin(vertical = 8.px)
     }
 
     val fileListExpandIcon by css {
@@ -494,19 +584,22 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val fileViewFileInfo by css {
-        height = 80.px
         backgroundColor = Colors.backgroundDarkestGrey
-        fontFamily = FontFamilies.nonCode
-        fontStyle = FontStyle.normal
-        fontWeight = FontWeight.normal
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
+        + body2Font
         width = 100.pct
-        display = Display.block
+        display = Display.flex
+        alignItems = Align.flexEnd
+        height = 34.px
+        media(QUAD_HD) {
+            height = 40.px
+        }
+        media(FOUR_K) {
+            height = 40.px
+        }
     }
     val fileViewFileInfoText by css {
-        marginTop = 24.px
-        marginBottom = 24.px
+//        marginTop = 24.px
+//        marginBottom = 24.px
         marginLeft = 36.px
         color = Colors.textDarkGrey
     }
@@ -661,42 +754,78 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
 
     val extraInfoWindowHeader by css {
-        height = 80.px
+        height = 36.px
+        media(QUAD_HD) {
+            height = 60.px
+        }
+        media(FOUR_K) {
+            height = 60.px
+        }
         backgroundColor = Colors.primaryBlack
         width = 100.pct
+    }
+
+    val actionBarShortcutContainer by css {
+        display = Display.flex
+        flexBasis = 22.pct.basis
+        justifyContent = JustifyContent.spaceBetween
+        alignItems = Align.center
+        alignContent = Align.center
     }
 
     val actionBar by css {
         position = Position.absolute
         right = 2.px
-        bottom = 30.vh
+        bottom = 20.vh
         backgroundColor = Colors.backgroundDarkestGrey
-        borderRadius = 14.px
-        fontSize = FontSizes.normal
-        fontFamily = FontFamilies.nonCode
-        lineHeight = LineHeights.normal
+        borderBottomLeftRadius = 14.px
+        borderTopLeftRadius = 14.px
+        borderTopRightRadius = 0.px
+        borderBottomRightRadius = 0.px
+        + helpTextCaption
         color = Colors.textDarkGrey
-        width = 1080.px
-        height = 80.px
+        height = 48.px
+        width = 580.px
+        media(QUAD_HD) {
+            height = 80.px
+            width = 900.px
+        }
+        media(FOUR_K) {
+            height = 80.px
+            width = 900.px
+        }
         display = Display.flex
-        justifyContent = JustifyContent.flexEnd
-        alignContent = Align.flexEnd
+        justifyContent = JustifyContent.spaceAround
+        alignContent = Align.center
     }
+
     val actionBarKeyboardLetterBox by css {
-        width = 44.px
-        height = 42.px
         backgroundColor = Colors.backgroundGrey
         borderRadius = 4.px
+        width = 24.px
+        height = 24.px
+        + caption
         fontStyle = FontStyle.normal
+        media(QUAD_HD) {
+            width = 42.px
+            height = 42.px
+            marginTop = 20.px
+            marginBottom = 20.px
+            + headline4
+        }
+        media(FOUR_K) {
+            width = 42.px
+            height = 42.px
+            marginTop = 20.px
+            marginBottom = 20.px
+            + headline4
+        }
         display = Display.flex
         textAlign = TextAlign.center
         justifyContent = JustifyContent.center
         alignItems = Align.center
         alignContent = Align.center
-        marginTop = 20.px
-        marginBottom = 20.px
         color = Colors.textMediumGrey
-        + headline4
     }
 
     val diffViewNewText by css {
@@ -1266,6 +1395,12 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         media(FOUR_K) {
             height = 16.vh
         }
+    }
+
+    val codeViewPane by css {
+        width = LinearDimension.inherit
+        height = 80.vh
+        + codeFont
     }
 }
 
