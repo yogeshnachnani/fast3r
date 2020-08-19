@@ -23,7 +23,7 @@ class GithubOauthClient constructor(
         GlobalScope.async(context = Dispatchers.Main) {
             val request = superCrClient.initiateLoginToGithub(initiateLoginPacket = InitiateLoginPacket(loginUserName))
             val requestAsParams = with(request) {
-                "client_id=$client_id&redirect_uri=${redirect_uri}&login=$login&scope=${scope}&state=$state"
+                "client_id=$client_id&redirect_uri=${window.location.href}&login=$login&scope=${scope}&state=$state"
             }
             window.location.href = "$baseUrl/authorize?$requestAsParams"
         }.invokeOnCompletion { throwable ->
