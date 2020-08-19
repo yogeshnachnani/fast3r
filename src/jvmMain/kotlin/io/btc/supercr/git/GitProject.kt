@@ -52,7 +52,7 @@ class GitProject constructor(
 class GitProjectCache {
     companion object {
         private val logger = LoggerFactory.getLogger(GitProjectCache::class.java)
-        private val directoriesOSXIsHornyAbout = setOf("Applications", "Desktop", "Documents", "Library", "Movies", "Music", "Pictures", "Public")
+        private val directoriesOSXIsHornyAbout = setOf("Applications", "Desktop", "Documents", "Library", "Movies", "Music", "Pictures", "Public", "Downloads")
     }
     private val knownProjectsByProviderPath: ConcurrentHashMap<String, Project> = ConcurrentHashMap(100)
 
