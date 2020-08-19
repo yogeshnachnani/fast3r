@@ -16,6 +16,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.util.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.FileFilter
 import java.nio.file.Files
 import java.util.concurrent.*
 
@@ -51,6 +52,7 @@ class GitProject constructor(
 class GitProjectCache {
     companion object {
         private val logger = LoggerFactory.getLogger(GitProjectCache::class.java)
+        private val directoriesOSXIsHornyAbout = setOf("Applications", "Desktop", "Documents", "Library", "Movies", "Music", "Pictures", "Public")
     }
     private val knownProjectsByProviderPath: ConcurrentHashMap<String, Project> = ConcurrentHashMap(100)
 
@@ -95,9 +97,9 @@ class GitProjectCache {
 
     private suspend fun File.processDir(processSubDirsChannel: Channel<File>, processGitDirChannel: Channel<File>) {
         GlobalScope.async(Dispatchers.IO) {
-            listFiles { file, _ -> file.isDirectory }
+            listFiles(FileFilter { file -> file.isDirectory })
                 ?.forEach { subDir ->
-                    if (!Files.isSymbolicLink(subDir.toPath())) {
+                    if (subDir.shouldProcessDir()) {
                         processSubDirsChannel.send(subDir)
                         if (subDir.endsWith(".git")) {
                             processGitDirChannel.send(subDir)
@@ -106,6 +108,21 @@ class GitProjectCache {
                 }
         }
     }
+
+    private fun File.shouldProcessDir(): Boolean {
+        return when {
+            !this.isDirectory -> {
+                logger.info("Found {} which is not a directory", name)
+                false
+            }
+            Files.isSymbolicLink(this.toPath()) -> false
+            name.startsWith(".") && !name.endsWith(".git") -> false
+            directoriesOSXIsHornyAbout.contains(name) -> false
+            else -> true
+        }
+    }
+
+
     private fun File.openRepoAndGetProviderPath(): String? {
         return try {
             FileRepositoryBuilder()
