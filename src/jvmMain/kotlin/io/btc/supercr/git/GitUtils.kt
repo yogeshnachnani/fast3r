@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
+import org.eclipse.jgit.errors.MissingObjectException
 import org.eclipse.jgit.lib.FileMode
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Repository
@@ -58,9 +59,14 @@ fun Git.fetchRef(ref: String): Boolean {
 }
 
 /**
- * TODO
+ * TODO: This will take a long time right now. Try to speed this up somehow
  */
 fun Git.checkOrFetchRef(ref: String): Boolean {
+    try {
+        repository.parseCommit(ObjectId.fromString(ref))
+    } catch (exception: MissingObjectException) {
+        this.fetchRef(ref)
+    }
     return true
 }
 
