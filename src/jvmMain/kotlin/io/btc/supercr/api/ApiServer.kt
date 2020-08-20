@@ -37,7 +37,18 @@ class ApiServer constructor(
 
 ) {
     init {
-        embeddedServer(Netty, DEFAULT_PORT, watchPaths = listOf("ApiServerInitKt"), module = Application::superCrServerProduction)
+        val customHost = System.getProperty("resourceHost")
+        embeddedServer(
+            Netty,
+            DEFAULT_PORT,
+            watchPaths = listOf("ApiServerInitKt"),
+            module = Application::superCrServerProduction,
+            host = if(customHost.isNullOrEmpty()) {
+                "0.0.0.0"
+            } else {
+                customHost
+            }
+        )
             .start()
     }
 
@@ -70,6 +81,10 @@ fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = false) {
     }
     install(CORS) {
         host("localhost:8080")
+        val customHost = System.getProperty("resourceHost")
+        if (customHost.isNullOrEmpty().not()) {
+            host(customHost)
+        }
         allowNonSimpleContentTypes = true
     }
 }

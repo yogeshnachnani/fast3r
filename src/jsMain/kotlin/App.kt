@@ -186,7 +186,8 @@ private fun RBuilder.renderDiffView() {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
             }
-        }
+        },
+        hostName = window.location.host
     )
 
     StylesProvider {

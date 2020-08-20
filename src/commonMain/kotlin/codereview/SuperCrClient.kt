@@ -30,13 +30,14 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
 class SuperCrClient(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    hostName: String
 ) {
     companion object {
-        private val baseUrl = "http://localhost:${DEFAULT_PORT}"
         private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-//        private val json = io.ktor.client.features.json.defaultSerializer()
     }
+
+    private val baseUrl: String = "http://${hostName}:${DEFAULT_PORT}"
 
     suspend fun getAllProjects(): List<Project> {
         return httpClient.request<List<Project>>(buildRequest().apply {

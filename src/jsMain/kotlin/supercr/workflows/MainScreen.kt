@@ -22,6 +22,7 @@ import supercr.workflows.gettingstarted.components.loginComponent
 import supercr.workflows.gettingstarted.components.repoInit
 import supercr.workflows.login.github.GithubOauthClient
 import supercr.workflows.overview.screens.overviewScreen
+import kotlin.browser.window
 
 external interface MainScreenState: RState{
     var projects: List<Project>
@@ -126,7 +127,8 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
             }
-        }
+        },
+        hostName = window.location.hostname
     )
 
     private val githubOauthClient = GithubOauthClient(
