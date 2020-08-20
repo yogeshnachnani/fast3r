@@ -319,6 +319,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         }
     }
 
+
     val keyboardShortcutSingleCharBox by css {
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 4.px
@@ -1404,6 +1405,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         width = LinearDimension.inherit
         height = 80.vh
         + codeFont
+    }
+    /** This has to be the last, since it takes precedence */
+    val keyboardShortcutBoxHighlighted by css {
+        backgroundColor = Colors.primaryBlue
     }
 }
 

@@ -63,11 +63,13 @@ class KeyboardChip(
             }
             styledDiv {
                 css {
-                    classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
-                    marginRight = 12.px
                     if (state.selectedPortion.isNotEmpty()) {
-                        backgroundColor = Colors.primaryBlue
+                        classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
+                        + ComponentStyles.keyboardShortcutBoxHighlighted
+                    } else {
+                        classes.add(props.className ?: ComponentStyles.getClassName { ComponentStyles::keyboardShortcutSingleCharBox })
                     }
+                    marginRight = 12.px
                 }
                 + "${props.assignedShortcut[0]}"
             }
