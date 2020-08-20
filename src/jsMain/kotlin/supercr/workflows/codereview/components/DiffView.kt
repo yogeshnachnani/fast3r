@@ -303,6 +303,22 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         UniversalKeyboardShortcutHandler.registerNumericEndKey('c', handleKeyboardTriggeredComments)
         UniversalKeyboardShortcutHandler.registerNumericEndKey('g', handleKeyboardTriggeredLineJump)
         UniversalKeyboardShortcutHandler.registerShortcut(DiffViewShortcuts.WindowOther.shortcutString, handleWindowSwitch, noOp)
+        UniversalKeyboardShortcutHandler.registerShortcut(DiffViewShortcuts.PageDown.shortcutString, handlePageDown, noOp)
+        UniversalKeyboardShortcutHandler.registerShortcut(DiffViewShortcuts.PageUp.shortcutString, handlePageUp, noOp)
+    }
+
+    val getActiveEditor: () -> Editor? = {
+        if (leftEditor == null || leftEditor?.isFocused() == false) {
+            rightEditor
+        } else {
+            leftEditor
+        }
+    }
+    private val handlePageDown: () -> Unit = {
+        getActiveEditor()?.gotoPageDown()
+    }
+    private val handlePageUp: () -> Unit = {
+        getActiveEditor()?.gotoPageUp()
     }
 
     private val handleWindowSwitch: () -> Unit = {

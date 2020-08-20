@@ -32,7 +32,9 @@ import kotlin.browser.window
 enum class DiffViewShortcuts(val label: String, val shortcutString: String) {
     NextFile("Next File", "fj"),
     ReviewLater("Review Later", "fl"),
-    WindowOther("Swith Window", "wo")
+    WindowOther("Swith Window", "wo"),
+    PageDown("Page Down", "J"),
+    PageUp("Page Up", "K")
 }
 
 

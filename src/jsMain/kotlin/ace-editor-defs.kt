@@ -32,6 +32,9 @@ external class Editor {
     fun isFocused(): Boolean
 
     fun focus(): Unit
+
+    fun gotoPageDown(): Unit
+    fun gotoPageUp(): Unit
 }
 @JsName("EditSession")
 external class EditSession(
