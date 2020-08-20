@@ -11,7 +11,7 @@ data class PrefixMatchHandlers(
 )
 
 object KeyboardShortcutTrie {
-    val listOfAvailableCharsForFirstLetter = listOf('a', 'd', 'e',  'g', 'q', 'r', 't', 'v', 'w', 'x', 'z')
+    val listOfAvailableCharsForFirstLetter = listOf('a', 'd', 'e',  'g', 'q', 'r', 't', 'v', 'x', 'z')
     val listOfAvailableCharsFor2ndLetter = listOf('h', 'j', 'k', 'l', 'u', 'i', 'o', 'p', 'n')
     val MAX_COMPONENTS_SUPPORTED = listOfAvailableCharsForFirstLetter.size * listOfAvailableCharsFor2ndLetter.size
     private val keyboardShortcutTrie = KeyboardShortcutTrieNode()
