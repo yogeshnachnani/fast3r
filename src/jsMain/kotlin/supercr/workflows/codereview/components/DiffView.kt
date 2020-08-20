@@ -3,7 +3,6 @@ package supercr.workflows.codereview.components
 import Editor
 import Grid
 import MouseEvent
-import RowColObject
 import codereview.FileData
 import codereview.FileDiffV2
 import codereview.FileLineItem
@@ -32,8 +31,7 @@ import supercr.css.GutterDecorationStyles
 import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
 import supercr.kb.UniversalKeyboardShortcutHandler
-import supercr.kb.UniversalShortcuts
-import supercr.kb.getShortcutString
+import supercr.kb.DiffViewShortcuts
 import supercr.workflows.codereview.processor.FileCommentHandler
 import supercr.workflows.codereview.processor.hasBothFiles
 import supercr.workflows.codereview.processor.nextEditPosition
@@ -304,6 +302,19 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     private fun addEditorShortcutListeners() {
         UniversalKeyboardShortcutHandler.registerNumericEndKey('c', handleKeyboardTriggeredComments)
         UniversalKeyboardShortcutHandler.registerNumericEndKey('g', handleKeyboardTriggeredLineJump)
+        UniversalKeyboardShortcutHandler.registerShortcut(DiffViewShortcuts.WindowOther.shortcutString, handleWindowSwitch, noOp)
+    }
+
+    private val handleWindowSwitch: () -> Unit = {
+        if (leftEditor == null || leftEditor?.isFocused() == true) {
+            rightEditor?.focus()
+        } else {
+            leftEditor?.focus()
+        }
+    }
+
+    private val noOp: (String) -> Unit = {
+
     }
 
     private val handleKeyboardTriggeredLineJump: (Int) -> Unit = { rowNumber ->
@@ -459,7 +470,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         console.log("Seems like we'll be jumping to $positionToJumpTo . and next edit index is $nextEditIndex")
         if (nextEditIndex == null) {
             console.log("Seems we have reached the last hunk, jumping to next file")
-            props.defaultActionBarActions.find { it.assignedShortcut == UniversalShortcuts.NextFile.getShortcutString() } ?.handler ?.invoke()
+            props.defaultActionBarActions.find { it.assignedShortcut == DiffViewShortcuts.NextFile.shortcutString } ?.handler ?.invoke()
         } else {
             jumpAndScrollTo(leftEditor!!, positionToJumpTo!! + 1)
             jumpAndScrollTo(rightEditor!!, positionToJumpTo + 1)

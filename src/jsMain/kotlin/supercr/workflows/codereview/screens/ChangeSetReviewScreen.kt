@@ -1,6 +1,5 @@
 package supercr.workflows.codereview.screens
 
-import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
 import codereview.ReviewInfo
@@ -18,14 +17,11 @@ import react.ReactElement
 import react.setState
 import styled.css
 import styled.styledDiv
-import supercr.kb.UniversalShortcuts
-import supercr.kb.getLabel
-import supercr.kb.getShortcutString
+import supercr.kb.DiffViewShortcuts
 import supercr.workflows.codereview.components.ActionBarShortcut
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
 import supercr.workflows.codereview.components.fileView
-import supercr.workflows.codereview.components.reviewScreenActionBar
 import supercr.workflows.codereview.processor.FileCommentHandler
 import supercr.workflows.codereview.processor.FileDiffCommentHandler
 import supercr.workflows.codereview.processor.retrieveChangedFileDiffList
@@ -135,8 +131,8 @@ class ChangeSetReviewScreen(
     }
 
     private val defaultActions = listOf(
-        ActionBarShortcut( UniversalShortcuts.NextFile.getLabel(), UniversalShortcuts.NextFile.getShortcutString(), handleNextFileCommand),
-        ActionBarShortcut( UniversalShortcuts.ReviewLater.getLabel(), UniversalShortcuts.ReviewLater.getShortcutString(), handleSaveForLater)
+        ActionBarShortcut( DiffViewShortcuts.NextFile.label, DiffViewShortcuts.NextFile.shortcutString, handleNextFileCommand),
+        ActionBarShortcut( DiffViewShortcuts.ReviewLater.label, DiffViewShortcuts.ReviewLater.shortcutString, handleSaveForLater)
     )
 
     private fun changeCurrentFileStateTo(statusToChangeTo: FileReviewStatus) {

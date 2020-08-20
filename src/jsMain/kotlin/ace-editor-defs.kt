@@ -30,6 +30,8 @@ external class Editor {
     fun resize(force: Boolean)
 
     fun isFocused(): Boolean
+
+    fun focus(): Unit
 }
 @JsName("EditSession")
 external class EditSession(

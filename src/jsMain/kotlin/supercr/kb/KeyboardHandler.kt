@@ -29,23 +29,10 @@ import kotlin.browser.window
  * TODO: Write test cases before making further edits
  */
 
-enum class UniversalShortcuts {
-    NextFile,
-    ReviewLater
-}
-
-fun UniversalShortcuts.getLabel(): String {
-    return when(this) {
-        UniversalShortcuts.NextFile -> "Next File"
-        UniversalShortcuts.ReviewLater -> "Review Later"
-    }
-}
-
-fun UniversalShortcuts.getShortcutString(): String {
-    return when(this) {
-        UniversalShortcuts.NextFile -> "fj"
-        UniversalShortcuts.ReviewLater -> "fl"
-    }
+enum class DiffViewShortcuts(val label: String, val shortcutString: String) {
+    NextFile("Next File", "fj"),
+    ReviewLater("Review Later", "fl"),
+    WindowOther("Swith Window", "wo")
 }
 
 
