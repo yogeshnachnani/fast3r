@@ -61,7 +61,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                         css {
                             fontWeight = FontWeight.w600
                         }
-                        + if(props.initials == "YN") { "yogeshnachnani" } else { "deepakt" }
+                        + if(props.initials == "YN") { "yogeshnachnani" } else { "amodm" }
                     }
                     styledSpan {
                         css {
