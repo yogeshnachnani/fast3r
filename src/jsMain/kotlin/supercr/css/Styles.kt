@@ -1042,11 +1042,11 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val pullRequestSummaryCardKeyboardShortcut by css {
         backgroundColor = Colors.backgroundDarkestGrey
         border(width = 1.px, style = BorderStyle.solid, color = Colors.primaryTealDark, borderRadius = 4.px)
-        animation(duration = 0.5.s, timing = Timing.stepEnd, iterationCount = 3.intTimes ) {
-            50 {
-                borderColor = Colors.primaryBlack
-            }
-        }
+//        animation(duration = 0.5.s, timing = Timing.stepEnd, iterationCount = 3.intTimes ) {
+//            50 {
+//                borderColor = Colors.primaryBlack
+//            }
+//        }
 
         width = 28.px
         height = 28.px
