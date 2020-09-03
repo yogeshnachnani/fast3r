@@ -1188,7 +1188,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         display = Display.flex
         flexDirection = FlexDirection.column
         /** Keep this similar to [changeSetOverviewFileList] */
-        maxHeight = ((40 + 14) * 12).px
+        maxHeight = 60.vh
         marginBottom = 30.px
         media(QUAD_HD) {
             maxHeight = ((60 + 24) * 15).px
@@ -1301,7 +1301,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     }
     val changeSetOverviewFileList by css {
         /** size it roughly equal to 13 items */
-        maxHeight = ((40 + 14) * 13).px
+        maxHeight = 65.vh
         media(QUAD_HD) {
             /** size it roughly equal to 15 items */
             maxHeight = ((60 + 24) * 15).px
