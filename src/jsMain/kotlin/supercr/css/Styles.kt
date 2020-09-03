@@ -201,7 +201,7 @@ object FontFamilies {
 val commentBoxWidth = 312.px
 val loginScreenItemsLeftMargin = 36.vw
 
-const val MACBOOK_13inch = "screen and (max-width: 1449px) and (min-width: 950px)"
+const val MACBOOK_13inch = "screen and (max-width: 1280px)"
 const val MACBOOK_15inch = "screen and (max-width: 2040px) and (min-width: 1450px)"
 const val QUAD_HD = "screen and (max-width: 2560px) and (min-width: 2041px)"
 const val FOUR_K = "screen and (min-width: 2561px)"
@@ -251,6 +251,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         lineHeight = 28.px.lh
         fontFamily = FontFamilies.nonCode
         fontWeight = FontWeight.normal
+        media(MACBOOK_13inch) {
+            fontSize = 18.px
+            lineHeight = 24.px.lh
+        }
         media(QUAD_HD) {
             fontSize = 24.px
             lineHeight = 32.px.lh
@@ -287,6 +291,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         lineHeight = 24.px.lh
         fontFamily = FontFamilies.nonCode
         fontWeight = FontWeight.normal
+        media(MACBOOK_13inch) {
+            fontSize = 16.px
+            lineHeight = 24.px.lh
+        }
         media(QUAD_HD) {
             fontSize = 21.px
             lineHeight = 28.px.lh
@@ -356,6 +364,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         paddingTop = 30.px
         minWidth = 340.px
         maxWidth = 360.px
+        media(MACBOOK_13inch) {
+            paddingTop = 20.px
+            minWidth = 300.px
+        }
         media(QUAD_HD) {
             paddingTop = 40.px
             minWidth = 450.px
@@ -1124,6 +1136,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         color = Colors.textMediumGrey
         marginBottom = 18.px
         width = 65.pct
+        media(MACBOOK_13inch) {
+            marginBottom = 10.px
+            width = 85.pct
+        }
     }
 
     val changeSetOverviewPullRequestAgeRibbonBalancer by css {
@@ -1146,6 +1162,10 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         flex(flexBasis = 40.pct.basis)
         width = 45.pct
         marginBottom = 30.px
+        media(MACBOOK_13inch) {
+            marginBottom = 18.px
+            width = 50.pct
+        }
         media(QUAD_HD) {
             width = 25.pct
             marginBottom = 100.px
@@ -1232,6 +1252,9 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         backgroundColor = Colors.backgroundDarkestGrey
         borderRadius = 8.px
         padding(vertical = 8.px, horizontal = 16.px)
+        media(MACBOOK_13inch) {
+            padding(vertical = 6.px, horizontal = 12.px)
+        }
         media(QUAD_HD) {
             padding(vertical = 20.px, horizontal = 30.px)
         }
@@ -1245,13 +1268,15 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val changeSetReviewButton by css {
         backgroundColor = Colors.primaryBlue
         borderRadius = 6.px
+        + bodyFont
         fontWeight = FontWeight.w600
-        fontFamily = FontFamilies.nonCode
-        fontSize = FontSizes.extraLarge
-        lineHeight = LineHeights.extraLarge
         color = Colors.textLightGrey
         padding(vertical = 14.px, horizontal = 26.px)
         width = 135.px
+        media(MACBOOK_13inch) {
+            padding(vertical = 8.px, horizontal = 12.px)
+            width = 100.px
+        }
         textTransform = TextTransform.none
     }
 
@@ -1286,13 +1311,18 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         width = 80.pct
         marginBottom = 14.px
         height = 40.px
+        media(MACBOOK_13inch) {
+            width = 95.pct
+        }
         media(QUAD_HD) {
             marginBottom = 24.px
             height = 60.px
+            width = 80.pct
         }
         media(FOUR_K) {
             marginBottom = 24.px
             height = 60.px
+            width = 80.pct
         }
     }
 
@@ -1430,6 +1460,9 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val iconAndLogoutButtonContainer by css {
         height = 6.vh
+        media(MACBOOK_13inch) {
+            height = 3.vh
+        }
         media(QUAD_HD) {
             height = 16.vh
         }
