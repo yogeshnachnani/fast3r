@@ -85,9 +85,11 @@ import kotlinx.css.paddingRight
 import kotlinx.css.paddingTop
 import kotlinx.css.pct
 import kotlinx.css.position
+import kotlinx.css.properties.Timing
 import kotlinx.css.properties.border
 import kotlinx.css.properties.boxShadow
 import kotlinx.css.properties.lh
+import kotlinx.css.properties.s
 import kotlinx.css.px
 import kotlinx.css.rgba
 import kotlinx.css.right
@@ -102,6 +104,9 @@ import kotlinx.css.whiteSpace
 import kotlinx.css.width
 import kotlinx.css.zIndex
 import styled.StyleSheet
+import styled.animation
+import styled.keyframes
+import kotlinx.css.properties.times as intTimes
 
 private fun String.cssClassName(): String {
     return "." + this
@@ -125,6 +130,7 @@ object Colors {
     val primaryBlack = hsl(224, 22, 10)
     val primaryBlue = hsl(234, 81, 57)
     val primaryTeal = hsl(169, 92, 71)
+    val primaryTealDark = hsla(169, 92, 51, 0.8)
 
     val backgroundDarkestGrey = hsl(222, 20, 17)
     val backgroundDarkestGreyAlpha04 = hsla(222, 20, 17, 0.4)
@@ -805,7 +811,7 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val actionBarKeyboardLetterBox by css {
         backgroundColor = Colors.backgroundGrey
-        borderRadius = 4.px
+        border(width = 1.px, style = BorderStyle.solid, color = Colors.primaryTealDark, borderRadius = 4.px)
         width = 24.px
         height = 24.px
         + caption
@@ -1035,7 +1041,13 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
 
     val pullRequestSummaryCardKeyboardShortcut by css {
         backgroundColor = Colors.backgroundDarkestGrey
-        borderRadius = 4.px
+        border(width = 1.px, style = BorderStyle.solid, color = Colors.primaryTealDark, borderRadius = 4.px)
+        animation(duration = 0.5.s, timing = Timing.stepEnd, iterationCount = 3.intTimes ) {
+            50 {
+                borderColor = Colors.primaryBlack
+            }
+        }
+
         width = 28.px
         height = 28.px
         + headline6
