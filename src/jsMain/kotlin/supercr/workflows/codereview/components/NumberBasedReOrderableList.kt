@@ -137,7 +137,7 @@ class NumberBasedReOrderableList : RComponent<NumberBasedReOrderableListProps, N
                                 }
                                 assignedShortcut = draggableProvided.draggableProps.asDynamic()["data-rbd-draggable-id"] as String
                                 uponUnmount = handleShortcutUnmount
-                                className = ComponentStyles.getClassName { ComponentStyles::pullRequestSummaryCardKeyboardShortcut }
+                                className = ComponentStyles.getClassName { ComponentStyles::numberedListKeyboardShortcut }
                             }
                         }
                     }

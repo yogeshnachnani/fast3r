@@ -1091,6 +1091,31 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         }
     }
 
+    val numberedListKeyboardShortcut by css {
+        backgroundColor = Colors.backgroundDarkestGrey
+        borderRadius = 4.px
+        width = 28.px
+        height = 28.px
+        + headline6
+        fontStyle = FontStyle.normal
+        media(QUAD_HD) {
+            width = 42.px
+            height = 42.px
+            + headline4
+        }
+        media(FOUR_K) {
+            width = 42.px
+            height = 42.px
+            + headline4
+        }
+        display = Display.flex
+        textAlign = TextAlign.center
+        justifyContent = JustifyContent.center
+        alignItems = Align.center
+        alignContent = Align.center
+        color = Colors.textMediumGrey
+    }
+
     val changeSetOverviewTitleAndAge by css {
         display = Display.flex
         justifyContent = JustifyContent.flexStart
