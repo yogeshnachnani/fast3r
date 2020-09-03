@@ -126,13 +126,13 @@ class ChangesetOverviewScreen constructor(
                     flexBasis = 100.pct.basis
                     marginBottom = 0.px
                 }
-                + "Set the File Review Sequence"
+                + "Changed Files"
             }
             styledP {
                 css {
                     + ComponentStyles.changeSetOverViewFileListSubText
                 }
-                + "Press a number assigned to each file to reorder"
+                + "Drag file to reorder"
             }
         }
         numberBasedReOrderableList {
