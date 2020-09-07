@@ -23,6 +23,8 @@ import kotlinx.css.justifyContent
 import kotlinx.css.minHeight
 import kotlinx.css.pct
 import kotlinx.css.width
+import kotlinx.html.js.onClickFunction
+import org.w3c.dom.events.Event
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -58,6 +60,9 @@ external interface PullRequestSummaryCardState : RState {
 class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullRequestSummaryCardState>() {
     override fun RBuilder.render() {
         styledDiv {
+            attrs {
+                onClickFunction = onClickHandlerWrapper
+            }
             css {
                 + ComponentStyles.pullRequestSummaryCard
             }
@@ -190,6 +195,11 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
 
     private val handleShortcutUnmount: (String) -> Unit = { _ ->
         //no op
+    }
+
+    private val onClickHandlerWrapper: (Event) -> Unit = {
+        // TODO: Send telemetry to guage how often this happens
+        props.onClickHandler.invoke()
     }
 
 }
