@@ -12,10 +12,11 @@ data class FileDiffCommentHandler(
 )
 
 class FileCommentHandler(
-    var comments: Map<Int, List<FileLineItem.Comment>>
+    private val existingComments: Map<Int, List<FileLineItem.Comment>>
 ) {
+    private val newCommentsMutable: MutableMap<Int, List<FileLineItem.Comment>> = mutableMapOf()
+
     val addNewComment: (String, Int) -> Unit = { commentBody, position ->
-        val existingComments = this.comments[position] ?: listOf()
         val createdAt = Date().toISOString()
         val newComment = FileLineItem.Comment(
             body = commentBody,
@@ -23,14 +24,31 @@ class FileCommentHandler(
             updatedAt = createdAt,
             userId = "yogeshnachnani"
         )
-        this.comments = comments.plus(Pair(position, existingComments.plus(newComment)))
+        /** We add entries to the [newCommentsMutable] as well as [allComments] maps */
+        val existingNewCommentsOnGivenPosition = this.newCommentsMutable[position] ?: listOf()
+        this.newCommentsMutable[position] = existingNewCommentsOnGivenPosition.plus(newComment)
     }
+
+    fun hasNewComments(): Boolean {
+        return this.newCommentsMutable.isNotEmpty()
+    }
+
+    val getNewCommentAt: (Int) -> List<FileLineItem.Comment> = { position ->
+        this.newCommentsMutable[position] ?: listOf()
+    }
+
+    val oldComments
+    get() = this.existingComments.toMap()
+
+    val newComments
+    get() = this.newCommentsMutable.toMap()
+
 }
 
 fun List<Pair<FileDiffV2, FileDiffCommentHandler>>.retrieveChangedFileDiffList(): FileDiffListV2 {
     return this.mapNotNull { (oldFileDiff, commentHandler) ->
         if (commentHandler.hasNewComments()) {
-            val (oldFileComments, newFileComments) = commentHandler.retrieveComments()
+            val (oldFileComments, newFileComments) = commentHandler.retrieveNewComments()
             with(oldFileDiff){
                 copy(
                     oldFile = oldFile?.copy(fileLines = oldFile.fileLines.replaceWithNewComments(oldFileComments)),
@@ -64,10 +82,10 @@ fun List<FileLine>.replaceWithNewComments(newCommentsMap: Map<Int, List<FileLine
     }
 }
 
-fun FileDiffCommentHandler.retrieveComments(): Pair<Map<Int, List<FileLineItem.Comment>>, Map<Int, List<FileLineItem.Comment>>> {
+fun FileDiffCommentHandler.retrieveNewComments(): Pair<Map<Int, List<FileLineItem.Comment>>, Map<Int, List<FileLineItem.Comment>>> {
     return Pair(
-        first = oldFileCommentHandler?.comments ?: mapOf(),
-        second = newFileCommentHandler?.comments ?: mapOf()
+        first = oldFileCommentHandler?.newComments ?: mapOf(),
+        second = newFileCommentHandler?.newComments ?: mapOf()
     )
 }
 
@@ -75,6 +93,3 @@ fun FileDiffCommentHandler.hasNewComments(): Boolean  {
     return oldFileCommentHandler?.hasNewComments() ?: false || newFileCommentHandler?.hasNewComments() ?: false
 }
 
-fun FileCommentHandler.hasNewComments(): Boolean {
-    return this.comments.isNotEmpty()
-}

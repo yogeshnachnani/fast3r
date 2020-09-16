@@ -3,9 +3,7 @@ package supercr.workflows.codereview.components
 import Editor
 import Grid
 import MouseEvent
-import codereview.FileData
 import codereview.FileDiffV2
-import codereview.FileLineItem
 import codereview.getNewFileText
 import codereview.getOldFileText
 import codereview.getUniqueIdentifier
@@ -51,13 +49,15 @@ external interface DiffViewState: RState {
 
 class AceCommentsWrapper(
     private var editor: Editor,
-    var oldComments: Map<Int, List<FileLineItem.Comment>>,
     val commentBoxXPosition: () -> LinearDimension,
-    val getNewComments: (Int) -> List<FileLineItem.Comment>,
     val commentHandler: FileCommentHandler
 ) {
-    fun highlightCommentLines() {
-        oldComments.keys.highlightCommentLines(editor)
+    fun highlightOldCommentLines() {
+        commentHandler.oldComments.keys.highlightOldCommentLines(editor)
+    }
+
+    fun highlightNewCommentLines() {
+        commentHandler.newComments.keys.highlightOldCommentLines(editor)
     }
 
     fun isCommentAllowed(): Boolean {
@@ -70,7 +70,7 @@ class AceCommentsWrapper(
         return Pair(screenPosition.pageX, screenPosition.pageY)
     }
 
-    private fun Set<Int>.highlightCommentLines(forEditor: Editor) {
+    private fun Set<Int>.highlightOldCommentLines(forEditor: Editor) {
         this
             .map { viewPosition ->
                 forEditor.getSession().addGutterDecoration(viewPosition, GutterDecorationStyles.commentIcon)
@@ -158,7 +158,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     override fun componentDidUpdate(prevProps: DiffViewProps, prevState: DiffViewState, snapshot: Any) {
         val updatedDueToDataChange = (snapshot as Boolean)
         if (updatedDueToDataChange) {
-            updateOrFirstMountCommon()
+            commonFunctionalityForNewContentOrOnFirstMount()
             if (state.currentCommentBoxRowPosition != null) {
                 hideCommentBox()
             }
@@ -166,12 +166,12 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     override fun componentDidMount() {
-        updateOrFirstMountCommon()
+        commonFunctionalityForNewContentOrOnFirstMount()
         addGutterListeners()
         addEditorShortcutListeners()
     }
 
-    private fun updateOrFirstMountCommon() {
+    private fun commonFunctionalityForNewContentOrOnFirstMount() {
         assignEditorVars()
         if (props.fileDiff.hasBothFiles()) {
             decorateDiffView()
@@ -229,8 +229,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             }
             commentThread {
                 attrs {
-                    comments = editorForCurrentComment.oldComments[state.currentCommentBoxRowPosition!!] ?: listOf()
-                    newComments = editorForCurrentComment.getNewComments(state.currentCommentBoxRowPosition!!)
+                    comments = editorForCurrentComment.commentHandler.oldComments[state.currentCommentBoxRowPosition!!] ?: listOf()
+                    newComments = editorForCurrentComment.commentHandler.getNewCommentAt(state.currentCommentBoxRowPosition!!)
                     onCommentAdd = handleNewComments
                     hideMe = hideCommentBox
                 }
@@ -243,14 +243,10 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         leftEditorCommentsWrapper = if (props.fileDiff.hasOldFile()) {
             AceCommentsWrapper(
                 editor = leftEditor!!,
-                oldComments = props.fileDiff.oldFile?.retrieveMapOfViewPositionToComments() ?: emptyMap(),
                 commentBoxXPosition = if (props.fileDiff.hasBothFiles()) {
                     determineCommentBoxXPositionForLeftEditor
                 } else {
                     determineCommentBoxXPositionForSingleEditor
-                },
-                getNewComments = { viewPosition ->
-                    props.oldFileNewCommentHandler.comments[viewPosition] ?: listOf()
                 },
                 commentHandler = props.oldFileNewCommentHandler
             )
@@ -260,14 +256,10 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         rightEditorCommentsWrapper= if (props.fileDiff.hasNewFile()) {
             AceCommentsWrapper(
                 editor = rightEditor!!,
-                oldComments = props.fileDiff.newFile?.retrieveMapOfViewPositionToComments() ?: emptyMap(),
                 commentBoxXPosition = if (props.fileDiff.hasBothFiles()) {
                     determineCommentBoxXPositionForRightEditor
                 } else {
                     determineCommentBoxXPositionForSingleEditor
-                },
-                getNewComments = { viewPosition ->
-                    props.newFileNewCommentHandler.comments[viewPosition] ?: listOf()
                 },
                 commentHandler = props.newFileNewCommentHandler
             )
@@ -276,8 +268,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         }
 
         /** Create maps for existing comments */
-        leftEditorCommentsWrapper?.highlightCommentLines()
-        rightEditorCommentsWrapper?.highlightCommentLines()
+        leftEditorCommentsWrapper?.highlightOldCommentLines()
+        rightEditorCommentsWrapper?.highlightOldCommentLines()
 
         /** Setup Right and left editor vertical scroll listeners that manage pane sync as well as hide comment on scroll */
         rightEditor?.getSession()?.on("changeScrollTop", syncLeftEditorTopScroll )
@@ -383,6 +375,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     private val handleNewComments: (String) -> Unit = { commentBody ->
         this.editorForCurrentComment.commentHandler.addNewComment(commentBody, state.currentCommentBoxRowPosition!!)
+        this.editorForCurrentComment.highlightNewCommentLines()
         forceUpdate()
     }
 
@@ -402,27 +395,6 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     private fun rightSideTextId(): String {
         return "right-${props.fileDiff.getUniqueIdentifier()}"
-    }
-
-    private fun FileData.retrieveMapOfViewPositionToComments(): Map<Int, List<FileLineItem.Comment>> {
-        val sampleComments = mutableListOf(
-            FileLineItem.Comment("This is a single line comment", "2020-06-26T09:44:44.018189Z", "2020-06-26T09:44:44.018189Z", "yogeshnachnani"),
-            FileLineItem.Comment("This is a much longer comment so it should ideally span more lines", "2020-06-26T09:44:44.018189Z", "2020-06-26T09:44:44.018189Z", "yogeshnachnani")
-        )
-        return sampleComments. mapIndexed { index, comment ->
-            Pair(index, listOf(comment, comment))
-        }
-            .associate { it }
-//        return this.retrieveAllLineItems()
-//            .mapNotNull { (viewPosition, filePosition, lineItems) ->
-//                val comments = lineItems.filterIsInstance<FileLineItem.Comment>()
-//                if (comments.isNotEmpty()) {
-//                    Pair(viewPosition, FilePositionAndComments(filePosition, comments))
-//                } else {
-//                    null
-//                }
-//            }
-//            .associate { it }
     }
 
     private fun Editor.applyGutterListener() {

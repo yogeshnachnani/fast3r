@@ -59,16 +59,16 @@ class CommentThread(
                 props.comments
                     .plus(props.newComments)
                     .mapIndexed { index, comment -> showComment(comment, index == props.comments.lastIndex) }
-                if (state.showCommentInput || props.comments.isEmpty()) {
+                if (state.showCommentInput) {
                     renderCommentInput()
                 }
             }
         }
     }
 
-//    override fun CommentThreadState.init(props: CommentThreadProps) {
-//        showCommentInput = props.comments.isEmpty()
-//    }
+    override fun CommentThreadState.init(props: CommentThreadProps) {
+        showCommentInput = props.comments.isEmpty()
+    }
 
     private val showCommentInputBox : () -> Unit = {
         setState {
@@ -88,7 +88,10 @@ class CommentThread(
 
     private val handleCommentAddition: (String) -> Unit = { commentBody ->
         props.onCommentAdd(commentBody)
-        forceUpdate()
+        /** TODO(yogesh): Add this functionality once we implement "Escape" to hide comments/everything in [DiffView] */
+//        setState {
+//            showCommentInput = false
+//        }
     }
 
     private fun RBuilder.renderCommentInput(): ReactElement {

@@ -94,14 +94,14 @@ class ChangeSetReviewScreen(
         return FileDiffCommentHandler(
             oldFileCommentHandler = if (fileDiff.oldFile != null) {
                 FileCommentHandler(
-                    comments = mapOf()
+                    existingComments = mapOf()
                 )
             } else {
                 null
             },
             newFileCommentHandler = if (fileDiff.newFile != null) {
                 FileCommentHandler(
-                    comments = mapOf()
+                    existingComments = mapOf()
                 )
             } else {
                 null
