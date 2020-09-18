@@ -3,13 +3,10 @@ import codereview.FileLineItem
 import codereview.Project
 import codereview.ReviewInfo
 import codereview.ReviewStorageProvider
-import codereview.SuperCrClient
 import git.provider.PullRequestSummary
-import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import react.RBuilder
 import react.ReactElement
 import react.buildElement
@@ -26,8 +23,6 @@ import supercr.workflows.gettingstarted.components.loginComponent
 import supercr.workflows.gettingstarted.components.repoInit
 import supercr.workflows.mainScreen
 import supercr.workflows.overview.components.pullRequestList
-import kotlin.browser.document
-import kotlin.browser.window
 import kotlin.js.Date
 
 @JsModule("../../../../processedResources/js/main/pull_request_big_one.json")
@@ -38,6 +33,7 @@ external val fileDiffForBigPullRequest: dynamic
 
 @JsModule("../../../../processedResources/js/main/file_diffv2_for_small_change.json")
 external val fileDiffV2ForSmallRequest: dynamic
+
 
 fun main ()  {
     document.head!!.insertAdjacentHTML("beforeend", "<style>$styles</style>")
@@ -96,8 +92,7 @@ private fun renderComments() {
 }
 
 private fun renderFileView() {
-    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-    val sampleFileDiff= json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffV2ForSmallRequest))
+    val sampleFileDiff= jsonParser.decodeFromString(FileDiffListV2.serializer(), JSON.stringify(fileDiffV2ForSmallRequest))
     render(document.getElementById("root"))  {
         fileView {
             fileDiff = sampleFileDiff.fileDiffs.first()
@@ -115,13 +110,12 @@ private fun getComponentsToRender(names: List<String>): List<Pair<ReactElement, 
         val handler: () -> Unit = {
             console.log("Hello, I am $it")
         }
-        Pair(element!!, handler)
+        Pair(element, handler)
     }
 }
 
 private fun RBuilder.renderPullRequests() {
-    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    val samplePullRequestSummary: PullRequestSummary = jsonParser.decodeFromString(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
     StylesProvider {
         attrs {
             injectFirst = true
@@ -159,9 +153,8 @@ private fun RBuilder.renderRepoList() {
 }
 
 private fun RBuilder.renderChangesetOverviewScreen() {
-    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
-    val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
+    val samplePullRequestSummary: PullRequestSummary = jsonParser.decodeFromString(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    val sampleFileDiff = jsonParser.decodeFromString(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
     StylesProvider {
         attrs {
             injectFirst = true
@@ -178,17 +171,8 @@ private fun RBuilder.renderChangesetOverviewScreen() {
 }
 
 private fun RBuilder.renderDiffView() {
-    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-    val samplePullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
-    val sampleFileDiff = json.parse(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
-    val client = SuperCrClient(
-        httpClient = HttpClient() {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
-            }
-        },
-        hostName = window.location.host
-    )
+    val samplePullRequestSummary: PullRequestSummary = jsonParser.decodeFromString(PullRequestSummary.serializer(), JSON.stringify(bigPullRequest))
+    val sampleFileDiff = jsonParser.decodeFromString(FileDiffListV2.serializer(), JSON.stringify(fileDiffForBigPullRequest))
 
     StylesProvider {
         attrs {

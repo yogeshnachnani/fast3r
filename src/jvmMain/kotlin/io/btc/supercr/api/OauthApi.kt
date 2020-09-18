@@ -29,6 +29,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
+import jsonParser
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -40,10 +41,9 @@ class OauthApi constructor(
         private val logger = LoggerFactory.getLogger(OauthApi::class.java)
         private const val githubBaseUrl = "https://github.com/login/oauth"
     }
-    private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     private val httpClient = HttpClient() {
         install(JsonFeature) {
-            serializer = KotlinxSerializer(json = json)
+            serializer = KotlinxSerializer(json = jsonParser)
         }
     }
 
@@ -86,7 +86,7 @@ class OauthApi constructor(
                                         url("$githubBaseUrl/access_token")
                                     }
                                     logger.debug("Received response from github with code : {}", response.status)
-                                    with(json.parse(AccessTokenResponse.serializer(), response.readText())) {
+                                    with(jsonParser.decodeFromString(AccessTokenResponse.serializer(), response.readText())) {
                                         oauthTokensRepository.updateAuthToken(
                                             existingLogin.copy(authToken = access_token, scope = scope, tokenType = token_type)
                                         )

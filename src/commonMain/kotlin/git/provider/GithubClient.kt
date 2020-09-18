@@ -3,8 +3,6 @@ package git.provider
 import auth.OauthClient
 import codereview.Project
 import io.ktor.client.HttpClient
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -18,6 +16,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import jsonParser
 
 
 class GithubClient(
@@ -33,7 +32,6 @@ class GithubClient(
         private const val REPOS_PATH = "repos"
         private const val PULLS_PATH = "pulls"
         private const val REVIEWS_PATH = "reviews"
-        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
     }
 
     suspend fun getAuthenticatedUser(): User {
@@ -192,7 +190,7 @@ class GithubClient(
             url("${pullRequestSummary._links.self}/$REVIEWS_PATH")
         }
         return when(response.status) {
-            HttpStatusCode.OK -> Pair(json.parse(Review.serializer(), response.readText()), null)
+            HttpStatusCode.OK -> Pair(jsonParser.decodeFromString(Review.serializer(), response.readText()), null)
             else -> Pair(null, response.readText())
         }
     }

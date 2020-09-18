@@ -1,9 +1,9 @@
 import datastructures.KeyboardShortcutTrie
 import datastructures.isNoMatch
+import kotlinx.browser.window
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.KeyboardEventInit
 import supercr.kb.UniversalKeyboardShortcutHandler
-import kotlin.browser.window
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

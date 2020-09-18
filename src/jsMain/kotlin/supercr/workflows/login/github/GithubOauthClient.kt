@@ -5,11 +5,11 @@ import codereview.SuperCrClient
 import git.provider.AccessTokenParams
 import git.provider.AuthorizeRequest
 import git.provider.InitiateLoginPacket
+import kotlinx.browser.window
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.w3c.dom.url.URLSearchParams
-import kotlin.browser.window
 
 class GithubOauthClient constructor(
     private val superCrClient: SuperCrClient

@@ -1,7 +1,6 @@
 package io.btc.utils
 
 import HOME
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -23,6 +22,7 @@ import java.lang.Exception
 import java.nio.file.Files
 import java.time.Instant
 import java.util.concurrent.*
+import java.util.concurrent.atomic.*
 import java.util.function.BiPredicate
 import kotlin.streams.toList
 
@@ -149,7 +149,7 @@ private fun File.openRepo() {
 fun findGitDirectoriesUsingChannels(rootDir: String = System.getenv(HOME)) {
     runBlocking {
         val now = Instant.now()
-        val atomicCounter = atomic(0)
+        val atomicCounter = AtomicInteger(0)
         val concurrentList : ConcurrentLinkedQueue<File> = ConcurrentLinkedQueue()
         val processMorDirsChannel = Channel<File>(20000)
         val receiveGitDirsChannel = Channel<File>(2000)
@@ -166,11 +166,11 @@ fun findGitDirectoriesUsingChannels(rootDir: String = System.getenv(HOME)) {
                 it.processDir(processMorDirsChannel, receiveGitDirsChannel)
             }
         }
-        while (atomicCounter.value <= 100) {
+        while (atomicCounter.get() <= 100) {
             delay(100)
         }
         val done = Instant.now()
-        println("Found ${concurrentList.size} or ${atomicCounter.value} files in ${done.toEpochMilli() - now.toEpochMilli()} ms")
+        println("Found ${concurrentList.size} or ${atomicCounter.get()} files in ${done.toEpochMilli() - now.toEpochMilli()} ms")
     }
 }
 

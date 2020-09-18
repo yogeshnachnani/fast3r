@@ -1,5 +1,6 @@
 package git.provider
 
+import jsonParser
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.Test
@@ -41,15 +42,13 @@ external val pullRequestComment: dynamic
  */
 class GithubDtosTest {
 
-    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-
     @Test
     fun shouldDeserialisePullRequestString() {
-        val pullRequestSummary: PullRequestSummary = json.parse(PullRequestSummary.serializer(), JSON.stringify(pullRequestExample1Contents))
+        val pullRequestSummary: PullRequestSummary = jsonParser.decodeFromString(PullRequestSummary.serializer(), JSON.stringify(pullRequestExample1Contents))
         assertEquals("Proposed changes to the website", pullRequestSummary.title)
         assertEquals(1, pullRequestSummary.assignees.size)
 
-        val pullRequestWithoutAssigneeSummary: PullRequestSummary = json.parse(
+        val pullRequestWithoutAssigneeSummary: PullRequestSummary = jsonParser.decodeFromString(
             deserializer = PullRequestSummary.serializer(),
             string = JSON.stringify(pullRequestExample2WithoutAssigneeContents)
         )
@@ -59,49 +58,49 @@ class GithubDtosTest {
 
     @Test
     fun shouldDeserialisePullRequestDetailsString() {
-        val pullRequestDetails: PullRequestDetails = json.parse(PullRequestDetails.serializer(), JSON.stringify(pullRequestDetailsContents))
+        val pullRequestDetails: PullRequestDetails = jsonParser.decodeFromString(PullRequestDetails.serializer(), JSON.stringify(pullRequestDetailsContents))
         assertEquals("Amazing new feature", pullRequestDetails.title)
         assertEquals(2, pullRequestDetails.assignees.size)
     }
 
     @Test
     fun shouldDeserialisePullRequestCommitListString() {
-        val pullRequestCommit = json.parse(GithubCommit.serializer(), JSON.stringify(pullRequestCommitListEntry))
+        val pullRequestCommit = jsonParser.decodeFromString(GithubCommit.serializer(), JSON.stringify(pullRequestCommitListEntry))
         assertEquals("Fix all the bugs", pullRequestCommit.commit.message)
         assertEquals(1, pullRequestCommit.parents.size)
     }
 
     @Test
     fun shouldDeserialisePullRequestFileListString() {
-        val pullRequestFileDetails = json.parse(PullRequestFileDetails.serializer(), JSON.stringify(pullRequestFileListEntry))
+        val pullRequestFileDetails = jsonParser.decodeFromString(PullRequestFileDetails.serializer(), JSON.stringify(pullRequestFileListEntry))
         assertEquals("file1.txt", pullRequestFileDetails.filename)
         assertEquals(124L, pullRequestFileDetails.changes)
     }
 
     @Test
     fun shouldDeserialiseIssueComment() {
-        val comment = json.parse(IssueComment.serializer(), JSON.stringify(issueComment))
+        val comment = jsonParser.decodeFromString(IssueComment.serializer(), JSON.stringify(issueComment))
         assertEquals("Me too", comment.body)
         assertEquals("octocat", comment.user.login)
     }
 
     @Test
     fun shouldDeserializeReview() {
-        val review = json.parse(Review.serializer(), JSON.stringify(review))
+        val review = jsonParser.decodeFromString(Review.serializer(), JSON.stringify(review))
         assertEquals("Here is the body for the review.", review.body)
         assertEquals("octocat", review.user.login)
     }
 
     @Test
     fun shouldDeserializeReviewComment() {
-        val comment = json.parse(ReviewComment.serializer(), JSON.stringify(reviewComment))
+        val comment = jsonParser.decodeFromString(ReviewComment.serializer(), JSON.stringify(reviewComment))
         assertEquals("Great stuff!", comment.body)
         assertEquals("octocat", comment.user.login)
     }
 
     @Test
     fun shouldDeserializePullRequestComment() {
-        val comment = json.parse(PullRequestReviewComment.serializer(), JSON.stringify(pullRequestComment))
+        val comment = jsonParser.decodeFromString(PullRequestReviewComment.serializer(), JSON.stringify(pullRequestComment))
         assertEquals("Dummy Comment", comment.body)
         assertEquals("yogeshnachnani", comment.user.login)
         assertEquals(7, comment.line)

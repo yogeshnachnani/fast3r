@@ -9,9 +9,11 @@ import codereview.FileLine
 import codereview.FilePatchType
 import codereview.FileTShirtSize
 import codereview.SimpleFileDiff
+import jsonParser
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.stringify
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.patch.FileHeader
@@ -168,7 +170,6 @@ private fun MutableList<FileLine>.insertEmptyLinesAt(rowNumber: Long, numLines: 
  * Hacky way of generating json for a given diff so that we can write tests for it easily
  */
 private fun writeTestJson(edits: List<Edit>, oldFileText: String?, newFileText: String?): String {
-    val json = Json(configuration = JsonConfiguration.Stable)
-    return json.stringify(SimpleFileDiff.serializer(), SimpleFileDiff(oldFileText, newFileText, edits))
+    return jsonParser.encodeToString(SimpleFileDiff.serializer(), SimpleFileDiff(oldFileText, newFileText, edits))
 }
 

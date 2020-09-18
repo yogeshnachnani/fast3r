@@ -5,9 +5,9 @@ import codereview.SuperCrClient
 import git.provider.GithubClient
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import jsonParser
+import kotlinx.browser.window
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -22,7 +22,6 @@ import supercr.workflows.gettingstarted.components.loginComponent
 import supercr.workflows.gettingstarted.components.repoInit
 import supercr.workflows.login.github.GithubOauthClient
 import supercr.workflows.overview.screens.overviewScreen
-import kotlin.browser.window
 
 external interface MainScreenState: RState{
     var projects: List<Project>
@@ -100,7 +99,7 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
             oauthClient = this.githubOauthClient,
             httpClient = HttpClient() {
                 install(JsonFeature) {
-                    serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
+                    serializer = KotlinxSerializer(json = jsonParser)
                 }
             }
         )
@@ -125,7 +124,7 @@ class MainScreen : RComponent<MainScreenProps, MainScreenState>() {
     private val superCrClient = SuperCrClient(
         httpClient = HttpClient() {
             install(JsonFeature) {
-                serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
+                serializer = KotlinxSerializer(json = jsonParser)
             }
         },
         hostName = window.location.hostname

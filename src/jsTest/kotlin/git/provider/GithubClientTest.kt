@@ -5,8 +5,8 @@ import codereview.Project
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import jsonParser
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import runTest
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class GithubClientTest {
         oauthClient = DumbOauthClient(""),
         httpClient = HttpClient() {
             install(JsonFeature) {
-                serializer = KotlinxSerializer(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
+                serializer = KotlinxSerializer(json = jsonParser)
             }
         }
     )

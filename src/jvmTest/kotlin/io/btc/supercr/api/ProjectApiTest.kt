@@ -22,6 +22,7 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import jsonParser
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.jdbi.v3.core.Jdbi
@@ -33,9 +34,8 @@ import kotlin.test.assertTrue
 
 
 class ProjectApiTest {
-    private val json = Json(configuration = JsonConfiguration.Stable)
     private val testProject = Project(providerPath = "theboringtech/btcmain", localPath = TestUtils.btcRepoDir, name = "BTC")
-    private val testRequestAsJson = json.stringify(Project.serializer(), testProject)
+    private val testRequestAsJson = jsonParser.encodeToString(Project.serializer(), testProject)
     private lateinit var jdbi: Jdbi
     private lateinit var fileLineItemsRepository: FileLineItemsRepository
 
@@ -54,7 +54,7 @@ class ProjectApiTest {
         addProjectEntry()
         /** Get Project */
         with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}")) {
-            val returnedProject = json.parse(Project.serializer(), response.content!!)
+            val returnedProject = jsonParser.decodeFromString(Project.serializer(), response.content!!)
             assertEquals(testProject, returnedProject)
         }
     }
@@ -119,7 +119,7 @@ class ProjectApiTest {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(TestUtils.samplePullRequestSummaryJson)
         }) {
-            json.parse(ReviewInfo.serializer(), response.content!!)
+            jsonParser.decodeFromString(ReviewInfo.serializer(), response.content!!)
         }
         assertEquals(createdReviewInfo, secondTimeReviewInfo)
     }
@@ -132,7 +132,7 @@ class ProjectApiTest {
         val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
         val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/review/${createdReview.rowId!!}?oldRef=$oldRef&newRef=$newRef")) {
             assertEquals(HttpStatusCode.OK, response.status())
-            json.parse(FileDiffListV2.serializer(), response.content!!)
+            jsonParser.decodeFromString(FileDiffListV2.serializer(), response.content!!)
         }
 
         /** Basic sanity check - because I'm too lazy to write 2 tests for retrieval */
@@ -155,7 +155,7 @@ class ProjectApiTest {
         val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
         val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/review/${createdReview.rowId!!}?oldRef=$oldRef&newRef=$newRef")) {
             assertEquals(HttpStatusCode.OK, response.status())
-            json.parse(FileDiffListV2.serializer(), response.content!!)
+            jsonParser.decodeFromString(FileDiffListV2.serializer(), response.content!!)
         }
 
         /** Now, create comments in the db */
@@ -173,14 +173,14 @@ class ProjectApiTest {
 
         with(handleRequest(HttpMethod.Post, "/projects/${testProject.id}/review/${createdReview.rowId}") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(json.stringify(FileDiffListV2.serializer(), completeDiffWithComments))
+            setBody(jsonParser.encodeToString(FileDiffListV2.serializer(), completeDiffWithComments))
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
 
         val returnedFileDiffWithComments = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/review/${createdReview.rowId!!}?oldRef=$oldRef&newRef=$newRef")) {
             assertEquals(HttpStatusCode.OK, response.status())
-            json.parse(FileDiffListV2.serializer(), response.content!!)
+            jsonParser.decodeFromString(FileDiffListV2.serializer(), response.content!!)
         }
         val commentBodies = returnedFileDiffWithComments.fileDiffs[0].newFile!!
             .retrieveAllLineItems()
@@ -196,7 +196,7 @@ class ProjectApiTest {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(TestUtils.samplePullRequestSummaryJson)
         }) {
-            json.parse(ReviewInfo.serializer(), response.content!!)
+            jsonParser.decodeFromString(ReviewInfo.serializer(), response.content!!)
         }
     }
 

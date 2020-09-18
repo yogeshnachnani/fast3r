@@ -1,19 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
-val ktorVersion = "1.3.2"
+val ktorVersion = "1.4.0"
 val jgitVersion = "5.7.0.202003110725-r"
 val logbackVersion = "1.2.3"
 val jdbiVersion = "3.12.2"
-val kotlinVersion = "1.3.72"
+val kotlinVersion = "1.4.0"
 val reactVersion = "16.13.1"
 val reactKotlinVersion = "$reactVersion-pre.110-kotlin-$kotlinVersion"
 val reactRouterDomVersion = "5.1.2"
+val serializationRuntimVersion = "1.0.0-RC"
 
 
 plugins {
     java
-    kotlin("multiplatform") version "1.3.72"
-    kotlin("plugin.serialization") version "1.3.72"
+    kotlin("multiplatform") version "1.4.0"
+    kotlin("plugin.serialization") version "1.4.0"
 }
 
 group = "io.btc"
@@ -122,9 +123,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.20.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationRuntimVersion")
             }
         }
         val commonTest by getting {
@@ -138,21 +137,19 @@ kotlin {
             dependencies {
                 api(npm("text-encoding", "0.7.0"))
                 api(npm("abort-controller", "3.0.0"))
-                implementation(kotlin("stdlib-js"))
-                implementation("io.ktor:ktor-client-serialization-js:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
+                implementation(kotlin("stdlib"))
+                implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
-                implementation("io.ktor:ktor-client-json-js:$ktorVersion")
-                api("org.jetbrains.kotlinx:kotlinx-html-js:0.7.1")
+                implementation("io.ktor:ktor-client-serialization-js:$ktorVersion")
 
                 //React, React DOM + Wrappers
                 implementation("org.jetbrains:kotlin-react:$reactKotlinVersion")
                 implementation("org.jetbrains:kotlin-react-dom:$reactKotlinVersion")
                 implementation(npm("react", reactVersion))
                 implementation(npm("react-dom", reactVersion))
-                implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-$kotlinVersion")
-                implementation(npm("styled-components"))
-                implementation(npm("inline-style-prefixer"))
+                implementation("org.jetbrains:kotlin-styled:1.0.0-pre.115-kotlin-1.4.10")
+                implementation(npm("styled-components", "5.2.0"))
+                implementation(npm("inline-style-prefixer", "6.0.0" ))
                 // Components used only within React rendering (substituted out when using Atom)
                 implementation(npm("ace-builds", "~1.4.10"))
                 // Material UI
@@ -179,13 +176,12 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
+                implementation(kotlin("stdlib"))
                 /** Ktor and relatives */
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
                 implementation("io.ktor:ktor-serialization:$ktorVersion")
                 /** Jgit */
                 implementation("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")

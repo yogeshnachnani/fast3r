@@ -2,9 +2,9 @@ package supercr.kb
 
 import datastructures.KeyboardShortcutTrie
 import datastructures.PrefixMatchHandlers
+import kotlinx.browser.window
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
-import kotlin.browser.window
 
 /**
  * A note on implementation:

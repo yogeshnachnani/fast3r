@@ -23,6 +23,7 @@ import io.ktor.routing.get
 import io.ktor.serialization.json
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import jsonParser
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.jdbi.v3.core.Jdbi
@@ -68,7 +69,7 @@ fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = false) {
         level = Level.INFO
     }
     install(ContentNegotiation) {
-        json(json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)))
+        json(json = jsonParser)
     }
     install(Routing) {
         get("/") {

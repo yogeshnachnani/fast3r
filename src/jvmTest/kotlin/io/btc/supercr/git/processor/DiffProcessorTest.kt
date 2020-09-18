@@ -2,6 +2,7 @@ package io.btc.supercr.git.processor
 
 import codereview.Edit
 import codereview.SimpleFileDiff
+import jsonParser
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.apache.commons.io.FileUtils
@@ -86,8 +87,7 @@ class DiffProcessorTest {
             .getResource("textDiffWithEditList_ReplaceEditWithLengthBLesserThanA.json")!!
             .file
             .let {
-                val json = Json(configuration = JsonConfiguration.Stable)
-                json.parse(SimpleFileDiff.serializer(), FileUtils.readFileToString(File(it), Charset.defaultCharset()))
+                jsonParser.decodeFromString(SimpleFileDiff.serializer(), FileUtils.readFileToString(File(it), Charset.defaultCharset()))
             }
         val (oldFileLines, newFileLines) = simpleFileDiff.editList.processWith(simpleFileDiff.oldFileText, simpleFileDiff.newFileText)
         assertEquals(254, oldFileLines.size)
