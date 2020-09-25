@@ -1,0 +1,60 @@
+{
+  "jsonrpc": "2.0",
+  "id": "157ca92c41ab45c081db014ea8155338",
+  "result": [
+    {
+      "name": "GITHUB_OAUTH_APP_CLIENT_ID",
+      "kind": 7,
+      "location": {
+        "uri": "file:///home/yogesh/work/btc/kotlin/src/commonMain/kotlin/Constants.kt",
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 61
+          }
+        }
+      },
+      "containerName": "null"
+    },
+    {
+      "name": "OauthApi",
+      "kind": 5,
+      "location": {
+        "uri": "file:///home/yogesh/work/btc/kotlin/src/jvmMain/kotlin/io/btc/supercr/api/OauthApi.kt",
+        "range": {
+          "start": {
+            "line": 34,
+            "character": 0
+          },
+          "end": {
+            "line": 127,
+            "character": 1
+          }
+        }
+      },
+      "containerName": "null"
+    },
+    {
+      "name": "OauthApi",
+      "kind": 9,
+      "location": {
+        "uri": "file:///home/yogesh/work/btc/kotlin/src/jvmMain/kotlin/io/btc/supercr/api/OauthApi.kt",
+        "range": {
+          "start": {
+            "line": 34,
+            "character": 15
+          },
+          "end": {
+            "line": 37,
+            "character": 1
+          }
+        }
+      },
+      "containerName": "io.btc.supercr.api.OauthApi"
+    }
+  ]
+}
