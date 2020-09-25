@@ -21,13 +21,6 @@ class ApiServerBackend {
     }
 }
 
-fun main() {
-    println("Hello from the world of kotlin")
-//    io.btc.tryoutGit()
-//    tryFetchRef()
-    ApiServer()
-}
-
 private fun tryoutGit() {
     FileRepositoryBuilder()
         .setGitDir(File("/home/yogesh/work/btc/.git"))
