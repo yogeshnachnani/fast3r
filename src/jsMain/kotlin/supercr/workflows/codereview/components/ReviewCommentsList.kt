@@ -41,7 +41,6 @@ class ReviewCommentsList : RComponent<ReviewCommentsListProps, ReviewCommentsLis
             reviewComment {
                 commentBody = props.pullRequestSummary.body
                 /** TODO: Fix this */
-                initials = "YN"
                 displayDate = props.pullRequestSummary.created_at.toDateTimeRepresentation()
                 user = props.pullRequestSummary.user
             }
@@ -50,7 +49,6 @@ class ReviewCommentsList : RComponent<ReviewCommentsListProps, ReviewCommentsLis
                     if (review.body.isNotBlank() && review.body.isNotEmpty()) {
                         reviewComment {
                             commentBody = review.body
-                            initials = "YN"
                             displayDate = review.submitted_at.toDateTimeRepresentation()
                             user = review.user
                         }

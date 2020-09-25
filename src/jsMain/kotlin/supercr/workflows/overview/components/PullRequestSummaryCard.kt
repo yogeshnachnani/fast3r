@@ -141,9 +141,8 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                 }
                 Avatar {
                     attrs {
-                        className = "${ComponentStyles.getClassName { ComponentStyles::avatarInitials }} ${ComponentStyles.getClassName { ComponentStyles::avatarOrangeBackground }}"
+                        src = props.pullRequestSummary.user.avatar_url
                     }
-                    + "YN"
                 }
             }
             styledDiv {
