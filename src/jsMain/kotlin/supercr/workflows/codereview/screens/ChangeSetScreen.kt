@@ -4,6 +4,7 @@ import codereview.FileDiffListV2
 import codereview.Project
 import codereview.ReviewInfo
 import codereview.SuperCrClient
+import git.provider.GithubClient
 import git.provider.PullRequestSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -20,6 +21,7 @@ external interface ChangeSetScreenProps : RProps {
     var pullRequestSummary: PullRequestSummary
     var project: Project
     var superCrClient: SuperCrClient
+    var githubClient: GithubClient
     var onReviewDone: (ReviewInfo ,FileDiffListV2) -> Unit
 }
 
@@ -70,6 +72,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
                 fileDiffList = state.fileDiffList!!
                 handleStartReview = startReview
                 project = props.project
+                githubClient = props.githubClient
             }
         } else {
             styledP {

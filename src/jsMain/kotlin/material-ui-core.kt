@@ -145,6 +145,8 @@ external interface AvatarProps: WithClassName {
     var alt: String
     /** 'circle' 'rounded' or 'square'. Default circle */
     var variant: String
+    /** To Display an image */
+    var src: String
 }
 
 @JsName("Avatar")

@@ -1,6 +1,7 @@
 package supercr.workflows.codereview.components
 
 import Avatar
+import git.provider.User
 import kotlinx.css.Display
 import kotlinx.css.FontWeight
 import kotlinx.css.color
@@ -28,6 +29,7 @@ external interface ReviewCommentProps : RProps {
     var commentBody: String
     var initials: String
     var displayDate: String
+    var user: User
 }
 
 external interface ReviewCommentState : RState {
@@ -46,9 +48,8 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                 }
                 Avatar {
                     attrs {
-                        className = "${ComponentStyles.getClassName { ComponentStyles::avatarInitials }} ${if( props.initials == "YN" ) {ComponentStyles.getClassName { ComponentStyles::avatarOrangeBackground }} else {ComponentStyles.getClassName { ComponentStyles::avatarPurpleBackground }} }"
+                        src = props.user.avatar_url
                     }
-                    + props.initials
                 }
             }
             styledDiv {
@@ -61,7 +62,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                         css {
                             fontWeight = FontWeight.w600
                         }
-                        + if(props.initials == "YN") { "yogeshnachnani" } else { "amodm" }
+                        + props.user.login
                     }
                     styledSpan {
                         css {

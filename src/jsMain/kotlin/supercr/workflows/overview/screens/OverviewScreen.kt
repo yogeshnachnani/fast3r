@@ -56,6 +56,7 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
             project = state.pullRequests[state.selectedPullRequestIndex].first
             superCrClient = props.superCrClient
             onReviewDone = handlePostReview
+            githubClient = props.getGithubClient()
         }
     }
 

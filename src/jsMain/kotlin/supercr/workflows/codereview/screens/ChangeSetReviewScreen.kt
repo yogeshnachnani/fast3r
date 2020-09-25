@@ -4,6 +4,7 @@ import codereview.FileDiffListV2
 import codereview.FileDiffV2
 import codereview.ReviewInfo
 import datastructures.KeyboardShortcutTrie
+import git.provider.GithubClient
 import git.provider.PullRequestSummary
 import kotlinx.css.Display
 import kotlinx.css.display

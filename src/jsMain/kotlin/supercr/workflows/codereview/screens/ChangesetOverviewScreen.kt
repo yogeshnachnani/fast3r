@@ -6,6 +6,7 @@ import Grid
 import codereview.FileDiffListV2
 import codereview.FileDiffV2
 import codereview.Project
+import git.provider.GithubClient
 import git.provider.PullRequestSummary
 import kotlinx.css.Display
 import kotlinx.css.JustifyContent
@@ -46,6 +47,7 @@ external interface ChangesetOverviewScreenProps: RProps {
     var pullRequestSummary: PullRequestSummary
     var handleStartReview: (FileDiffListV2) -> Unit
     var project: Project
+    var githubClient: GithubClient
 }
 
 external interface ChangeSetOverviewScreenState: RState {
@@ -151,7 +153,8 @@ class ChangesetOverviewScreen constructor(
             renderTitleAndAge()
             renderPRMetaInfo()
             reviewCommentsList {
-
+                pullRequestSummary = props.pullRequestSummary
+                githubClient = props.githubClient
             }
             startReviewButton()
         }
