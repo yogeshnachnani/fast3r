@@ -1,17 +1,13 @@
 package supercr.workflows.codereview.components
 
 import Avatar
-import git.provider.PullRequestReviewComment
 import git.provider.PullRequestSummary
-import git.provider.Review
-import git.provider.User
 import kotlinx.css.Display
 import kotlinx.css.FontWeight
 import kotlinx.css.color
 import kotlinx.css.display
 import kotlinx.css.fontSize
 import kotlinx.css.fontWeight
-import kotlinx.css.lineHeight
 import kotlinx.css.marginLeft
 import kotlinx.css.px
 import react.RBuilder
@@ -20,7 +16,6 @@ import react.RProps
 import react.RState
 import react.ReactElement
 import styled.css
-import styled.getClassName
 import styled.styledDiv
 import styled.styledP
 import styled.styledSpan
@@ -29,16 +24,15 @@ import supercr.css.ComponentStyles
 import supercr.css.FontSizes
 import supercr.utils.toDateTimeRepresentation
 
-external interface ReviewCommentProps : RProps {
-    var review: Review
-    var reviewComments: List<PullRequestReviewComment>
+external interface PullRequestDescriptionProps : RProps {
+    var pullRequestSummary: PullRequestSummary
 }
 
-external interface ReviewCommentState : RState {
+external interface PullRequestDescriptionState : RState {
 
 }
 
-class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
+class PullRequestDescription : RComponent<PullRequestDescriptionProps, PullRequestDescriptionState>() {
     override fun RBuilder.render() {
         styledDiv {
             css {
@@ -50,7 +44,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                 }
                 Avatar {
                     attrs {
-                        src = props.review.user.avatar_url
+                        src = props.pullRequestSummary.user.avatar_url
                     }
                 }
             }
@@ -64,11 +58,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                         css {
                             fontWeight = FontWeight.w600
                         }
-                        + if (props.reviewComments.isNotEmpty()) {
-                            "${props.review.user.login} left ${props.reviewComments.size} comments"
-                        } else {
-                            props.review.user.login
-                        }
+                        + props.pullRequestSummary.user.login
                     }
                     styledSpan {
                         css {
@@ -78,20 +68,20 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                             marginLeft = 12.px
                             fontSize = FontSizes.tiny
                         }
-                        + props.review.submitted_at.toDateTimeRepresentation()
+                        + props.pullRequestSummary.created_at.toDateTimeRepresentation()
                     }
                 }
                 /** User Comment */
                 styledP {
-                    + props.review.body
+                    + props.pullRequestSummary.body
                 }
             }
         }
     }
 }
 
-fun RBuilder.reviewComment(handler: ReviewCommentProps.() -> Unit): ReactElement {
-    return child(ReviewComment::class) {
+fun RBuilder.pullRequestDescription(handler: PullRequestDescriptionProps.() -> Unit): ReactElement {
+    return child(PullRequestDescription::class) {
         this.attrs(handler)
     }
 }

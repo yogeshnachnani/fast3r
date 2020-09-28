@@ -1,6 +1,7 @@
 package supercr.workflows.codereview.components
 
 import git.provider.GithubClient
+import git.provider.PullRequestReviewComment
 import git.provider.PullRequestSummary
 import git.provider.Review
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ import supercr.utils.toDateTimeRepresentation
 external interface ReviewCommentsListProps : RProps {
     var pullRequestSummary: PullRequestSummary
     var githubClient: GithubClient
+    var existingGithubComments: List<PullRequestReviewComment>
 }
 
 external interface ReviewCommentsListState : RState {
@@ -38,19 +40,16 @@ class ReviewCommentsList : RComponent<ReviewCommentsListProps, ReviewCommentsLis
                 + ComponentStyles.reviewCommentsContainer
             }
             /** This is the Description posted by the original author */
-            reviewComment {
-                commentBody = props.pullRequestSummary.body
-                /** TODO: Fix this */
-                displayDate = props.pullRequestSummary.created_at.toDateTimeRepresentation()
-                user = props.pullRequestSummary.user
+            /** TODO: Fix this hack. Have this as a first class citizen*/
+            pullRequestDescription {
+                pullRequestSummary = props.pullRequestSummary
             }
             state.reviews
-                .mapNotNull { review ->
-                    if (review.body.isNotBlank() && review.body.isNotEmpty()) {
+                .mapNotNull { aReview ->
+                    if (aReview.body.isNotBlank() && aReview.body.isNotEmpty()) {
                         reviewComment {
-                            commentBody = review.body
-                            displayDate = review.submitted_at.toDateTimeRepresentation()
-                            user = review.user
+                            review = aReview
+                            reviewComments = props.existingGithubComments.filter { it.pull_request_review_id == aReview.id }
                         }
                     } else {
                         null

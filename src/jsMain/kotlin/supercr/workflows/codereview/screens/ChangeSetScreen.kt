@@ -5,6 +5,7 @@ import codereview.Project
 import codereview.ReviewInfo
 import codereview.SuperCrClient
 import git.provider.GithubClient
+import git.provider.PullRequestReviewComment
 import git.provider.PullRequestSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,6 +30,8 @@ external interface ChangeSetScreenState : RState {
     var inReview: Boolean
     var fileDiffList: FileDiffListV2?
     var reviewInfo: ReviewInfo?
+    var githubComments: List<PullRequestReviewComment>
+    var githubCommentsLoadedSuccessfully: Boolean
 }
 
 /**
@@ -39,6 +42,8 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
     override fun ChangeSetScreenState.init() {
         inReview = false
         fileDiffList = null
+        githubComments = listOf()
+        githubCommentsLoadedSuccessfully = false
     }
 
     override fun RBuilder.render() {
@@ -50,6 +55,26 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
     }
 
     override fun componentDidMount() {
+        createReviewInBackend()
+        loadPullRequestComments()
+    }
+
+    private fun loadPullRequestComments() {
+        GlobalScope.async(context = Dispatchers.Main) {
+            val comments = props.githubClient.listComments(props.pullRequestSummary)
+            setState {
+                githubComments = comments
+                githubCommentsLoadedSuccessfully = true
+            }
+        }.invokeOnCompletion { throwable ->
+            if (throwable != null) {
+                console.error("Something bad happened while loading PR comments from github")
+                console.error(throwable)
+            }
+        }
+    }
+
+    private fun createReviewInBackend() {
         GlobalScope.async(context = Dispatchers.Main) {
             val (createdReview, errString) = props.superCrClient.startReview(props.project, props.pullRequestSummary)
             val diff = props.superCrClient.getReviewDiff(createdReview!!, props.pullRequestSummary)
@@ -58,21 +83,22 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
                 reviewInfo = createdReview
             }
         }.invokeOnCompletion { throwable ->
-        if (throwable != null) {
-            console.error("Something bad happened")
-            console.error(throwable)
+            if (throwable != null) {
+                console.error("Something bad happened while creating review in backend")
+                console.error(throwable)
+            }
         }
-    }
     }
 
     private fun RBuilder.renderOverviewScreen() {
-        if (state.fileDiffList != null) {
+        if (state.fileDiffList != null && state.githubCommentsLoadedSuccessfully) {
             changeSetOverviewScreen {
                 pullRequestSummary = props.pullRequestSummary
                 fileDiffList = state.fileDiffList!!
                 handleStartReview = startReview
                 project = props.project
                 githubClient = props.githubClient
+                existingGithubComments = state.githubComments
             }
         } else {
             styledP {
