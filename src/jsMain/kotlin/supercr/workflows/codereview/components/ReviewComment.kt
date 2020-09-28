@@ -65,7 +65,7 @@ class ReviewComment : RComponent<ReviewCommentProps, ReviewCommentState>() {
                             fontWeight = FontWeight.w600
                         }
                         + if (props.reviewComments.isNotEmpty()) {
-                            "${props.review.user.login} left ${props.reviewComments.size} comments"
+                            "${props.review.user.login} gave ${props.reviewComments.size} comment${if (props.reviewComments.size > 1) {'s'} else {""}}"
                         } else {
                             props.review.user.login
                         }
