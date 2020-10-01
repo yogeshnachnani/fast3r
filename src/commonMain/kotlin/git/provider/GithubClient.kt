@@ -2,6 +2,7 @@ package git.provider
 
 import auth.OauthClient
 import codereview.Project
+import codereview.ReviewInfo
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
@@ -24,6 +25,7 @@ class GithubClient(
     private val httpClient: HttpClient
 ) {
     companion object {
+        private const val PULL_REQUEST_COMFORT_FADE_HEADER = "application/vnd.github.comfort-fade-preview+json"
         private const val ACCEPT_HEADER_VALUE = "application/vnd.github.v3+json"
         private const val GITHUB_API_BASE_URL = "https://api.github.com/"
         private const val AUTH_HEADER_PREFIX = "token "
@@ -220,15 +222,22 @@ class GithubClient(
     }
 
     suspend fun listComments(pullRequestSummary: PullRequestSummary): List<PullRequestReviewComment> {
-        return httpClient.request<List<PullRequestReviewComment>>(buildRequest().apply {
+        return httpClient.request<List<PullRequestReviewComment>>(buildRequest(PULL_REQUEST_COMFORT_FADE_HEADER).apply {
             url("${pullRequestSummary._links.review_comments}")
             method = HttpMethod.Get
         })
     }
 
-    private suspend fun buildRequest(): HttpRequestBuilder {
+    suspend fun listComments(providerPath: String, reviewInfo: ReviewInfo): List<PullRequestReviewComment> {
+        return httpClient.request<List<PullRequestReviewComment>>(buildRequest(PULL_REQUEST_COMFORT_FADE_HEADER).apply {
+            url("$GITHUB_API_BASE_URL$REPOS_PATH/${providerPath}/$PULLS_PATH/${reviewInfo.providerId}/comments")
+            method = HttpMethod.Get
+        })
+    }
+
+    private suspend fun buildRequest(acceptHeaderOverride: String? = null): HttpRequestBuilder {
         return HttpRequestBuilder().apply {
-            header(HttpHeaders.Accept, ACCEPT_HEADER_VALUE)
+            header(HttpHeaders.Accept, acceptHeaderOverride ?: ACCEPT_HEADER_VALUE)
             header(HttpHeaders.Authorization, "$AUTH_HEADER_PREFIX${oauthClient.getToken(emptyMap())}")
         }
     }

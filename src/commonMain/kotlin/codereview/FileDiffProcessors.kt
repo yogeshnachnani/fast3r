@@ -1,10 +1,7 @@
-package supercr.workflows.codereview.processor
+package codereview
 
-import codereview.FileDiffListV2
-import codereview.FileDiffV2
-import codereview.FileLine
-import codereview.FileLineItem
-import kotlin.js.Date
+import git.provider.PullRequestReviewComment
+import git.provider.ReviewCommentSide
 
 data class FileDiffCommentHandler(
     var oldFileCommentHandler: FileCommentHandler?,
@@ -12,12 +9,11 @@ data class FileDiffCommentHandler(
 )
 
 class FileCommentHandler(
-    private val existingComments: Map<Int, List<FileLineItem.Comment>>
+    val existingComments: Map<Int, List<FileLineItem.Comment>>
 ) {
     private val newCommentsMutable: MutableMap<Int, List<FileLineItem.Comment>> = mutableMapOf()
 
-    val addNewComment: (String, Int) -> Unit = { commentBody, position ->
-        val createdAt = Date().toISOString()
+    val addNewComment: (String, Int, String) -> Unit = { commentBody, position, createdAt ->
         val newComment = FileLineItem.Comment(
             body = commentBody,
             createdAt = createdAt,
@@ -36,9 +32,6 @@ class FileCommentHandler(
     val getNewCommentAt: (Int) -> List<FileLineItem.Comment> = { position ->
         this.newCommentsMutable[position] ?: listOf()
     }
-
-    val oldComments
-    get() = this.existingComments.toMap()
 
     val newComments
     get() = this.newCommentsMutable.toMap()
@@ -60,7 +53,6 @@ fun List<Pair<FileDiffV2, FileDiffCommentHandler>>.retrieveChangedFileDiffList()
         }
     }
         .let {
-            console.log("Found Following files with new comments: $it")
             FileDiffListV2(it)
         }
 }
@@ -91,5 +83,23 @@ fun FileDiffCommentHandler.retrieveNewComments(): Pair<Map<Int, List<FileLineIte
 
 fun FileDiffCommentHandler.hasNewComments(): Boolean  {
     return oldFileCommentHandler?.hasNewComments() ?: false || newFileCommentHandler?.hasNewComments() ?: false
+}
+
+fun createCommentHandlerForFile(
+    oldFile: FileData?,
+    newFile: FileData?
+): FileDiffCommentHandler {
+    return FileDiffCommentHandler(
+        oldFileCommentHandler = if (oldFile != null) {
+            FileCommentHandler(existingComments = oldFile.retrieveViewPositionToCommentMap())
+        } else {
+            null
+        },
+        newFileCommentHandler = if (newFile != null) {
+            FileCommentHandler(existingComments = newFile.retrieveViewPositionToCommentMap())
+        } else {
+            null
+        }
+    )
 }
 

@@ -30,9 +30,10 @@ import supercr.workflows.codereview.processor.TextDiffProcessor
 import supercr.css.commentBoxWidth
 import supercr.kb.UniversalKeyboardShortcutHandler
 import supercr.kb.DiffViewShortcuts
-import supercr.workflows.codereview.processor.FileCommentHandler
+import codereview.FileCommentHandler
 import supercr.workflows.codereview.processor.hasBothFiles
 import supercr.workflows.codereview.processor.nextEditPosition
+import kotlin.js.Date
 
 external interface DiffViewProps: RProps {
     var fileDiff: FileDiffV2
@@ -53,7 +54,7 @@ class AceCommentsWrapper(
     val commentHandler: FileCommentHandler
 ) {
     fun highlightOldCommentLines() {
-        commentHandler.oldComments.keys.highlightOldCommentLines(editor)
+        commentHandler.existingComments.keys.highlightOldCommentLines(editor)
     }
 
     fun highlightNewCommentLines() {
@@ -229,7 +230,7 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
             }
             commentThread {
                 attrs {
-                    comments = editorForCurrentComment.commentHandler.oldComments[state.currentCommentBoxRowPosition!!] ?: listOf()
+                    comments = editorForCurrentComment.commentHandler.existingComments[state.currentCommentBoxRowPosition!!] ?: listOf()
                     newComments = editorForCurrentComment.commentHandler.getNewCommentAt(state.currentCommentBoxRowPosition!!)
                     onCommentAdd = handleNewComments
                     hideMe = hideCommentBox
@@ -374,7 +375,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private val handleNewComments: (String) -> Unit = { commentBody ->
-        this.editorForCurrentComment.commentHandler.addNewComment(commentBody, state.currentCommentBoxRowPosition!!)
+        val createdAt = Date().toISOString()
+        this.editorForCurrentComment.commentHandler.addNewComment(commentBody, state.currentCommentBoxRowPosition!!, createdAt)
         this.editorForCurrentComment.highlightNewCommentLines()
         forceUpdate()
     }

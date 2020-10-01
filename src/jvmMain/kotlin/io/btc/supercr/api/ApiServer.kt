@@ -3,6 +3,7 @@ package io.btc.supercr.api
 import APP_NAME
 import DEFAULT_PORT
 import HOME
+import io.btc.auth.SessionBasedOauthClient
 import io.btc.supercr.db.FileLineItemsRepository
 import io.btc.supercr.db.OauthTokensRepository
 import io.btc.supercr.db.ProjectRepository
@@ -75,9 +76,16 @@ fun Application.superCrServer(jdbi: Jdbi, isProduction: Boolean = false) {
         get("/") {
             call.respond(mapOf("OK" to true))
         }
-        ProjectApi(this, GitProject(GitUtils(), ProjectRepository(jdbi)), ReviewController(FileLineItemsRepository(jdbi)))
+        val oauthTokensRepository = OauthTokensRepository(jdbi)
+        ProjectApi(
+            routing = this,
+            gitProject = GitProject(GitUtils(), ProjectRepository(jdbi)),
+            reviewController = ReviewController(FileLineItemsRepository(jdbi)),
+            sessionBasedOauthClient = SessionBasedOauthClient(oauthTokensRepository),
+            isProduction = isProduction
+        )
         RepoApi(this, gitProjectCache)
-        OauthApi(this, OauthTokensRepository(jdbi))
+        OauthApi(this, oauthTokensRepository)
         StaticApi(this)
     }
     install(CORS) {

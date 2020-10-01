@@ -1,14 +1,9 @@
 package io.btc.supercr.git
 
-import codereview.DiffChangeType
-import codereview.Edit
 import codereview.FileDiffListV2
-import codereview.FileDiffV2
-import io.btc.supercr.git.GitUtils.Companion.gitUtilsLogger
+import git.provider.PullRequestReviewComment
 import io.btc.supercr.git.processor.process
-import org.apache.commons.io.FileUtils
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.errors.MissingObjectException
 import org.eclipse.jgit.lib.FileMode
@@ -19,7 +14,6 @@ import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.lang.Exception
-import java.nio.charset.Charset
 
 class GitRepoNotFoundException(localPath: String): RuntimeException("Could not open git repo at $localPath")
 
@@ -70,7 +64,7 @@ fun Git.checkOrFetchRef(ref: String): Boolean {
     return true
 }
 
-fun Git.formatDiffV2(oldRef: String, newRef: String): FileDiffListV2 {
+fun Git.formatDiffV2(oldRef: String, newRef: String, existingComments: List<PullRequestReviewComment> = emptyList()): FileDiffListV2 {
     val diffFormatter = DiffFormatter(System.out)
         .also {
             it.setRepository(this.repository)
@@ -91,7 +85,7 @@ fun Git.formatDiffV2(oldRef: String, newRef: String): FileDiffListV2 {
             } else {
                 repository.fetchContents(diffEntry.newId.toObjectId())
             }
-            diffFormatter.process(diffEntry = diffEntry, oldFileText = oldFileText, newFileText = newFileText)
+            diffFormatter.process(diffEntry = diffEntry, oldFileText = oldFileText, newFileText = newFileText, existingComments)
         }
         .let {
             FileDiffListV2(it)

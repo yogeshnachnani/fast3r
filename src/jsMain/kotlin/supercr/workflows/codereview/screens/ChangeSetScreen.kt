@@ -113,6 +113,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
             fileDiffList = state.fileDiffList!!
             onReviewDone = props.onReviewDone
             reviewInfo = state.reviewInfo!!
+            existingGithubComments = state.githubComments
         }
     }
 

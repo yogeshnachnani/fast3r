@@ -6,14 +6,13 @@ import codereview.Edit
 import codereview.FileData
 import codereview.FileDiffV2
 import codereview.FileLine
+import codereview.FileLineItem
 import codereview.FilePatchType
 import codereview.FileTShirtSize
 import codereview.SimpleFileDiff
+import git.provider.PullRequestReviewComment
+import git.provider.ReviewCommentSide
 import jsonParser
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.stringify
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.patch.FileHeader
@@ -21,7 +20,7 @@ import org.eclipse.jgit.patch.FileHeader
 /**
  *
  */
-fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileText: String?): FileDiffV2 {
+fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileText: String?, existingComments: List<PullRequestReviewComment>): FileDiffV2 {
     val fileHeader = this.toFileHeader(diffEntry)
     val edits = fileHeader.toEditList()
         .map { edit ->
@@ -33,9 +32,9 @@ fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileTex
             )
         }
     val (linesForOldText, linesForNewText) = if (fileHeader.patchType == FileHeader.PatchType.BINARY) {
-        convertTextToFileLines(oldFileText, newFileText)
+        convertTextToFileLines(oldFileText, newFileText, existingComments.filter { it.path == diffEntry.newPath || it.path == diffEntry.oldPath })
     } else {
-        edits.processWith(oldFileText, newFileText)
+        edits.processWith(oldFileText, newFileText, existingComments.filter { it.path == diffEntry.newPath || it.path == diffEntry.oldPath })
     }
     return FileDiffV2(
         oldFile = FileData(
@@ -76,8 +75,12 @@ fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileTex
     )
 }
 
-fun List<Edit>.processWith(oldFileText: String?, newFileText: String?): Pair<List<FileLine>, List<FileLine>> {
-    val (oldFileLines, newFileLines) = convertTextToFileLines(oldFileText, newFileText)
+fun List<Edit>.processWith(
+    oldFileText: String?,
+    newFileText: String?,
+    existingGithubComments: List<PullRequestReviewComment> = emptyList()
+): Pair<List<FileLine>, List<FileLine>> {
+    val (oldFileLines, newFileLines) = convertTextToFileLines(oldFileText, newFileText, existingGithubComments)
     return if (oldFileLines.isEmpty() || newFileLines.isEmpty()) {
         Pair(oldFileLines, newFileLines)
     } else {
@@ -85,21 +88,31 @@ fun List<Edit>.processWith(oldFileText: String?, newFileText: String?): Pair<Lis
     }
 }
 
-private fun convertTextToFileLines(oldFileText: String?, newFileText: String?): Pair<List<FileLine>, List<FileLine>> {
+private fun convertTextToFileLines(
+    oldFileText: String?,
+    newFileText: String?,
+    existingGithubComments: List<PullRequestReviewComment> = emptyList()
+): Pair<List<FileLine>, List<FileLine>> {
     val oldFileLines = oldFileText?.lines() ?: listOf()
     val newFileLines = newFileText?.lines() ?: listOf()
     require(oldFileLines.isNotEmpty() || newFileLines.isNotEmpty())
-    return if (oldFileLines.isEmpty() || newFileLines.isEmpty()) {
-        Pair(
-            oldFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf()) },
-            newFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf())}
-        )
-    } else {
-        Pair(
-            oldFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf()) },
-            newFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = listOf())}
-        )
-    }
+    return Pair(
+        oldFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = existingGithubComments.getCommentsFor(index, ReviewCommentSide.LEFT)) },
+        newFileLines.mapIndexed { index, line -> FileLine(lineText = line, filePosition = index, lineItems = existingGithubComments.getCommentsFor(index, ReviewCommentSide.RIGHT))}
+    )
+}
+
+private fun List<PullRequestReviewComment>.getCommentsFor(index: Int, side: ReviewCommentSide): List<FileLineItem.Comment> {
+    return this
+        .filter { it.line?.toInt() == index + 1 && it.side == side }
+        .map { githubComment ->
+            FileLineItem.Comment(
+                body = githubComment.body,
+                createdAt = githubComment.created_at,
+                updatedAt = githubComment.updated_at,
+                userId = githubComment.user.login
+            )
+        }
 }
 
 private fun List<Edit>.processDiff(oldFileLines: List<FileLine>, newFileLines: List<FileLine>): Pair<List<FileLine>, List<FileLine>> {

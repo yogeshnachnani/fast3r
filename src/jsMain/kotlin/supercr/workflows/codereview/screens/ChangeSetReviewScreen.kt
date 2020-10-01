@@ -4,7 +4,7 @@ import codereview.FileDiffListV2
 import codereview.FileDiffV2
 import codereview.ReviewInfo
 import datastructures.KeyboardShortcutTrie
-import git.provider.GithubClient
+import git.provider.PullRequestReviewComment
 import git.provider.PullRequestSummary
 import kotlinx.css.Display
 import kotlinx.css.display
@@ -23,15 +23,16 @@ import supercr.workflows.codereview.components.ActionBarShortcut
 import supercr.workflows.codereview.components.FileReviewStatus
 import supercr.workflows.codereview.components.fileList
 import supercr.workflows.codereview.components.fileView
-import supercr.workflows.codereview.processor.FileCommentHandler
-import supercr.workflows.codereview.processor.FileDiffCommentHandler
-import supercr.workflows.codereview.processor.retrieveChangedFileDiffList
+import codereview.FileDiffCommentHandler
+import codereview.createCommentHandlerForFile
+import codereview.retrieveChangedFileDiffList
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffListV2
     var reviewInfo: ReviewInfo
     var pullRequestSummary: PullRequestSummary
     var onReviewDone: (ReviewInfo , FileDiffListV2) -> Unit
+    var existingGithubComments: List<PullRequestReviewComment>
 }
 
 external interface ChangeSetReviewScreenState : RState {
@@ -86,28 +87,12 @@ class ChangeSetReviewScreen(
                     assignedShortcut = prefix,
                     currentStatus = FileReviewStatus.TO_BE_REVIEWED,
                     handler = handler,
-                    commentHandler = createCommentHandlerFor(fileDiff)
+                    commentHandler = createCommentHandlerForFile(
+                        oldFile = fileDiff.oldFile,
+                        newFile = fileDiff.newFile,
+                    )
                 )
             }
-    }
-
-    private fun createCommentHandlerFor(fileDiff: FileDiffV2): FileDiffCommentHandler {
-        return FileDiffCommentHandler(
-            oldFileCommentHandler = if (fileDiff.oldFile != null) {
-                FileCommentHandler(
-                    existingComments = mapOf()
-                )
-            } else {
-                null
-            },
-            newFileCommentHandler = if (fileDiff.newFile != null) {
-                FileCommentHandler(
-                    existingComments = mapOf()
-                )
-            } else {
-                null
-            }
-        )
     }
 
     private fun createHandlerFor(fileDiff: FileDiffV2): () -> Unit {

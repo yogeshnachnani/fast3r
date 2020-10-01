@@ -28,6 +28,7 @@ class ReviewController constructor(
             }
     }
 
+    @Deprecated("Not storing comments in DB anymore")
     fun retrieveCommentsFor(fileDiffListV2: FileDiffListV2, reviewId: Long): FileDiffListV2 {
         return fileLineItemsRepository.retrieveCommentsForReviewId(reviewId)
             .let { fileReviewInfoAndComments  ->

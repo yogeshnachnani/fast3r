@@ -1,12 +1,16 @@
 package io.btc.supercr.git.processor
 
 import codereview.Edit
+import codereview.FileLineItem
 import codereview.SimpleFileDiff
+import git.provider.GithubAuthorAssociation
+import git.provider.GithubLink
+import git.provider.GithubLinkRelations
+import git.provider.PullRequestReviewComment
+import git.provider.ReviewCommentSide
+import git.provider.User
 import jsonParser
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.junit.Test
 import java.io.File
 import java.nio.charset.Charset
@@ -93,4 +97,90 @@ class DiffProcessorTest {
         assertEquals(254, oldFileLines.size)
         assertEquals(oldFileLines.size, newFileLines.size)
     }
+
+    @Test
+    fun processComments_ShouldAddCommentsBasedOnOriginalLineNumber() {
+        val existingCommentsForFile = listOf(
+            createDummyComment( 4, 6, "Some comment", ReviewCommentSide.LEFT),
+            createDummyComment( 4, 6, "Another comment on same line", ReviewCommentSide.LEFT),
+            createDummyComment( 6, 8, "Comment on some other line", ReviewCommentSide.RIGHT),
+            createDummyComment( 7, 9, "Comment on right line 9", ReviewCommentSide.RIGHT)
+        )
+
+        val expectedCommentsOnLine6 = listOf(
+            FileLineItem.Comment("Some comment", DUMMY_CREATED_AT, DUMMY_CREATED_AT, dummyUser.login),
+            FileLineItem.Comment("Another comment on same line", DUMMY_CREATED_AT, DUMMY_CREATED_AT, dummyUser.login)
+        )
+        val expectedCommentOnLine8 = listOf(
+            FileLineItem.Comment("Comment on some other line", DUMMY_CREATED_AT, DUMMY_CREATED_AT, dummyUser.login),
+        )
+        val expectedCommentOnLine9 = listOf(
+            FileLineItem.Comment("Comment on right line 9", DUMMY_CREATED_AT, DUMMY_CREATED_AT, dummyUser.login),
+        )
+
+        val (oldFileLines, newFileLines) = listOf<Edit>().processWith(rawTextOld, rawTextNew, existingCommentsForFile)
+        /** Note: Github starts it's position from 1 while we start file position from 0. Hence, when a Github comment says it's on line 6, we want it to be on filePosition = 5 */
+        /** Check for old file comments */
+        assertEquals(1, oldFileLines.filter { it.lineItems.isNotEmpty() }.size)
+        assertEquals(expectedCommentsOnLine6, oldFileLines.find { it.filePosition == 5 }!!.lineItems)
+        /** Check for new file comments */
+        assertEquals(2, newFileLines.filter { it.lineItems.isNotEmpty() }.size)
+        assertEquals(expectedCommentOnLine8, newFileLines.find { it.filePosition == 7 }!!.lineItems)
+        assertEquals(expectedCommentOnLine9, newFileLines.find { it.filePosition == 8 }!!.lineItems)
+    }
+
+    private fun createDummyComment(
+        position: Long,
+        line: Long,
+        commentBody: String,
+        side: ReviewCommentSide
+    ): PullRequestReviewComment {
+        return PullRequestReviewComment(
+            url = "https://api.github.com/something/foo/bar",
+            pull_request_review_id = 112233,
+            id = 112244,
+            node_id = "998112",
+            diff_hunk = "",
+            path = "/home/foo/bar.kt",
+            position = position,
+            original_position = position,
+            commit_id = "some-commit",
+            original_commit_id = "some-commit",
+            user = dummyUser,
+            body = commentBody,
+            created_at = DUMMY_CREATED_AT,
+            updated_at = DUMMY_CREATED_AT,
+            html_url = "",
+            pull_request_url = "",
+            author_association = GithubAuthorAssociation.CONTRIBUTOR,
+            _links = GithubLinkRelations(
+                html = GithubLink(href = "")
+            ),
+            side = side,
+            line = line,
+            original_line = line
+        )
+    }
+
+    private val dummyUser = User(
+        login = "dummyuser",
+        id = 121212,
+        node_id = "121212",
+        avatar_url = "http://some.avatar",
+        gravatar_id = "http://some.gravatar",
+        url = "http://api.github.com/someuser",
+        html_url = "http://api.github.com/someuser",
+        followers_url = "",
+        following_url = "",
+        gists_url = "",
+        starred_url = "",
+        subscriptions_url = "",
+        organizations_url = "",
+        repos_url = "",
+        events_url = "",
+        received_events_url = "",
+        type = "",
+        site_admin = false
+    )
+    private val DUMMY_CREATED_AT = "2020-09-28 00:00:00"
 }

@@ -31,7 +31,7 @@ import styled.getClassName
 import styled.styledDiv
 import styled.styledP
 import supercr.css.ComponentStyles
-import supercr.workflows.codereview.processor.FileDiffCommentHandler
+import codereview.FileDiffCommentHandler
 
 /**
  * Show the diff/details for a file.

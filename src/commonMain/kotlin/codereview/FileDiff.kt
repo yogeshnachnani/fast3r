@@ -51,6 +51,19 @@ fun FileData.retrieveAllLineItems(): List<Triple<Int, Int?, List<FileLineItem>>>
         }
 }
 
+fun FileData.retrieveViewPositionToCommentMap(): Map<Int, List<FileLineItem.Comment>> {
+    return this.fileLines
+        .mapIndexedNotNull { index, fileLine ->
+            val comments = fileLine.lineItems.filterIsInstance<FileLineItem.Comment>()
+            if (comments.isNotEmpty()) {
+                Pair(index, comments)
+            } else {
+                null
+            }
+        }
+        .associateBy(keySelector = {it.first}, valueTransform = {it.second})
+}
+
 @Serializable
 enum class FilePatchType {
     BINARY,
