@@ -1,6 +1,11 @@
 package io.btc.lsp.protocol
 
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Various Params for [NotificationMessage]
@@ -70,7 +75,19 @@ interface WorkDoneProgressParams{
     val workDoneToken: ProgressToken?
 }
 
-@Serializable
+class WorkDoneProgressSerializer: JsonContentPolymorphicSerializer<WorkDoneProgress>(WorkDoneProgress::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out WorkDoneProgress> {
+        return when(element.jsonObject["kind"]!!.jsonPrimitive.content) {
+            "begin" -> WorkDoneProgressBegin.serializer()
+            "report" -> WorkDoneProgressReport.serializer()
+            "end" -> WorkDoneProgressReport.serializer()
+            else -> throw RuntimeException("No appropriate deserializer for an apparent WorkDoneProgress object")
+        }
+    }
+
+}
+
+@Serializable(with = WorkDoneProgressSerializer::class)
 sealed class WorkDoneProgress
 
 @Serializable
