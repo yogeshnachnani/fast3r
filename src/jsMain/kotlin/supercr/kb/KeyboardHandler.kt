@@ -32,9 +32,11 @@ import org.w3c.dom.events.KeyboardEvent
 enum class DiffViewShortcuts(val label: String, val shortcutString: String) {
     NextFile("Next File", "fj"),
     ReviewLater("Review Later", "fl"),
-    WindowOther("Swith Window", "wo"),
+    WindowOther("Switch Window", "wo"),
     PageDown("Page Down", "J"),
-    PageUp("Page Up", "K")
+    PageUp("Page Up", "K"),
+    NextHunk("Next Hunk", "sj"),
+    PreviousHunk("Prev Hunk", "sk")
 }
 
 

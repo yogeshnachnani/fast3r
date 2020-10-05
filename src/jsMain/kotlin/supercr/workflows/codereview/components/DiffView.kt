@@ -31,9 +31,13 @@ import supercr.css.commentBoxWidth
 import supercr.kb.UniversalKeyboardShortcutHandler
 import supercr.kb.DiffViewShortcuts
 import codereview.FileCommentHandler
+import supercr.kb.DiffViewShortcuts.NextHunk
+import supercr.kb.DiffViewShortcuts.PreviousHunk
 import supercr.workflows.codereview.processor.hasBothFiles
 import supercr.workflows.codereview.processor.nextEditPosition
 import kotlin.js.Date
+import kotlin.math.max
+import kotlin.math.min
 
 external interface DiffViewProps: RProps {
     var fileDiff: FileDiffV2
@@ -444,6 +448,10 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
         jumpToNextHunk(state.currentHunkIndex)
     }
 
+    private val jumpToPreviousHunkFromCurrentState: () -> Unit = {
+        jumpToNextHunk(max(state.currentHunkIndex - 2, -1))
+    }
+
     /**
      * This exists separately specifically to be called  whenever we have new text in _both_ the editors
      * The reason for that is that we cannot use [state.currentHunkIndex] whenever we get _new text_ in the editors
@@ -457,7 +465,6 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
 
     private val jumpToNextHunk: (Int) -> Unit = { givenHunkIndex ->
         val (nextEditIndex, positionToJumpTo) = props.fileDiff.nextEditPosition(givenHunkIndex)
-        console.log("Seems like we'll be jumping to $positionToJumpTo . and next edit index is $nextEditIndex")
         if (nextEditIndex == null) {
             console.log("Seems we have reached the last hunk, jumping to next file")
             props.defaultActionBarActions.find { it.assignedShortcut == DiffViewShortcuts.NextFile.shortcutString } ?.handler ?.invoke()
@@ -476,8 +483,8 @@ class DiffView: RComponent<DiffViewProps, DiffViewState>() {
     }
 
     private val additionalShortcutsForTwoPaneView = listOf(
-        ActionBarShortcut("Next Hunk", "sj", jumpToNextHunkFromCurrentState),
-        ActionBarShortcut("Prev Hunk", "sk", {console.log("Will move hunk backword")})
+        ActionBarShortcut(NextHunk.label, NextHunk.shortcutString, jumpToNextHunkFromCurrentState),
+        ActionBarShortcut(PreviousHunk.label, PreviousHunk.shortcutString, jumpToPreviousHunkFromCurrentState)
     )
 
 }
