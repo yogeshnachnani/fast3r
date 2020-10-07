@@ -130,16 +130,17 @@ class NumberBasedReOrderableList : RComponent<NumberBasedReOrderableListProps, N
                         css {
                             flexBasis = 15.pct.basis
                         }
-                        keyboardChip {
-                            attrs {
-                                onSelected = {
-
-                                }
-                                assignedShortcut = draggableProvided.draggableProps.asDynamic()["data-rbd-draggable-id"] as String
-                                uponUnmount = handleShortcutUnmount
-                                className = ComponentStyles.getClassName { ComponentStyles::numberedListKeyboardShortcut }
-                            }
-                        }
+                        /** Commenting this instead of removing since we'll be moving to new git project soon and the history would be lost (TODO: Delete once we move to new project) */
+//                        keyboardChip {
+//                            attrs {
+//                                onSelected = {
+//
+//                                }
+//                                assignedShortcut = draggableProvided.draggableProps.asDynamic()["data-rbd-draggable-id"] as String
+//                                uponUnmount = handleShortcutUnmount
+//                                className = ComponentStyles.getClassName { ComponentStyles::numberedListKeyboardShortcut }
+//                            }
+//                        }
                     }
                 }
             }
