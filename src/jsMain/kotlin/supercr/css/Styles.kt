@@ -32,8 +32,10 @@ import kotlinx.css.backgroundPosition
 import kotlinx.css.backgroundRepeat
 import kotlinx.css.backgroundSize
 import kotlinx.css.basis
+import kotlinx.css.borderBottomColor
 import kotlinx.css.borderBottomLeftRadius
 import kotlinx.css.borderBottomRightRadius
+import kotlinx.css.borderBottomWidth
 import kotlinx.css.borderColor
 import kotlinx.css.borderRadius
 import kotlinx.css.borderRightColor
@@ -76,6 +78,7 @@ import kotlinx.css.marginTop
 import kotlinx.css.maxHeight
 import kotlinx.css.maxWidth
 import kotlinx.css.minWidth
+import kotlinx.css.opacity
 import kotlinx.css.outline
 import kotlinx.css.overflow
 import kotlinx.css.padding
@@ -87,6 +90,7 @@ import kotlinx.css.pct
 import kotlinx.css.position
 import kotlinx.css.properties.Timing
 import kotlinx.css.properties.border
+import kotlinx.css.properties.borderBottom
 import kotlinx.css.properties.boxShadow
 import kotlinx.css.properties.lh
 import kotlinx.css.properties.s
@@ -1476,6 +1480,52 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
         height = 80.vh
         + codeFont
     }
+
+    val helpBoxContainer by css {
+        margin(vertical = 40.px, horizontal = 100.px)
+        + bodyFont
+        backgroundColor = Colors.primaryBlack
+        opacity = 0.9
+        width = 92.pct
+        zIndex = 100
+        color = Colors.textMediumGrey
+        position = Position.absolute
+        top = 5.pct
+        left = 4.pct
+    }
+
+    val helpBoxHeader by css {
+        + headline4
+        padding(vertical = 14.px)
+        marginLeft = 20.px
+        marginRight = 20.px
+        borderBottom(width = 2.px, style = BorderStyle.solid, color = Colors.textLightGrey)
+        display = Display.flex
+        justifyContent = JustifyContent.spaceBetween
+    }
+    /** Oh the horror */
+    val helpBoxHeaderCloseActionHelp by css {
+        width = LinearDimension.fitContent
+        display = Display.inlineFlex
+        marginRight = 14.px
+        + helpTextCaption
+        color = Colors.textDarkGrey
+    }
+
+    val helpBoxSectionHeading by css {
+        + headline5
+        fontWeight = FontWeight.bold
+        color = Colors.textMediumGrey
+        marginLeft = 20.px
+    }
+
+    val helpBoxText by css {
+        + bodyFont
+        display = Display.flex
+        alignItems = Align.center
+        color = Colors.textMediumGrey
+    }
+
     /** This has to be the last, since it takes precedence */
     val keyboardShortcutBoxHighlighted by css {
         backgroundColor = Colors.primaryBlue

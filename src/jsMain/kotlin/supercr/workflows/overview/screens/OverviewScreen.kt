@@ -16,11 +16,14 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.buildElement
 import react.setState
 import styled.css
 import styled.styledP
 import supercr.css.ComponentStyles
+import supercr.kb.components.helpBox
 import supercr.kb.components.iconAndLogoutButton
+import supercr.kb.components.keyboardShortcutExplainer
 import supercr.workflows.codereview.screens.changeSetScreen
 import supercr.workflows.overview.components.pullRequestList
 
@@ -61,6 +64,26 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
     }
 
     private fun RBuilder.renderOverview() {
+        renderHelp()
+        renderPullRequestGrid()
+    }
+
+    private fun RBuilder.renderHelp() {
+        helpBox {
+            contents = listOf(
+                "General" to listOf(
+                    buildElement {
+                        keyboardShortcutExplainer {
+                            keyboardShortcutString = "dh"
+                            helpText = "This is an example of a keyboard shortcut used in Fast3r. Pressing the combo will trigger the corresponding action."
+                        }
+                    }
+                )
+            )
+        }
+    }
+
+    private fun RBuilder.renderPullRequestGrid() {
         Grid {
             attrs {
                 container = true

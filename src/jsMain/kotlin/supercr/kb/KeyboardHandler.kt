@@ -39,6 +39,14 @@ enum class DiffViewShortcuts(val label: String, val shortcutString: String) {
     PreviousHunk("Prev Hunk", "sk")
 }
 
+val noOpPartialMatchHandler: (String) -> Unit = {
+
+}
+
+enum class UniversalShortcuts(val label: String, val shortcutString: String) {
+    Help("Help", "?")
+}
+
 
 object UniversalKeyboardShortcutHandler {
 
