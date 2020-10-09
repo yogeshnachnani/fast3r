@@ -7,7 +7,10 @@ import react.RState
 import react.ReactElement
 import supercr.kb.components.helpBox
 
-abstract class BaseScreen<P: RProps, S: RState>: RComponent<P, S>() {
+abstract class BaseScreen<P: RProps, S: RState>: RComponent<P, S> {
+    constructor() : super()
+
+    constructor(props: P) : super(props)
 
     override fun RBuilder.render() {
         helpBox {

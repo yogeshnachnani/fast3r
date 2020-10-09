@@ -26,6 +26,9 @@ import supercr.workflows.codereview.components.fileView
 import codereview.FileDiffCommentHandler
 import codereview.createCommentHandlerForFile
 import codereview.retrieveChangedFileDiffList
+import react.buildElement
+import supercr.kb.components.keyboardShortcutExplainer
+import supercr.workflows.common.BaseScreen
 
 external interface ChangeSetReviewScreenProps : RProps {
     var fileDiffList: FileDiffListV2
@@ -50,14 +53,14 @@ data class FileDiffStateAndMetaData(
 /** TODO: There are too many places where state is being set. Fix that! */
 class ChangeSetReviewScreen(
     constructorProps: ChangeSetReviewScreenProps
-) : RComponent<ChangeSetReviewScreenProps, ChangeSetReviewScreenState>(constructorProps) {
+) : BaseScreen<ChangeSetReviewScreenProps, ChangeSetReviewScreenState>(constructorProps) {
     override fun ChangeSetReviewScreenState.init(props: ChangeSetReviewScreenProps) {
         fileDiffShortutAndStatusList = generateFileDiffAndMetaData()
         selectedFile = props.fileDiffList.fileDiffs.first()
         reviewDone = false
     }
 
-    override fun RBuilder.render() {
+    override fun RBuilder.renderScreen() {
         styledDiv {
             css {
                 display = Display.flex
@@ -75,6 +78,69 @@ class ChangeSetReviewScreen(
                 }
             }
         }
+    }
+
+    override fun getHelpContents(): List<Pair<String, List<ReactElement>>> {
+        return listOf(
+            "Basics" to listOf(
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "sj"
+                        helpText = "Jump to next Hunk. Use s-j to easily traverse all changes one by one"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "nc"
+                        helpText = "Comment on line number <n>. Example: 113c would open up a comment box on line number 113"
+                    }
+                }
+            ),
+            "Other Shortcuts" to listOf(
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "sk"
+                        helpText = "Jump to previous hunk"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "ng"
+                        helpText = "Jump to line number n"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "⇧j"
+                        helpText = "Page Down"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "⇧k"
+                        helpText = "Page Up"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "wo"
+                        helpText = "Switch Active Editor pane"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "fj"
+                        helpText = "Next file (Marks current file viewed)"
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "fl"
+                        helpText = "Mark the file for later review"
+                    }
+                }
+            )
+        )
     }
 
     private fun generateFileDiffAndMetaData(): List<FileDiffStateAndMetaData> {
