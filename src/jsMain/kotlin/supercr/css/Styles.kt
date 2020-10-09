@@ -1507,9 +1507,15 @@ object ComponentStyles: StyleSheet("SuperCrCss", isStatic = true) {
     val helpBoxHeaderCloseActionHelp by css {
         width = LinearDimension.fitContent
         display = Display.inlineFlex
-        marginRight = 14.px
+        marginRight = 8.px
         + helpTextCaption
         color = Colors.textDarkGrey
+    }
+
+    val helpBoxCloseButton by css {
+        + headline3
+        backgroundColor = Color.transparent
+        color = Colors.textLightGrey
     }
 
     val helpBoxSectionHeading by css {

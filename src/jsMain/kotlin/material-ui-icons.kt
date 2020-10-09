@@ -49,6 +49,9 @@ external val Battery90: RClass<SvgIconProps>
 @JsName("BatteryFull")
 external val BatteryFull: RClass<SvgIconProps>
 
+@JsName("Close")
+external val Close: RClass<SvgIconProps>
+
 external interface SvgIconProps: RProps {
     var fontSize: String
 }

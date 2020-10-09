@@ -25,6 +25,7 @@ import supercr.kb.components.helpBox
 import supercr.kb.components.iconAndLogoutButton
 import supercr.kb.components.keyboardShortcutExplainer
 import supercr.workflows.codereview.screens.changeSetScreen
+import supercr.workflows.common.BaseScreen
 import supercr.workflows.overview.components.pullRequestList
 
 external interface OverviewScreenProps: RProps {
@@ -38,11 +39,11 @@ external interface OverviewScreenState: RState {
     var selectedPullRequestIndex: Int
 }
 
-class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
+class OverviewScreen : BaseScreen<OverviewScreenProps, OverviewScreenState>() {
 
-    override fun RBuilder.render() {
+    override fun RBuilder.renderScreen() {
         if (state.selectedPullRequestIndex == -1) {
-            renderOverview()
+            renderPullRequestGrid()
         } else {
             renderChangeSetOverview()
         }
@@ -63,32 +64,25 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
         }
     }
 
-    private fun RBuilder.renderOverview() {
-        renderHelp()
-        renderPullRequestGrid()
-    }
-
-    private fun RBuilder.renderHelp() {
-        helpBox {
-            contents = listOf(
-                "Overview Screen" to listOf(
-                    buildElement {
-                        keyboardShortcutExplainer {
-                            keyboardShortcutString = ""
-                            helpText = "You can view all Pull Requests pending on you across all your projects"
-                        }
+    override fun getHelpContents(): List<Pair<String, List<ReactElement>>> {
+        return listOf(
+            "Overview Screen" to listOf(
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = ""
+                        helpText = "You can view all Pull Requests pending on you across all your projects"
                     }
-                ),
-                "General" to listOf(
-                    buildElement {
-                        keyboardShortcutExplainer {
-                            keyboardShortcutString = "dh"
-                            helpText = "This is an example of a keyboard shortcut used in Fast3r. Pressing the combo will trigger the corresponding action."
-                        }
+                }
+            ),
+            "General" to listOf(
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = "dh"
+                        helpText = "This is an example of a keyboard shortcut used in Fast3r. Pressing the combo will trigger the corresponding action."
                     }
-                )
+                }
             )
-        }
+        )
     }
 
     private fun RBuilder.renderPullRequestGrid() {

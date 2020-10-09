@@ -12,6 +12,17 @@ import react.dom.WithClassName
 import styled.CustomStyledProps
 import styled.StyledProps
 
+
+@JsName("IconButton")
+external val IconButton: RClass<IconButtonProps>
+
+external interface IconButtonProps: WithClassName {
+    var color: String
+    /** Small, medium, large. Default is medium */
+    var size: String
+    var onClick: () -> Unit
+}
+
 @JsName("Button")
 external val Button: RClass<ButtonProps>
 

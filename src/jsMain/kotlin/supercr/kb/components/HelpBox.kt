@@ -1,20 +1,29 @@
 package supercr.kb.components
 
+import Button
+import Close
+import IconButton
 import ListItem
 import MaterialUIList
 import Paper
+import kotlinx.css.Align
 import kotlinx.css.Display
+import kotlinx.css.alignItems
 import kotlinx.css.display
 import kotlinx.css.marginRight
 import kotlinx.css.px
+import kotlinx.html.js.onClickFunction
+import org.w3c.dom.events.Event
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.dom.button
 import react.setState
 import styled.css
 import styled.getClassName
+import styled.styledA
 import styled.styledDiv
 import styled.styledP
 import styled.styledSpan
@@ -68,13 +77,28 @@ class HelpBox : RComponent<HelpBoxProps, HelpBoxState>() {
                         + "Fast3r Help"
                     }
                     styledDiv {
+                        css {
+                            display = Display.flex
+                            alignItems = Align.center
+                            + ComponentStyles.headline3
+                        }
                         styledSpan {
                             css {
-                                +ComponentStyles.helpBoxHeaderCloseActionHelp
+                                + ComponentStyles.helpBoxHeaderCloseActionHelp
                             }
-                            +"Press Esc To"
+                            + "(esc)"
                         }
-                        + "Close"
+                        IconButton {
+                            attrs {
+                                onClick = escapeHandler
+                                className = ComponentStyles.getClassName { ComponentStyles::helpBoxCloseButton }
+                            }
+                            Close {
+                                attrs {
+                                    fontSize = "inherit"
+                                }
+                            }
+                        }
                     }
                 }
                 props.contents.map { (headingText, listOfHelpItems) ->
@@ -130,6 +154,10 @@ class HelpBox : RComponent<HelpBoxProps, HelpBoxState>() {
         setState {
             showHelpBox = newValue
         }
+    }
+
+    private val closeButtonHandler: (Event) -> Unit = {
+        escapeHandler.invoke()
     }
 
     private val escapeHandler: () -> Unit = {
