@@ -139,6 +139,8 @@ class HelpBox : RComponent<HelpBoxProps, HelpBoxState>() {
     }
 
     override fun componentDidMount() {
+        /** (Hack) TODO: Figure out why the previously loaded help box is not unmounting before the new one gets mounted */
+        UniversalKeyboardShortcutHandler.unRegisterShortcut(UniversalShortcuts.Help.shortcutString)
         UniversalKeyboardShortcutHandler.registerShortcut(UniversalShortcuts.Help.shortcutString, toggleHelpBox, noOpPartialMatchHandler)
     }
 

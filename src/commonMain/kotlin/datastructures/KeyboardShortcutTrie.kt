@@ -87,7 +87,7 @@ private class KeyboardShortcutTrieNode {
         when(val prefix = shortcutString.firstOrNull()) {
             null -> {
                 if (this.fullMatchHandler != null) {
-                    throw RuntimeException("Ye nahi ho sakta")
+                    throw RuntimeException("Cannot add shortcut since it has already been added")
                 } else {
                     this.fullMatchHandler = fullMatchHandler
                 }

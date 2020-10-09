@@ -15,8 +15,11 @@ import react.RComponent
 import react.RProps
 import react.RState
 import react.ReactElement
+import react.buildElement
 import react.setState
 import styled.styledP
+import supercr.kb.components.keyboardShortcutExplainer
+import supercr.workflows.common.BaseScreen
 
 external interface ChangeSetScreenProps : RProps {
     var pullRequestSummary: PullRequestSummary
@@ -37,7 +40,7 @@ external interface ChangeSetScreenState : RState {
 /**
  * Entry point for a changeset. Shows the [ChangesetOverviewScreen] and facilitates transition to [ChangeSetReviewScreen]
  */
-class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>() {
+class ChangeSetScreen : BaseScreen<ChangeSetScreenProps, ChangeSetScreenState>() {
 
     override fun ChangeSetScreenState.init() {
         inReview = false
@@ -46,7 +49,7 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
         githubCommentsLoadedSuccessfully = false
     }
 
-    override fun RBuilder.render() {
+    override fun RBuilder.renderScreen() {
         if(state.inReview) {
             renderReviewScreen()
         } else {
@@ -57,6 +60,33 @@ class ChangeSetScreen : RComponent<ChangeSetScreenProps, ChangeSetScreenState>()
     override fun componentDidMount() {
         createReviewInBackend()
         loadPullRequestComments()
+    }
+
+    override fun getHelpContents(): List<Pair<String, List<ReactElement>>> {
+        return listOf(
+            "Diff Overview Screen" to listOf(
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = ""
+                        helpText = "This Screen summarizes the Pull request for you."
+                    }
+                }
+            ),
+            "Changes & Comments" to listOf(
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = ""
+                        helpText = "The Left hand side of the screen shows the list of changed files."
+                    }
+                },
+                buildElement {
+                    keyboardShortcutExplainer {
+                        keyboardShortcutString = ""
+                        helpText = "This screen also lists all the comments made for the Pull Request."
+                    }
+                }
+            )
+        )
     }
 
     private fun loadPullRequestComments() {
