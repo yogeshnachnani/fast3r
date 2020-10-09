@@ -128,8 +128,8 @@ class HelpBox : RComponent<HelpBoxProps, HelpBoxState>() {
         }
     }
 
-    override fun componentWillUpdate(nextProps: HelpBoxProps, nextState: HelpBoxState) {
-        if(nextState.showHelpBox) {
+    override fun componentDidUpdate(prevProps: HelpBoxProps, prevState: HelpBoxState, snapshot: Any) {
+        if(state.showHelpBox) {
             /** The component will be rendered. Register the escape handler */
             UniversalKeyboardShortcutHandler.registerEscapeHandler(escapeHandler)
         } else {
