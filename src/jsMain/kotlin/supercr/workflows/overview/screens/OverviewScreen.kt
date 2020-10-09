@@ -71,6 +71,14 @@ class OverviewScreen : RComponent<OverviewScreenProps, OverviewScreenState>() {
     private fun RBuilder.renderHelp() {
         helpBox {
             contents = listOf(
+                "Overview Screen" to listOf(
+                    buildElement {
+                        keyboardShortcutExplainer {
+                            keyboardShortcutString = ""
+                            helpText = "You can view all Pull Requests pending on you across all your projects"
+                        }
+                    }
+                ),
                 "General" to listOf(
                     buildElement {
                         keyboardShortcutExplainer {
