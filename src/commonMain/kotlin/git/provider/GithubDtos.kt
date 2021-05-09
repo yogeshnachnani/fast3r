@@ -282,7 +282,7 @@ data class Repo(
     val private: Boolean,
     val owner: User,
     val html_url: String,
-    val description: String,
+    val description: String? = null,
     val fork: Boolean,
     val url: String,
     val forks_url: String,
