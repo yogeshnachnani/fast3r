@@ -45,12 +45,11 @@ import supercr.kb.components.pullRequestAgeRibbon
 import supercr.utils.ageInHoursFromNow
 import supercr.utils.getAgeFromNow
 import supercr.utils.pickAgeRibbonColor
+import supercr.workflows.overview.data.PullRequestInfo
 
 external interface PullRequestSummaryCardProps : RProps {
-    var project: Project
-    var pullRequestSummary: PullRequestSummary
+    var pullRequestInfo: PullRequestInfo
     var onClickHandler : () -> Unit
-    var assignedKeyboardShortcut: String
 }
 
 external interface PullRequestSummaryCardState : RState {
@@ -115,14 +114,14 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                         css {
                             + ComponentStyles.pullRequestSummaryMetaDataText
                         }
-                        + " Size: XS "
+                        + " Size: ${props.pullRequestInfo.fileDiffListV2.diffTShirtSize} "
                     }
                 }
             }
             keyboardChip {
                 attrs {
                     onSelected = props.onClickHandler
-                    assignedShortcut = props.assignedKeyboardShortcut
+                    assignedShortcut = props.pullRequestInfo.keyboardShortcut
                     uponUnmount = handleShortcutUnmount
                     className = ComponentStyles.getClassName { ComponentStyles::pullRequestSummaryCardKeyboardShortcut }
                 }
@@ -141,7 +140,7 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                 }
                 Avatar {
                     attrs {
-                        src = props.pullRequestSummary.user.avatar_url
+                        src = props.pullRequestInfo.pullRequestSummary.user.avatar_url
                     }
                 }
             }
@@ -153,13 +152,13 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                     css {
                         fontWeight = FontWeight.w600
                     }
-                    + props.pullRequestSummary.user.login
+                    + props.pullRequestInfo.pullRequestSummary.user.login
                 }
                 styledDiv {
                     css {
                         + ComponentStyles.pullRequestSummaryCommentBody
                     }
-                    + props.pullRequestSummary.body
+                    + props.pullRequestInfo.pullRequestSummary.body
                 }
             }
         }
@@ -170,7 +169,7 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
             css {
                 + ComponentStyles.pullRequestSummaryProjectName
             }
-            + props.project.name
+            + props.pullRequestInfo.project.name
         }
     }
 
@@ -183,10 +182,10 @@ class PullRequestSummaryCard : RComponent<PullRequestSummaryCardProps, PullReque
                 css {
                     + ComponentStyles.pullRequestSummaryCardHeading
                 }
-                + props.pullRequestSummary.title
+                + props.pullRequestInfo.pullRequestSummary.title
             }
             pullRequestAgeRibbon {
-                pullRequestSummary = props.pullRequestSummary
+                pullRequestSummary = props.pullRequestInfo.pullRequestSummary
                 roundedBothSides = false
             }
         }
