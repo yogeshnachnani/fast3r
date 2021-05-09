@@ -11,6 +11,16 @@ enum class FileTShirtSize {
     XL
 }
 
+
+@Serializable
+enum class DiffTShirtSize {
+    XS,
+    S,
+    M,
+    L,
+    XL
+}
+
 @Serializable
 sealed class FileLineItem() {
     @Serializable
@@ -110,7 +120,21 @@ fun FileDiffV2.hasNewFile(): Boolean {
 @Serializable
 data class FileDiffListV2(
     val fileDiffs: List<FileDiffV2>
-)
+) {
+    val diffTShirtSize: DiffTShirtSize
+    get() {
+        val allFileEditLength = this.fileDiffs.fold(0L) { acc, fileDiff ->
+            acc + fileDiff.editList.totalEditLength()
+        }
+        return when {
+            allFileEditLength < 20L -> DiffTShirtSize.XS
+            allFileEditLength < 100L -> DiffTShirtSize.S
+            allFileEditLength < 200L -> DiffTShirtSize.M
+            allFileEditLength < 400L -> DiffTShirtSize.L
+            else -> DiffTShirtSize.XL
+        }
+    }
+}
 
 @Serializable
 enum class DiffEditType {
@@ -155,6 +179,12 @@ data class Edit (
 
     override fun toString(): String {
         return "$editType($beginA-$endA,$beginB-$endB)"
+    }
+}
+
+fun List<Edit>.totalEditLength(): Long {
+    return this.fold(0L) { acc, edit ->
+        acc + edit.lengthB
     }
 }
 
