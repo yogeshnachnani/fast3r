@@ -53,16 +53,16 @@ kotlin {
             }
         }
         tasks {
-            /** Run compilations + tests and copy all built artifacts into build/electron directory */
+            /** Run compilations + tests and copy all built artifacts into build/deployable_dist directory */
             register<Copy>("buildAllArtifacts") {
                 dependsOn(
                     "clean",
                     "jvmJar",
                     "jsBrowserDistribution"
                 )
-                /** Copy electron files */
-                from("$projectDir/electron_packaging")
-                into("$buildDir/electron")
+                /** Just to get the COPY command here to start copying files _into_ deployable_dist directory */
+                from("$projectDir/non_existent_directory")
+                into("$buildDir/deployable_dist")
 
                 /** Copy main jar file */
                 getByName("jvmJar").outputs.files.map {
@@ -79,30 +79,6 @@ kotlin {
                 /** Copy javascript */
                 from("$buildDir/distributions") {
                     into("js")
-                }
-            }
-            register("electronPackage") {
-                dependsOn("buildAllArtifacts")
-                doLast {
-                    val locationOfElectronPackager = "$projectDir/../electron"
-                    println("Copying built artifacts from $buildDir/electron to $locationOfElectronPackager")
-                    copy {
-                        from("$buildDir/electron")
-                        into("$locationOfElectronPackager/lib")
-                    }
-                    println("Will run electron packager now")
-                    exec {
-                        workingDir = File(locationOfElectronPackager)
-                        commandLine("npm", "install")
-                    }
-                    exec {
-                        workingDir = File(locationOfElectronPackager)
-                        commandLine("node_modules/electron-packager/bin/electron-packager.js", ".", "--platform", "darwin")
-                    }
-                    exec {
-                        workingDir = File(locationOfElectronPackager)
-                        commandLine("node_modules/electron-packager/bin/electron-packager.js", ".", "--platform", "linux", "--arch", "x64")
-                    }
                 }
             }
         }
