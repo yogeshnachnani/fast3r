@@ -73,6 +73,15 @@ class SuperCrClient(
         }
     }
 
+    suspend fun getDiff(project: Project, pullRequestSummary: PullRequestSummary): FileDiffListV2 {
+        return httpClient.request<FileDiffListV2>(buildRequest().apply {
+            url("$baseUrl/projects/${project.id}/diff")
+            parameter("oldRef", pullRequestSummary.base.sha)
+            parameter("newRef", pullRequestSummary.head.sha)
+            method = HttpMethod.Get
+        })
+    }
+
     suspend fun getReviewDiff(reviewInfo: ReviewInfo, pullRequestSummary: PullRequestSummary): FileDiffListV2 {
         return httpClient.request<FileDiffListV2>(buildRequest().apply {
             url("$baseUrl/projects/${reviewInfo.projectIdentifier}/review/${reviewInfo.rowId!!}")

@@ -10,6 +10,7 @@ import codereview.FileLineItem
 import codereview.FilePatchType
 import codereview.FileTShirtSize
 import codereview.SimpleFileDiff
+import codereview.totalEditLength
 import git.provider.PullRequestReviewComment
 import git.provider.ReviewCommentSide
 import jsonParser
@@ -55,17 +56,16 @@ fun DiffFormatter.process(diffEntry: DiffEntry, oldFileText: String?, newFileTex
             DiffEntry.ChangeType.COPY -> DiffChangeType.COPY
             else -> throw RuntimeException("Not possible to have a null change type for file ${diffEntry.newPath}")
         },
-        tShirtSize = edits.fold(0L) {acc, edit ->
-            acc + edit.lengthB
-        }.let { totalEditLength ->
-            when {
-                totalEditLength < 2L -> FileTShirtSize.XS
-                totalEditLength < 60L -> FileTShirtSize.S
-                totalEditLength < 100L -> FileTShirtSize.M
-                totalEditLength < 160L -> FileTShirtSize.L
-                else -> FileTShirtSize.XL
-            }
-        },
+        tShirtSize = edits.totalEditLength()
+            .let { totalEditLength ->
+                when {
+                    totalEditLength < 2L -> FileTShirtSize.XS
+                    totalEditLength < 60L -> FileTShirtSize.S
+                    totalEditLength < 100L -> FileTShirtSize.M
+                    totalEditLength < 160L -> FileTShirtSize.L
+                    else -> FileTShirtSize.XL
+                }
+            },
         editList = edits,
         patchType = if (fileHeader.patchType == FileHeader.PatchType.BINARY || fileHeader.patchType == FileHeader.PatchType.GIT_BINARY) {
             FilePatchType.BINARY
