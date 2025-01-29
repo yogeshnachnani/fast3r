@@ -1,6 +1,7 @@
 package io.btc.supercr.api
 
 import codereview.DiffChangeType
+import codereview.DiffTShirtSize
 import codereview.FileDiffListV2
 import codereview.FileLineItem
 import codereview.Project
@@ -92,6 +93,18 @@ class ProjectApiTest {
         }
     }
 
+    @Test
+    fun `testDiff - should return FileDiff given oldRef and newRef`() = withTestApplication({superCrServer(jdbi)})  {
+        addProjectEntry()
+        val oldRef = "51664bc83fc398a50d8fcf601d24c9449c95396b"
+        val newRef = "f5d172438eab345885a0af297683f7b41a14060f"
+        val returnedFileDiff = with(handleRequest(HttpMethod.Get, "/projects/${testProject.id}/diff?oldRef=$oldRef&newRef=$newRef")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            jsonParser.decodeFromString(FileDiffListV2.serializer(), response.content!!)
+        }
+        assertEquals(2, returnedFileDiff.fileDiffs.size )
+        assertEquals(DiffTShirtSize.S,returnedFileDiff.diffTShirtSize)
+    }
 
     @Test
     fun `testReview - should throw not found if review requested for non existent project`() = withTestApplication({superCrServer(jdbi)}) {

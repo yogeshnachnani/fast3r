@@ -10,9 +10,10 @@ import react.RElementBuilder
 import react.RProps
 import react.RState
 import react.ReactElement
+import supercr.workflows.overview.data.PullRequestInfo
 
 external interface PullRequestListProps: RProps {
-    var pullRequests: List<Triple<Project, PullRequestSummary, String>>
+    var pullRequests: List<PullRequestInfo>
     var onPullRequestSelect: (Int) -> Unit
 }
 
@@ -32,7 +33,7 @@ class PullRequestList constructor(
                 spacing = 6
                 justify = "flex-start"
             }
-            props.pullRequests.mapIndexed { index, (currentPRProject, currentPullRequest, kbShortcut) ->
+            props.pullRequests.mapIndexed { index, currentPullRequestInfo->
                 Grid {
                     attrs {
                         item = true
@@ -42,10 +43,8 @@ class PullRequestList constructor(
                         xl = 4
                     }
                     pullRequestSummaryCard {
-                        project = currentPRProject
-                        pullRequestSummary = currentPullRequest
+                        pullRequestInfo = currentPullRequestInfo
                         onClickHandler = createPullRequestSelectHandler(index)
-                        assignedKeyboardShortcut = kbShortcut
                     }
                 }
             }
